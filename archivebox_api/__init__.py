@@ -6,8 +6,8 @@ import inspect
 
 # List of modules to import from
 MODULES = [
-    "audio_transcriber.audio_transcriber",
-    "audio_transcriber.audio_transcriber_mcp",
+    "archivebox_api.archivebox_api",
+    "archivebox_api.archivebox_mcp",
 ]
 
 # Initialize __all__ to expose all public classes and functions
@@ -25,7 +25,7 @@ for module_name in MODULES:
             __all__.append(name)
 
 """
-audio-transcriber
+archivebox-api
 
-Transcribe your .wav .mp4 .mp3 .flac files to text using AI!
+Interact with ArchiveBox using python API wrapper or Fast MCP Server for Agentic AI!
 """

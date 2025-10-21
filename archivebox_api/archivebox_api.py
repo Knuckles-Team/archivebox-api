@@ -14,21 +14,22 @@ from archivebox_api.exceptions import (
     MissingParameterError,
 )
 
+
 class Api(object):
     def __init__(
-            self,
-            url: str = None,
-            token: str = None,
-            username: str = None,
-            password: str = None,
-            api_key: str = None,
-            verify: bool = True,
+        self,
+        url: str = None,
+        token: str = None,
+        username: str = None,
+        password: str = None,
+        api_key: str = None,
+        verify: bool = True,
     ):
         if url is None:
             raise MissingParameterError("URL is required")
 
         self._session = requests.Session()
-        self.url = url.rstrip('/')
+        self.url = url.rstrip("/")
         self.headers = {"Content-Type": "application/json"}
         self.verify = verify
 
@@ -63,7 +64,7 @@ class Api(object):
             f"{self.url}/api/v1/core/snapshots",
             params=test_params,
             headers=self.headers,
-            verify=self.verify
+            verify=self.verify,
         )
 
         if response.status_code == 403:
@@ -79,7 +80,9 @@ class Api(object):
     ####################################################################################################################
     #                                              Authentication Endpoints                                           #
     ####################################################################################################################
-    def get_api_token(self, username: Optional[str] = None, password: Optional[str] = None) -> requests.Response:
+    def get_api_token(
+        self, username: Optional[str] = None, password: Optional[str] = None
+    ) -> requests.Response:
         """
         Generate an API token for a given username & password
 
@@ -138,29 +141,29 @@ class Api(object):
     ####################################################################################################################
     @require_auth
     def get_snapshots(
-            self,
-            id: Optional[str] = None,
-            abid: Optional[str] = None,
-            created_by_id: Optional[str] = None,
-            created_by_username: Optional[str] = None,
-            created_at__gte: Optional[str] = None,
-            created_at__lt: Optional[str] = None,
-            created_at: Optional[str] = None,
-            modified_at: Optional[str] = None,
-            modified_at__gte: Optional[str] = None,
-            modified_at__lt: Optional[str] = None,
-            search: Optional[str] = None,
-            url: Optional[str] = None,
-            tag: Optional[str] = None,
-            title: Optional[str] = None,
-            timestamp: Optional[str] = None,
-            bookmarked_at__gte: Optional[str] = None,
-            bookmarked_at__lt: Optional[str] = None,
-            with_archiveresults: bool = False,
-            limit: int = 200,
-            offset: int = 0,
-            page: int = 0,
-            api_key: Optional[str] = None
+        self,
+        id: Optional[str] = None,
+        abid: Optional[str] = None,
+        created_by_id: Optional[str] = None,
+        created_by_username: Optional[str] = None,
+        created_at__gte: Optional[str] = None,
+        created_at__lt: Optional[str] = None,
+        created_at: Optional[str] = None,
+        modified_at: Optional[str] = None,
+        modified_at__gte: Optional[str] = None,
+        modified_at__lt: Optional[str] = None,
+        search: Optional[str] = None,
+        url: Optional[str] = None,
+        tag: Optional[str] = None,
+        title: Optional[str] = None,
+        timestamp: Optional[str] = None,
+        bookmarked_at__gte: Optional[str] = None,
+        bookmarked_at__lt: Optional[str] = None,
+        with_archiveresults: bool = False,
+        limit: int = 200,
+        offset: int = 0,
+        page: int = 0,
+        api_key: Optional[str] = None,
     ) -> requests.Response:
         """
         Retrieve list of snapshots
@@ -196,7 +199,8 @@ class Api(object):
             ParameterError: If the provided parameters are invalid.
         """
         params = {
-            k: v for k, v in locals().items()
+            k: v
+            for k, v in locals().items()
             if k != "self" and v is not None and k != "api_key"
         }
         if api_key:
@@ -213,7 +217,9 @@ class Api(object):
         return response
 
     @require_auth
-    def get_snapshot(self, snapshot_id: str, with_archiveresults: bool = True) -> requests.Response:
+    def get_snapshot(
+        self, snapshot_id: str, with_archiveresults: bool = True
+    ) -> requests.Response:
         """
         Get a specific Snapshot by abid or id
 
@@ -240,25 +246,25 @@ class Api(object):
 
     @require_auth
     def get_archiveresults(
-            self,
-            id: Optional[str] = None,
-            search: Optional[str] = None,
-            snapshot_id: Optional[str] = None,
-            snapshot_url: Optional[str] = None,
-            snapshot_tag: Optional[str] = None,
-            status: Optional[str] = None,
-            output: Optional[str] = None,
-            extractor: Optional[str] = None,
-            cmd: Optional[str] = None,
-            pwd: Optional[str] = None,
-            cmd_version: Optional[str] = None,
-            created_at: Optional[str] = None,
-            created_at__gte: Optional[str] = None,
-            created_at__lt: Optional[str] = None,
-            limit: int = 200,
-            offset: int = 0,
-            page: int = 0,
-            api_key: Optional[str] = None
+        self,
+        id: Optional[str] = None,
+        search: Optional[str] = None,
+        snapshot_id: Optional[str] = None,
+        snapshot_url: Optional[str] = None,
+        snapshot_tag: Optional[str] = None,
+        status: Optional[str] = None,
+        output: Optional[str] = None,
+        extractor: Optional[str] = None,
+        cmd: Optional[str] = None,
+        pwd: Optional[str] = None,
+        cmd_version: Optional[str] = None,
+        created_at: Optional[str] = None,
+        created_at__gte: Optional[str] = None,
+        created_at__lt: Optional[str] = None,
+        limit: int = 200,
+        offset: int = 0,
+        page: int = 0,
+        api_key: Optional[str] = None,
     ) -> requests.Response:
         """
         List all ArchiveResult entries matching these filters
@@ -290,7 +296,8 @@ class Api(object):
             ParameterError: If the provided parameters are invalid.
         """
         params = {
-            k: v for k, v in locals().items()
+            k: v
+            for k, v in locals().items()
             if k != "self" and v is not None and k != "api_key"
         }
         if api_key:
@@ -332,11 +339,11 @@ class Api(object):
 
     @require_auth
     def get_tags(
-            self,
-            limit: int = 200,
-            offset: int = 0,
-            page: int = 0,
-            api_key: Optional[str] = None
+        self,
+        limit: int = 200,
+        offset: int = 0,
+        page: int = 0,
+        api_key: Optional[str] = None,
     ) -> requests.Response:
         """
         Retrieve list of tags
@@ -354,7 +361,8 @@ class Api(object):
             ParameterError: If the provided parameters are invalid.
         """
         params = {
-            k: v for k, v in locals().items()
+            k: v
+            for k, v in locals().items()
             if k != "self" and v is not None and k != "api_key"
         }
         if api_key:
@@ -425,18 +433,18 @@ class Api(object):
     ####################################################################################################################
     @require_auth
     def cli_add(
-            self,
-            urls: List[str],
-            tag: str = "",
-            depth: int = 0,
-            update: bool = False,
-            update_all: bool = False,
-            index_only: bool = False,
-            overwrite: bool = False,
-            init: bool = False,
-            extractors: str = "",
-            parser: str = "auto",
-            extra_data: Optional[Dict] = None
+        self,
+        urls: List[str],
+        tag: str = "",
+        depth: int = 0,
+        update: bool = False,
+        update_all: bool = False,
+        index_only: bool = False,
+        overwrite: bool = False,
+        init: bool = False,
+        extractors: str = "",
+        parser: str = "auto",
+        extra_data: Optional[Dict] = None,
     ) -> requests.Response:
         """
         Execute archivebox add command
@@ -470,7 +478,7 @@ class Api(object):
             "overwrite": overwrite,
             "init": init,
             "extractors": extractors,
-            "parser": parser
+            "parser": parser,
         }
         if extra_data:
             data.update(extra_data)
@@ -487,18 +495,18 @@ class Api(object):
 
     @require_auth
     def cli_update(
-            self,
-            resume: Optional[float] = 0,
-            only_new: bool = True,
-            index_only: bool = False,
-            overwrite: bool = False,
-            after: Optional[float] = 0,
-            before: Optional[float] = 999999999999999,
-            status: Optional[str] = "unarchived",
-            filter_type: Optional[str] = "substring",
-            filter_patterns: Optional[List[str]] = None,
-            extractors: Optional[str] = "",
-            extra_data: Optional[Dict] = None
+        self,
+        resume: Optional[float] = 0,
+        only_new: bool = True,
+        index_only: bool = False,
+        overwrite: bool = False,
+        after: Optional[float] = 0,
+        before: Optional[float] = 999999999999999,
+        status: Optional[str] = "unarchived",
+        filter_type: Optional[str] = "substring",
+        filter_patterns: Optional[List[str]] = None,
+        extractors: Optional[str] = "",
+        extra_data: Optional[Dict] = None,
     ) -> requests.Response:
         """
         Execute archivebox update command
@@ -523,7 +531,8 @@ class Api(object):
             ParameterError: If the provided parameters are invalid.
         """
         data = {
-            k: v for k, v in locals().items()
+            k: v
+            for k, v in locals().items()
             if k != "self" and v is not None and k != "extra_data"
         }
         if filter_patterns is None:
@@ -543,16 +552,16 @@ class Api(object):
 
     @require_auth
     def cli_schedule(
-            self,
-            import_path: Optional[str] = None,
-            add: bool = False,
-            every: Optional[str] = None,
-            tag: str = "",
-            depth: int = 0,
-            overwrite: bool = False,
-            update: bool = False,
-            clear: bool = False,
-            extra_data: Optional[Dict] = None
+        self,
+        import_path: Optional[str] = None,
+        add: bool = False,
+        every: Optional[str] = None,
+        tag: str = "",
+        depth: int = 0,
+        overwrite: bool = False,
+        update: bool = False,
+        clear: bool = False,
+        extra_data: Optional[Dict] = None,
     ) -> requests.Response:
         """
         Execute archivebox schedule command
@@ -575,7 +584,8 @@ class Api(object):
             ParameterError: If the provided parameters are invalid.
         """
         data = {
-            k: v for k, v in locals().items()
+            k: v
+            for k, v in locals().items()
             if k != "self" and v is not None and k != "extra_data"
         }
         if extra_data:
@@ -593,18 +603,18 @@ class Api(object):
 
     @require_auth
     def cli_list(
-            self,
-            filter_patterns: Optional[List[str]] = None,
-            filter_type: str = "substring",
-            status: Optional[str] = "indexed",
-            after: Optional[float] = 0,
-            before: Optional[float] = 999999999999999,
-            sort: str = "bookmarked_at",
-            as_json: bool = True,
-            as_html: bool = False,
-            as_csv: Union[str, bool] = "timestamp,url",
-            with_headers: bool = False,
-            extra_data: Optional[Dict] = None
+        self,
+        filter_patterns: Optional[List[str]] = None,
+        filter_type: str = "substring",
+        status: Optional[str] = "indexed",
+        after: Optional[float] = 0,
+        before: Optional[float] = 999999999999999,
+        sort: str = "bookmarked_at",
+        as_json: bool = True,
+        as_html: bool = False,
+        as_csv: Union[str, bool] = "timestamp,url",
+        with_headers: bool = False,
+        extra_data: Optional[Dict] = None,
     ) -> requests.Response:
         """
         Execute archivebox list command
@@ -629,7 +639,8 @@ class Api(object):
             ParameterError: If the provided parameters are invalid.
         """
         data = {
-            k: v for k, v in locals().items()
+            k: v
+            for k, v in locals().items()
             if k != "self" and v is not None and k != "extra_data"
         }
         if filter_patterns is None:
@@ -649,13 +660,13 @@ class Api(object):
 
     @require_auth
     def cli_remove(
-            self,
-            delete: bool = True,
-            after: Optional[float] = 0,
-            before: Optional[float] = 999999999999999,
-            filter_type: str = "exact",
-            filter_patterns: Optional[List[str]] = None,
-            extra_data: Optional[Dict] = None
+        self,
+        delete: bool = True,
+        after: Optional[float] = 0,
+        before: Optional[float] = 999999999999999,
+        filter_type: str = "exact",
+        filter_patterns: Optional[List[str]] = None,
+        extra_data: Optional[Dict] = None,
     ) -> requests.Response:
         """
         Execute archivebox remove command
@@ -675,7 +686,8 @@ class Api(object):
             ParameterError: If the provided parameters are invalid.
         """
         data = {
-            k: v for k, v in locals().items()
+            k: v
+            for k, v in locals().items()
             if k != "self" and v is not None and k != "extra_data"
         }
         if filter_patterns is None:
