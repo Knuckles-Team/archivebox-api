@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "archivebox-api"
-version = "0.0.2"
+version = "0.0.3"
 description = "Pythonic ArchiveBox API Wrapper and Fast MCP Server for Agentic AI use!"
 readme = "README.md"
 authors = [{ name = "Audel Rouhi", email = "knucklessg1@gmail.com" }]
