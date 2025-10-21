@@ -8,6 +8,8 @@ import inspect
 MODULES = [
     "archivebox_api.archivebox_api",
     "archivebox_api.archivebox_mcp",
+    "archivebox_api.decorators",
+    "archivebox_api.exceptions",
 ]
 
 # Initialize __all__ to expose all public classes and functions
