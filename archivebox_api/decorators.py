@@ -2,11 +2,7 @@
 # coding: utf-8
 
 import functools
-
-try:
-    from clarity_api.exceptions import LoginRequiredError
-except ModuleNotFoundError:
-    from exceptions import LoginRequiredError
+from archivebox_api.exceptions import LoginRequiredError
 
 
 def require_auth(function):
