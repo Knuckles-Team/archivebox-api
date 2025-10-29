@@ -48,7 +48,7 @@ ENV EUNOMIA_REMOTE_URL=${EUNOMIA_REMOTE_URL}
 ENV PATH="/usr/local/bin:${PATH}"
 
 RUN pip install uv \
-    && uv pip install --system --upgrade archivebox-api>=0.0.4
+    && uv pip install --system --upgrade archivebox-api>=0.0.5
 
 ENTRYPOINT exec archivebox-mcp \
     --transport "${TRANSPORT}" \
