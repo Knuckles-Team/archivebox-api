@@ -20,7 +20,7 @@
 ![PyPI - Wheel](https://img.shields.io/pypi/wheel/archivebox-api)
 ![PyPI - Implementation](https://img.shields.io/pypi/implementation/archivebox-api)
 
-*Version: 0.0.5*
+*Version: 0.0.6*
 
 ArchiveBox API Python Wrapper & Fast MCP Server!
 
