@@ -1,6 +1,7 @@
 # ArchiveBox API
 
 ![PyPI - Version](https://img.shields.io/pypi/v/archivebox-api)
+![MCP Server](https://badge.mcpx.dev?type=server 'MCP Server')
 ![PyPI - Downloads](https://img.shields.io/pypi/dd/archivebox-api)
 ![GitHub Repo stars](https://img.shields.io/github/stars/Knuckles-Team/archivebox-api)
 ![GitHub forks](https://img.shields.io/github/forks/Knuckles-Team/archivebox-api)
@@ -20,7 +21,7 @@
 ![PyPI - Wheel](https://img.shields.io/pypi/wheel/archivebox-api)
 ![PyPI - Implementation](https://img.shields.io/pypi/implementation/archivebox-api)
 
-*Version: 0.0.7*
+*Version: 0.0.8*
 
 ArchiveBox API Python Wrapper & Fast MCP Server!
 

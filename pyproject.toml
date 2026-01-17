@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "archivebox-api"
-version = "0.0.7"
+version = "0.0.8"
 description = "Pythonic ArchiveBox API Wrapper and Fast MCP Server for Agentic AI use!"
 readme = "README.md"
 authors = [{ name = "Audel Rouhi", email = "knucklessg1@gmail.com" }]
@@ -17,16 +17,31 @@ classifiers = [
     "Programming Language :: Python :: 3",
 ]
 requires-python = ">=3.10"
-dependencies = [
+
+[project.optional-dependencies]
+mcp = [
     "fastmcp>=2.13.0.2",
+    "eunomia-mcp>=0.3.10"
+]
+
+a2a = [
+    "pydantic-ai-slim[fastmcp,openai,anthropic,google,huggingface,a2a]>=1.32.0",
+    "pydantic-ai-skills",
+]
+
+all = [
+    "fastmcp>=2.13.0.2",
+    "eunomia-mcp>=0.3.10",
+    "pydantic-ai-slim[fastmcp,openai,anthropic,google,huggingface,a2a]>=1.32.0",
+    "pydantic-ai-skills",
 ]
 
 [project.scripts]
 archivebox-mcp = "archivebox_api.archivebox_mcp:archivebox_mcp"
+archivebox-a2a = "archivebox_api.archivebox_a2a:agent_server"
+
+[tool.setuptools.package-data]
+archivebox_api = ["mcp_config.json", "skills/**"]
 
 [tool.setuptools.packages.find]
 where = ["."]
-
-[tool.setuptools]
-include-package-data = true
-package-data = { "archivebox_api" = ["archivebox_api"] }
