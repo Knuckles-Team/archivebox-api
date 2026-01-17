@@ -1,4 +1,4 @@
-# ArchiveBox API
+# ArchiveBox API - A2A & MCP Server
 
 ![PyPI - Version](https://img.shields.io/pypi/v/archivebox-api)
 ![MCP Server](https://badge.mcpx.dev?type=server 'MCP Server')
