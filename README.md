@@ -23,6 +23,8 @@
 
 *Version: 0.0.8*
 
+## Overview
+
 ArchiveBox API Python Wrapper & Fast MCP Server!
 
 This repository provides a Python wrapper for interacting with the ArchiveBox API, enabling programmatic access to web archiving functionality. It includes a Model Context Protocol (MCP) server for Agentic AI, enhanced with various authentication mechanisms, middleware for observability and control, and optional Eunomia authorization for policy-based access control.
@@ -31,7 +33,17 @@ Contributions are welcome!
 
 All API Response objects are customized for the response call. You can access return values in a `parent.value.nested_value` format, or use `parent.json()` to get the response as a dictionary.
 
-#### API Calls:
+#### Features:
+- **Authentication**: Supports multiple authentication types including none (disabled), static (internal tokens), JWT, OAuth Proxy, OIDC Proxy, and Remote OAuth for external identity providers.
+- **Middleware**: Includes logging, timing, rate limiting, and error handling for robust server operation.
+- **Eunomia Authorization**: Optional policy-based authorization with embedded or remote Eunomia server integration.
+- **Resources**: Provides `instance_config` for ArchiveBox configuration.
+- **Prompts**: Includes `cli_add_prompt` for AI-driven interactions.
+
+
+## API
+
+### API Calls:
 - Authentication
 - Core Model (Snapshots, ArchiveResults, Tags)
 - CLI Commands (add, update, schedule, list, remove)
@@ -40,17 +52,87 @@ If your API call isn't supported, you can extend the functionality by adding cus
 
 [These are the API endpoints currently supported](https://demo.archivebox.io/api/v1/docs)
 
-#### Features:
-- **Authentication**: Supports multiple authentication types including none (disabled), static (internal tokens), JWT, OAuth Proxy, OIDC Proxy, and Remote OAuth for external identity providers.
-- **Middleware**: Includes logging, timing, rate limiting, and error handling for robust server operation.
-- **Eunomia Authorization**: Optional policy-based authorization with embedded or remote Eunomia server integration.
-- **Resources**: Provides `instance_config` for ArchiveBox configuration.
-- **Prompts**: Includes `cli_add_prompt` for AI-driven interactions.
+## MCP
 
-<details>
-  <summary><b>Usage:</b></summary>
+All the available API Calls above are wrapped in MCP Tools. You can find those below with their tool descriptions and associated tag.
 
-### MCP CLI
+### MCP Tools
+
+| Function Name        | Description                                                    | Tag(s)           |
+|:---------------------|:---------------------------------------------------------------|:-----------------|
+| `get_api_token`      | Generate an API token for a given username & password.         | `authentication` |
+| `check_api_token`    | Validate an API token to make sure it's valid and non-expired. | `authentication` |
+| `get_snapshots`      | Retrieve list of snapshots.                                    | `core`           |
+| `get_snapshot`       | Get a specific Snapshot by abid or id.                         | `core`           |
+| `get_archiveresults` | List all ArchiveResult entries matching these filters.         | `core`           |
+| `get_tag`            | Get a specific Tag by id or abid.                              | `core`           |
+| `get_any`            | Get a specific Snapshot, ArchiveResult, or Tag by abid.        | `core`           |
+| `cli_add`            | Execute archivebox add command.                                | `cli`            |
+| `cli_update`         | Execute archivebox update command.                             | `cli`            |
+| `cli_schedule`       | Execute archivebox schedule command.                           | `cli`            |
+| `cli_list`           | Execute archivebox list command.                               | `cli`            |
+| `cli_remove`         | Execute archivebox remove command.                             | `cli`            |
+
+## A2A Agent
+
+
+### Architecture:
+
+```mermaid
+---
+config:
+  layout: dagre
+---
+flowchart TB
+ subgraph subGraph0["Agent Capabilities"]
+        C["Agent"]
+        B["A2A Server - Uvicorn/FastAPI"]
+        D["MCP Tools"]
+        F["Agent Skills"]
+  end
+    C --> D & F
+    A["User Query"] --> B
+    B --> C
+    D --> E["Platform API"]
+
+     C:::agent
+     B:::server
+     A:::server
+    classDef server fill:#f9f,stroke:#333
+    classDef agent fill:#bbf,stroke:#333,stroke-width:2px
+    style B stroke:#000000,fill:#FFD600
+    style D stroke:#000000,fill:#BBDEFB
+    style F fill:#BBDEFB
+    style A fill:#C8E6C9
+    style subGraph0 fill:#FFF9C4
+```
+
+### Component Interaction Diagram
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Server as A2A Server
+    participant Agent as Agent
+    participant Skill as Agent Skills
+    participant MCP as MCP Tools
+
+    User->>Server: Send Query
+    Server->>Agent: Invoke Agent
+    Agent->>Skill: Analyze Skills Available
+    Skill->>Agent: Provide Guidance on Next Steps
+    Agent->>MCP: Invoke Tool
+    MCP-->>Agent: Tool Response Returned
+    Agent-->>Agent: Return Results Summarized
+    Agent-->>Server: Final Response
+    Server-->>User: Output
+```
+
+## Usage
+
+### MCP
+
+#### MCP CLI
 
 | Short Flag | Long Flag                          | Description                                                                 |
 |------------|------------------------------------|-----------------------------------------------------------------------------|
@@ -78,7 +160,7 @@ If your API call isn't supported, you can extend the functionality by adding cus
 |            | --eunomia-policy-file              | Policy file for embedded Eunomia (default: mcp_policies.json)              |
 |            | --eunomia-remote-url               | URL for remote Eunomia server                                              |
 
-### Using as an MCP Server
+#### Using as an MCP Server
 
 The MCP Server can be run in two modes: `stdio` (for local testing) or `http` (for networked access). To start the server, use the following commands:
 
@@ -400,19 +482,30 @@ eunomia-mcp init
 eunomia-mcp validate mcp_policies.json
 ```
 
-</details>
+### A2A CLI
 
-<details>
-  <summary><b>Installation Instructions:</b></summary>
+| Short Flag | Long Flag         | Description                                                            |
+|------------|-------------------|------------------------------------------------------------------------|
+| -h         | --help            | Display help information                                               |
+|            | --host            | Host to bind the server to (default: 0.0.0.0)                          |
+|            | --port            | Port to bind the server to (default: 9000)                             |
+|            | --reload          | Enable auto-reload                                                     |
+|            | --provider        | LLM Provider: 'openai', 'anthropic', 'google', 'huggingface'           |
+|            | --model-id        | LLM Model ID (default: qwen3:4b)                                       |
+|            | --base-url        | LLM Base URL (for OpenAI compatible providers)                         |
+|            | --api-key         | LLM API Key                                                            |
+|            | --mcp-url         | MCP Server URL (default: http://localhost:8000/mcp)                    |
 
-Install Python Package
+
+
+## Install Python Package
 
 ```bash
-python -m pip install archivebox-api eunomia-mcp
+python -m pip install archivebox-api[all]
 ```
 
-</details>
 
+## Repository Owners
 
 <img width="100%" height="180em" src="https://github-readme-stats.vercel.app/api?username=Knucklessg1&show_icons=true&hide_border=true&&count_private=true&include_all_commits=true" />
 

@@ -1,0 +1,87 @@
+---
+services:
+  archivebox-mcp:
+    image: docker.io/knucklessg1/archivebox-api:latest
+    # build: . # Debug
+    container_name: archivebox-mcp
+    hostname: archivebox-mcp
+    command: ["archivebox-mcp"]
+    depends_on:
+      - archivebox
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: always
+    environment:
+      - "HOST=0.0.0.0"
+      - "PORT=8013"
+      - "TRANSPORT=streamable-http"
+      - "ARCHIVEBOX_URL=${ARCHIVEBOX_URL:-http://archivebox:8000}"
+      - "ARCHIVEBOX_USERNAME=${ARCHIVEBOX_USERNAME:-admin}"
+      - "ARCHIVEBOX_PASSWORD=${ARCHIVEBOX_PASSWORD:-admin}"
+      #- "ARCHIVEBOX_API_KEY=${ARCHIVEBOX_API_KEY:-admin}"
+      - "ARCHIVEBOX_BASE_URL=${ARCHIVEBOX_BASE_URL:-http://archivebox:8000}"
+      - "ARCHIVEBOX_VERIFY=${ARCHIVEBOX_VERIFY:-False}"
+    ports:
+      - "8013:8013"
+
+  archivebox-a2a:
+    image: docker.io/knucklessg1/archivebox-api:latest
+    # build: . # Debug
+    container_name: archivebox-a2a
+    hostname: archivebox-a2a
+    command: ["archivebox-a2a"]
+    depends_on:
+      - archivebox-mcp
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: always
+    environment:
+      - "HOST=0.0.0.0"
+      - "PORT=9013"
+      - "MCP_URL=http://archivebox-mcp:8013/mcp"
+      - "PROVIDER=openai"
+      - "OPENAI_BASE_URL=http://localhost:1234/v1"
+      - "OPENAI_API_KEY=llama"
+      - "MODEL_ID=qwen/qwen3-8b"
+      - "DEBUG=False"
+    ports:
+      - "9013:9013"
+
+  archivebox:
+    image: docker.io/archivebox/archivebox:latest
+    volumes:
+      - ./mcp/archivebox:/data
+    depends_on:
+      - novnc
+    environment:
+      - ADMIN_USERNAME=${ARCHIVEBOX_USER:-admin}
+      - ADMIN_PASSWORD=${ARCHIVEBOX_PASSWORD:-admin}
+      - CSRF_TRUSTED_ORIGINS=http://archivebox:8000  # REQUIRED for auth, REST API, etc. to work
+      - ALLOWED_HOSTS=*                   # set this to the hostname(s) from your CSRF_TRUSTED_ORIGINS
+      - PUBLIC_INDEX=False                 # set to False to prevent anonymous users from viewing snapshot list
+      - PUBLIC_SNAPSHOTS=False             # set to False to prevent anonymous users from viewing snapshot content
+      - PUBLIC_ADD_VIEW=False             # set to True to allow anonymous users to submit new URLs to archive
+      - SAVE_ARCHIVE_DOT_ORG=False       # set to False to disable submitting all URLs to Archive.org when archiving
+      - SEARCH_BACKEND_ENGINE=sonic       # tells ArchiveBox to use sonic container below for fast full-text search
+      - SEARCH_BACKEND_HOST_NAME=sonic
+      - SEARCH_BACKEND_PASSWORD=${SONIC_PASSWORD}
+      - MEDIA_MAX_SIZE=1024m             # increase this filesize limit to allow archiving larger audio/video files
+      - TIMEOUT=3600                      # increase this number to 120+ seconds if you see many slow downloads timing out
+      - CHECK_SSL_VALIDITY=False
+    ports:
+      - "8000:8000"
+
+  novnc:
+    image: docker.io/theasp/novnc:latest
+    environment:
+      - DISPLAY_WIDTH=1920
+      - DISPLAY_HEIGHT=1080
+      - RUN_XTERM=no
+    ports:
+      - "8080:8080"
