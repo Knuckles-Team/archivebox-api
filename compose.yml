@@ -5,7 +5,7 @@ services:
     # build: . # Debug
     container_name: archivebox-mcp
     hostname: archivebox-mcp
-    command: ["archivebox-mcp"]
+    command: [ "archivebox-mcp" ]
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
@@ -28,13 +28,19 @@ services:
       - "ARCHIVEBOX_VERIFY=${ARCHIVEBOX_VERIFY:-False}"
     ports:
       - "8013:8013"
+    healthcheck:
+      test: [ "CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8013/health')" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
   archivebox-agent:
     image: docker.io/knucklessg1/archivebox-api:latest
     # build: . # Debug
     container_name: archivebox-agent
     hostname: archivebox-agent
-    command: ["archivebox-agent"]
+    command: [ "archivebox-agent" ]
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
@@ -57,6 +63,12 @@ services:
       - "ENABLE_WEB_UI=True"
     ports:
       - "9013:9013"
+    healthcheck:
+      test: [ "CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:9013/health')" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
   archivebox:
     image: docker.io/archivebox/archivebox:latest
@@ -71,17 +83,17 @@ services:
     environment:
       - ADMIN_USERNAME=${ARCHIVEBOX_USER:-admin}
       - ADMIN_PASSWORD=${ARCHIVEBOX_PASSWORD:-admin}
-      - CSRF_TRUSTED_ORIGINS=http://archivebox:8000  # REQUIRED for auth, REST API, etc. to work
-      - ALLOWED_HOSTS=*                   # set this to the hostname(s) from your CSRF_TRUSTED_ORIGINS
-      - PUBLIC_INDEX=False                 # set to False to prevent anonymous users from viewing snapshot list
-      - PUBLIC_SNAPSHOTS=False             # set to False to prevent anonymous users from viewing snapshot content
-      - PUBLIC_ADD_VIEW=False             # set to True to allow anonymous users to submit new URLs to archive
-      - SAVE_ARCHIVE_DOT_ORG=False       # set to False to disable submitting all URLs to Archive.org when archiving
-      - SEARCH_BACKEND_ENGINE=sonic       # tells ArchiveBox to use sonic container below for fast full-text search
+      - CSRF_TRUSTED_ORIGINS=http://archivebox:8000 # REQUIRED for auth, REST API, etc. to work
+      - ALLOWED_HOSTS=* # set this to the hostname(s) from your CSRF_TRUSTED_ORIGINS
+      - PUBLIC_INDEX=False # set to False to prevent anonymous users from viewing snapshot list
+      - PUBLIC_SNAPSHOTS=False # set to False to prevent anonymous users from viewing snapshot content
+      - PUBLIC_ADD_VIEW=False # set to True to allow anonymous users to submit new URLs to archive
+      - SAVE_ARCHIVE_DOT_ORG=False # set to False to disable submitting all URLs to Archive.org when archiving
+      - SEARCH_BACKEND_ENGINE=sonic # tells ArchiveBox to use sonic container below for fast full-text search
       - SEARCH_BACKEND_HOST_NAME=sonic
       - SEARCH_BACKEND_PASSWORD=${SONIC_PASSWORD}
-      - MEDIA_MAX_SIZE=1024m             # increase this filesize limit to allow archiving larger audio/video files
-      - TIMEOUT=3600                      # increase this number to 120+ seconds if you see many slow downloads timing out
+      - MEDIA_MAX_SIZE=1024m # increase this filesize limit to allow archiving larger audio/video files
+      - TIMEOUT=3600 # increase this number to 120+ seconds if you see many slow downloads timing out
       - CHECK_SSL_VALIDITY=False
     ports:
       - "8000:8000"
