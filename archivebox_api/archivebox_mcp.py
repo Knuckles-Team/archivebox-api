@@ -13,7 +13,7 @@ from pydantic import Field
 from eunomia_mcp.middleware import EunomiaMcpMiddleware
 from starlette.requests import Request
 from starlette.responses import JSONResponse
-from fastmcp import FastMCP
+from fastmcp import FastMCP, Context
 from fastmcp.server.auth.oidc_proxy import OIDCProxy
 from fastmcp.server.auth import OAuthProxy, RemoteAuthProvider
 from fastmcp.server.auth.providers.jwt import JWTVerifier, StaticTokenVerifier
@@ -67,7 +67,7 @@ def register_tools(mcp: FastMCP):
         ],
         tags={"authentication"},
     )
-    def get_api_token(
+    async def get_api_token(
         username: Optional[str] = Field(
             description="The username for authentication",
         ),
@@ -116,7 +116,7 @@ def register_tools(mcp: FastMCP):
         ],
         tags={"authentication"},
     )
-    def check_api_token(
+    async def check_api_token(
         token: str = Field(
             description="The API token to validate",
         ),
@@ -171,7 +171,7 @@ def register_tools(mcp: FastMCP):
         ],
         tags={"core"},
     )
-    def get_snapshots(
+    async def get_snapshots(
         id: Optional[str] = Field(None, description="Filter by snapshot ID"),
         abid: Optional[str] = Field(None, description="Filter by snapshot abid"),
         created_by_id: Optional[str] = Field(None, description="Filter by creator ID"),
@@ -293,7 +293,7 @@ def register_tools(mcp: FastMCP):
         ],
         tags={"core"},
     )
-    def get_snapshot(
+    async def get_snapshot(
         snapshot_id: str = Field(
             description="The ID or abid of the snapshot",
         ),
@@ -353,7 +353,7 @@ def register_tools(mcp: FastMCP):
         ],
         tags={"core"},
     )
-    def get_archiveresults(
+    async def get_archiveresults(
         id: Optional[str] = Field(None, description="Filter by ID"),
         search: Optional[str] = Field(
             None,
@@ -454,7 +454,7 @@ def register_tools(mcp: FastMCP):
         ],
         tags={"core"},
     )
-    def get_tag(
+    async def get_tag(
         tag_id: str = Field(
             description="The ID or abid of the tag",
         ),
@@ -512,7 +512,7 @@ def register_tools(mcp: FastMCP):
         ],
         tags={"core"},
     )
-    def get_any(
+    async def get_any(
         abid: str = Field(
             description="The abid of the Snapshot, ArchiveResult, or Tag",
         ),
@@ -567,7 +567,7 @@ def register_tools(mcp: FastMCP):
         ],
         tags={"cli"},
     )
-    def cli_add(
+    async def cli_add(
         urls: List[str] = Field(
             description="List of URLs to archive",
         ),
@@ -609,10 +609,20 @@ def register_tools(mcp: FastMCP):
             default=to_boolean(os.environ.get("ARCHIVEBOX_VERIFY", "True")),
             description="Whether to verify SSL certificates",
         ),
+        ctx: Context = None,
     ) -> dict:
         """
         Execute archivebox add command.
         """
+        if ctx:
+            message = f"Are you sure you want to ADD {len(urls)} URLs to ArchiveBox?"
+            result = await ctx.elicit(message, response_type=bool)
+            if result.action != "accept" or not result.data:
+                return {
+                    "status": "cancelled",
+                    "message": "Operation cancelled by user.",
+                }
+
         client = Api(
             url=archivebox_url,
             username=username,
@@ -647,7 +657,7 @@ def register_tools(mcp: FastMCP):
         ],
         tags={"cli"},
     )
-    def cli_update(
+    async def cli_update(
         resume: Optional[float] = Field(0, description="Resume from timestamp"),
         only_new: bool = Field(True, description="Update only new snapshots"),
         index_only: bool = Field(False, description="Index without archiving"),
@@ -693,10 +703,20 @@ def register_tools(mcp: FastMCP):
             default=to_boolean(os.environ.get("ARCHIVEBOX_VERIFY", "True")),
             description="Whether to verify SSL certificates",
         ),
+        ctx: Context = None,
     ) -> dict:
         """
         Execute archivebox update command.
         """
+        if ctx:
+            message = "Are you sure you want to UPDATE snapshots?"
+            result = await ctx.elicit(message, response_type=bool)
+            if result.action != "accept" or not result.data:
+                return {
+                    "status": "cancelled",
+                    "message": "Operation cancelled by user.",
+                }
+
         client = Api(
             url=archivebox_url,
             username=username,
@@ -731,7 +751,7 @@ def register_tools(mcp: FastMCP):
         ],
         tags={"cli"},
     )
-    def cli_schedule(
+    async def cli_schedule(
         import_path: Optional[str] = Field(None, description="Path to import file"),
         add: bool = Field(False, description="Enable adding new URLs"),
         every: Optional[str] = Field(
@@ -805,7 +825,7 @@ def register_tools(mcp: FastMCP):
         ],
         tags={"cli"},
     )
-    def cli_list(
+    async def cli_list(
         filter_patterns: Optional[List[str]] = Field(
             None, description="List of filter patterns"
         ),
@@ -889,7 +909,7 @@ def register_tools(mcp: FastMCP):
         ],
         tags={"cli"},
     )
-    def cli_remove(
+    async def cli_remove(
         delete: bool = Field(True, description="Delete matching snapshots"),
         after: Optional[float] = Field(
             0, description="Filter snapshots after timestamp"
@@ -928,10 +948,20 @@ def register_tools(mcp: FastMCP):
             default=to_boolean(os.environ.get("ARCHIVEBOX_VERIFY", "True")),
             description="Whether to verify SSL certificates",
         ),
+        ctx: Context = None,
     ) -> dict:
         """
         Execute archivebox remove command.
         """
+        if ctx:
+            message = "Are you sure you want to REMOVE matching snapshots?"
+            result = await ctx.elicit(message, response_type=bool)
+            if result.action != "accept" or not result.data:
+                return {
+                    "status": "cancelled",
+                    "message": "Operation cancelled by user.",
+                }
+
         client = Api(
             url=archivebox_url,
             username=username,
@@ -953,7 +983,7 @@ def register_tools(mcp: FastMCP):
 
 def register_resources(mcp: FastMCP):
     @mcp.resource("data://instance_config")
-    def get_instance_config() -> dict:
+    async def get_instance_config() -> dict:
         """
         Provides the current ArchiveBox instance configuration.
         """
