@@ -52,6 +52,6 @@ ENV PATH="/usr/local/bin:${PATH}"
 ENV UV_HTTP_TIMEOUT=3600
 
 RUN pip install uv \
-    && uv pip install --system archivebox-api[all]>=0.0.12
+    && uv pip install --system archivebox-api[all]>=0.0.13
 
 CMD ["archivebox-mcp"]
