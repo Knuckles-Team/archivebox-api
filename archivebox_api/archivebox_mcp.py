@@ -26,6 +26,8 @@ from archivebox_api.archivebox_api import Api
 from archivebox_api.utils import to_boolean, to_integer
 from archivebox_api.middlewares import UserTokenMiddleware, JWTClaimsLoggingMiddleware
 
+__version__ = "0.0.16"
+
 logger = get_logger(name="TokenMiddleware")
 logger.setLevel(logging.DEBUG)
 
@@ -1113,6 +1115,7 @@ def get_archivebox_client() -> Api:
 
 
 def archivebox_mcp():
+    print(f"archivebox_mcp v{__version__}")
     parser = argparse.ArgumentParser(description="ArchiveBox MCP Runner")
     parser.add_argument(
         "-t",
@@ -1610,6 +1613,7 @@ def archivebox_mcp():
     for mw in middlewares:
         mcp.add_middleware(mw)
 
+    print(f"ArchiveBox MCP v{__version__}")
     print("\nStarting ArchiveBox MCP Server")
     print(f"  Transport: {args.transport.upper()}")
     print(f"  Auth: {args.auth_type}")
