@@ -1,7 +1,7 @@
 ---
 services:
   archivebox-mcp:
-    image: docker.io/knucklessg1/archivebox-api:latest
+    image: docker.io/knucklessg1/archivebox-mcp:latest
     # build: . # Debug
     container_name: archivebox-mcp
     hostname: archivebox-mcp
@@ -36,7 +36,7 @@ services:
       start_period: 10s
 
   archivebox-agent:
-    image: docker.io/knucklessg1/archivebox-api:latest
+    image: docker.io/knucklessg1/archivebox-mcp:latest
     # build: . # Debug
     container_name: archivebox-agent
     hostname: archivebox-agent
