@@ -26,7 +26,7 @@ from archivebox_api.archivebox_api import Api
 from archivebox_api.utils import to_boolean, to_integer
 from archivebox_api.middlewares import UserTokenMiddleware, JWTClaimsLoggingMiddleware
 
-__version__ = "0.0.21"
+__version__ = "0.0.22"
 
 logger = get_logger(name="TokenMiddleware")
 logger.setLevel(logging.DEBUG)
