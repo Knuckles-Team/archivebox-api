@@ -36,13 +36,11 @@ class Api(object):
         if self.verify is False:
             urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-        # Handle authentication methods
         if token:
             self.headers["Authorization"] = f"Bearer {token}"
         elif api_key:
             self.headers["X-ArchiveBox-API-Key"] = api_key
         elif username and password:
-            # Fetch API token using username and password
             response = self.get_api_token(username=username, password=password)
             if response.status_code == 200:
                 data = response.json()
@@ -53,9 +51,7 @@ class Api(object):
             else:
                 print(f"Authentication Error: {response.content}")
                 raise AuthError
-        # else: no authentication
 
-        # Test connection and authentication
         test_params = {"limit": 1}
         if api_key and "X-ArchiveBox-API-Key" not in self.headers:
             test_params["api_key"] = api_key
@@ -77,9 +73,6 @@ class Api(object):
             print(f"Parameter Error: {response.content}")
             raise ParameterError
 
-    ####################################################################################################################
-    #                                              Authentication Endpoints                                           #
-    ####################################################################################################################
     def get_api_token(
         self, username: Optional[str] = None, password: Optional[str] = None
     ) -> requests.Response:
@@ -136,9 +129,6 @@ class Api(object):
             raise ParameterError(f"Invalid parameters: {e.errors()}")
         return response
 
-    ####################################################################################################################
-    #                                              Core Model Endpoints                                               #
-    ####################################################################################################################
     @require_auth
     def get_snapshots(
         self,
@@ -428,9 +418,6 @@ class Api(object):
             raise ParameterError(f"Invalid parameters: {e.errors()}")
         return response
 
-    ####################################################################################################################
-    #                                              CLI Sub-Command Endpoints                                          #
-    ####################################################################################################################
     @require_auth
     def cli_add(
         self,
