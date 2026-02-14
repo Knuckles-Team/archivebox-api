@@ -26,7 +26,7 @@ from archivebox_api.archivebox_api import Api
 from archivebox_api.utils import to_boolean, to_integer
 from archivebox_api.middlewares import UserTokenMiddleware, JWTClaimsLoggingMiddleware
 
-__version__ = "0.1.7"
+__version__ = "0.1.8"
 
 logger = get_logger(name="TokenMiddleware")
 logger.setLevel(logging.DEBUG)
@@ -614,13 +614,8 @@ def register_tools(mcp: FastMCP):
         Execute archivebox add command.
         """
         if ctx:
-            message = f"Are you sure you want to ADD {len(urls)} URLs to ArchiveBox?"
-            result = await ctx.elicit(message, response_type=bool)
-            if result.action != "accept" or not result.data:
-                return {
-                    "status": "cancelled",
-                    "message": "Operation cancelled by user.",
-                }
+            # Elicitation not supported by some clients, skipping confirmation
+            pass
 
         client = Api(
             url=archivebox_url,
@@ -708,13 +703,8 @@ def register_tools(mcp: FastMCP):
         Execute archivebox update command.
         """
         if ctx:
-            message = "Are you sure you want to UPDATE snapshots?"
-            result = await ctx.elicit(message, response_type=bool)
-            if result.action != "accept" or not result.data:
-                return {
-                    "status": "cancelled",
-                    "message": "Operation cancelled by user.",
-                }
+            # Elicitation not supported by some clients, skipping confirmation
+            pass
 
         client = Api(
             url=archivebox_url,
@@ -953,13 +943,8 @@ def register_tools(mcp: FastMCP):
         Execute archivebox remove command.
         """
         if ctx:
-            message = "Are you sure you want to REMOVE matching snapshots?"
-            result = await ctx.elicit(message, response_type=bool)
-            if result.action != "accept" or not result.data:
-                return {
-                    "status": "cancelled",
-                    "message": "Operation cancelled by user.",
-                }
+            # Elicitation not supported by some clients, skipping confirmation
+            pass
 
         client = Api(
             url=archivebox_url,
