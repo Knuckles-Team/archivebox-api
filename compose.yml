@@ -1,8 +1,10 @@
 ---
 services:
   archivebox-mcp:
-    image: docker.io/knucklessg1/archivebox-mcp:latest
-    # build: . # Debug
+    # image: docker.io/knucklessg1/archivebox-mcp:latest
+    build:
+      context: .
+      dockerfile: debug.Dockerfile
     container_name: archivebox-mcp
     hostname: archivebox-mcp
     command: [ "archivebox-mcp" ]
@@ -16,15 +18,15 @@ services:
         max-size: "10m"
         max-file: "3"
     restart: always
+
     environment:
+      - "PYTHONUNBUFFERED=1"
       - "HOST=0.0.0.0"
       - "PORT=8013"
       - "TRANSPORT=streamable-http"
       - "ARCHIVEBOX_URL=${ARCHIVEBOX_URL:-http://archivebox:8000}"
       - "ARCHIVEBOX_USERNAME=${ARCHIVEBOX_USERNAME:-admin}"
       - "ARCHIVEBOX_PASSWORD=${ARCHIVEBOX_PASSWORD:-admin}"
-      #- "ARCHIVEBOX_API_KEY=${ARCHIVEBOX_API_KEY:-admin}"
-      - "ARCHIVEBOX_BASE_URL=${ARCHIVEBOX_BASE_URL:-http://archivebox:8000}"
       - "ARCHIVEBOX_VERIFY=${ARCHIVEBOX_VERIFY:-False}"
     ports:
       - "8013:8013"
@@ -36,8 +38,10 @@ services:
       start_period: 10s
 
   archivebox-agent:
-    image: docker.io/knucklessg1/archivebox-mcp:latest
-    # build: . # Debug
+    # image: docker.io/knucklessg1/archivebox-mcp:latest
+    build:
+      context: .
+      dockerfile: debug.Dockerfile
     container_name: archivebox-agent
     hostname: archivebox-agent
     command: [ "archivebox-agent" ]
@@ -54,6 +58,7 @@ services:
     env_file:
       - .env
     environment:
+      - "PYTHONUNBUFFERED=1"
       - "HOST=0.0.0.0"
       - "PORT=9013"
       - "MCP_URL=http://archivebox-mcp:8013/mcp"
@@ -73,18 +78,24 @@ services:
       start_period: 10s
 
   archivebox:
-    image: docker.io/archivebox/archivebox:latest
+    image: docker.io/archivebox/archivebox:dev
     container_name: archivebox
     hostname: archivebox
+    # command: /bin/sh -c "archivebox init && archivebox server --quick-init 0.0.0.0:8000"
+    # Use this temporary command to fix a bug in archivebox:dev
+    command: /bin/sh -c "sed -i 's/settings.BINARIES.to_dict()/settings.BINARIES.dict()/g' /app/archivebox/index/json.py && archivebox init && archivebox server --quick-init 0.0.0.0:8000"
     volumes:
       - ./mcp/archivebox:/data
     depends_on:
       - novnc
     extra_hosts:
       - "host.docker.internal:host-gateway"
+
     environment:
+      - "PYTHONUNBUFFERED=1"
       - ADMIN_USERNAME=${ARCHIVEBOX_USER:-admin}
       - ADMIN_PASSWORD=${ARCHIVEBOX_PASSWORD:-admin}
+      - SONIC_PASSWORD=${SONIC_PASSWORD:-admin}
       - CSRF_TRUSTED_ORIGINS=http://archivebox:8000 # REQUIRED for auth, REST API, etc. to work
       - ALLOWED_HOSTS=* # set this to the hostname(s) from your CSRF_TRUSTED_ORIGINS
       - PUBLIC_INDEX=False # set to False to prevent anonymous users from viewing snapshot list
@@ -102,7 +113,9 @@ services:
 
   novnc:
     image: docker.io/theasp/novnc:latest
+
     environment:
+      - "PYTHONUNBUFFERED=1"
       - DISPLAY_WIDTH=1920
       - DISPLAY_HEIGHT=1080
       - RUN_XTERM=no
