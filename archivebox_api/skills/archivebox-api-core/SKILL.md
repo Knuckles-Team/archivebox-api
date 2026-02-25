@@ -1,6 +1,7 @@
 ---
 name: archivebox-api-core
 description: Archivebox Api Core capabilities for A2A Agent.
+tags: [core]
 ---
 ### Overview
 This skill provides access to core operations.

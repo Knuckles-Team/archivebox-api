@@ -1,6 +1,7 @@
 ---
 name: archivebox-api-cli
 description: Archivebox Api Cli capabilities for A2A Agent.
+tags: [cli]
 ---
 ### Overview
 This skill provides access to cli operations.

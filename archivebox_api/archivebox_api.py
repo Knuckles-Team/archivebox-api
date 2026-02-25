@@ -6,8 +6,8 @@ import urllib3
 from pydantic import ValidationError
 from typing import Optional, Dict, List, Union
 
-from archivebox_api.decorators import require_auth
-from archivebox_api.exceptions import (
+from agent_utilities.decorators import require_auth
+from agent_utilities.exceptions import (
     AuthError,
     UnauthorizedError,
     ParameterError,

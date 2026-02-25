@@ -12,8 +12,8 @@ CORE_MODULES = [
 ]
 
 OPTIONAL_MODULES = {
-    "archivebox_api.archivebox_agent": "a2a",
-    "archivebox_api.archivebox_mcp": "mcp",
+    "archivebox_api.agent": "agent",
+    "archivebox_api.mcp": "mcp",
 }
 
 
@@ -47,12 +47,12 @@ for module_name, extra_name in OPTIONAL_MODULES.items():
     else:
         globals()[f"_{extra_name.upper()}_AVAILABLE"] = False
 
-_MCP_AVAILABLE = OPTIONAL_MODULES.get("archivebox_api.archivebox_mcp") in [
+_MCP_AVAILABLE = OPTIONAL_MODULES.get("archivebox_api.mcp") in [
     m.__name__ for m in globals().values() if hasattr(m, "__name__")
 ]
-_A2A_AVAILABLE = "archivebox_api.archivebox_agent" in globals()
+_AGENT_AVAILABLE = "archivebox_api.agent" in globals()
 
-__all__.extend(["_MCP_AVAILABLE", "_A2A_AVAILABLE"])
+__all__.extend(["_MCP_AVAILABLE", "_AGENT_AVAILABLE"])
 
 
 """

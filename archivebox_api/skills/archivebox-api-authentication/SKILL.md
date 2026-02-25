@@ -1,6 +1,7 @@
 ---
 name: archivebox-api-authentication
 description: Archivebox Api Authentication capabilities for A2A Agent.
+tags: [authentication]
 ---
 ### Overview
 This skill provides access to authentication operations.
