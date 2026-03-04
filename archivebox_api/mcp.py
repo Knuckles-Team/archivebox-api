@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # coding: utf-8
 
+from dotenv import load_dotenv, find_dotenv
 import os
 import sys
 import logging
@@ -32,17 +33,18 @@ from agent_utilities.middlewares import (
     JWTClaimsLoggingMiddleware,
 )
 
-__version__ = "0.1.24"
+__version__ = "0.1.25"
 
 logger = get_logger(name="TokenMiddleware")
 logger.setLevel(logging.DEBUG)
 
 
-def register_tools(mcp: FastMCP):
-    @mcp.custom_route("/health", methods=["GET"])
+def register_misc_tools(mcp: FastMCP):
     async def health_check(request: Request) -> JSONResponse:
         return JSONResponse({"status": "OK"})
 
+
+def register_authentication_tools(mcp: FastMCP):
     @mcp.tool(
         exclude_args=[
             "archivebox_url",
@@ -146,6 +148,8 @@ def register_tools(mcp: FastMCP):
         response = client.check_api_token(token=token)
         return response.json()
 
+
+def register_core_tools(mcp: FastMCP):
     @mcp.tool(
         exclude_args=[
             "archivebox_url",
@@ -541,6 +545,8 @@ def register_tools(mcp: FastMCP):
         response = client.get_any(abid=abid)
         return response.json()
 
+
+def register_cli_tools(mcp: FastMCP):
     @mcp.tool(
         exclude_args=[
             "archivebox_url",
@@ -1082,6 +1088,7 @@ def get_archivebox_client() -> Api:
 
 
 def mcp_server():
+    load_dotenv(find_dotenv())
     print(f"mcp_server v{__version__}")
     parser = create_mcp_parser()
     parser.description = "ArchiveBox MCP Runner"
@@ -1385,7 +1392,18 @@ def mcp_server():
             sys.exit(1)
 
     mcp = FastMCP("ArchiveBox", auth=auth)
-    register_tools(mcp)
+    DEFAULT_MISCTOOL = to_boolean(os.getenv("MISCTOOL", "True"))
+    if DEFAULT_MISCTOOL:
+        register_misc_tools(mcp)
+    DEFAULT_AUTHENTICATIONTOOL = to_boolean(os.getenv("AUTHENTICATIONTOOL", "True"))
+    if DEFAULT_AUTHENTICATIONTOOL:
+        register_authentication_tools(mcp)
+    DEFAULT_CORETOOL = to_boolean(os.getenv("CORETOOL", "True"))
+    if DEFAULT_CORETOOL:
+        register_core_tools(mcp)
+    DEFAULT_CLITOOL = to_boolean(os.getenv("CLITOOL", "True"))
+    if DEFAULT_CLITOOL:
+        register_cli_tools(mcp)
     register_prompts(mcp)
     register_resources(mcp)
 
