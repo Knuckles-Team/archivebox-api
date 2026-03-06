@@ -1,5 +1,42 @@
 ---
 services:
+  archivebox-mcp:
+    # image: docker.io/knucklessg1/archivebox-mcp:latest
+    build:
+      context: .
+      dockerfile: debug.Dockerfile
+    container_name: archivebox-mcp
+    hostname: archivebox-mcp
+    command: [ "archivebox-mcp" ]
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - archivebox
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: always
+    environment:
+      - "PYTHONUNBUFFERED=1"
+      - "HOST=0.0.0.0"
+      - "PORT=8013"
+      - "TRANSPORT=streamable-http"
+      - "ARCHIVEBOX_URL=${ARCHIVEBOX_URL:-http://archivebox:8000}"
+      - "ARCHIVEBOX_USERNAME=${ARCHIVEBOX_USERNAME:-admin}"
+      - "ARCHIVEBOX_PASSWORD=${ARCHIVEBOX_PASSWORD:-admin}"
+      - "ARCHIVEBOX_VERIFY=${ARCHIVEBOX_VERIFY:-False}"
+    ports:
+      - "8013:8013"
+    healthcheck:
+      test: [ "CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8013/health')" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Optional - Connect to Standalone MCP Server
   archivebox-agent:
     # image: docker.io/knucklessg1/archivebox-mcp:latest
     build:
@@ -23,12 +60,8 @@ services:
     environment:
       - "PYTHONUNBUFFERED=1"
       - "HOST=0.0.0.0"
-      - "PORT=9045"
-      - "TRANSPORT=stdio"
-      - "ARCHIVEBOX_URL=${ARCHIVEBOX_URL:-http://archivebox:8000}"
-      - "ARCHIVEBOX_USERNAME=${ARCHIVEBOX_USERNAME:-admin}"
-      - "ARCHIVEBOX_PASSWORD=${ARCHIVEBOX_PASSWORD:-admin}"
-      - "ARCHIVEBOX_VERIFY=${ARCHIVEBOX_VERIFY:-False}"
+      - "PORT=9013"
+      - "MCP_URL=http://archivebox-mcp:8013/mcp"
       - "PROVIDER=openai"
       - "LLM_BASE_URL=${LLM_BASE_URL:-http://host.docker.internal:1234/v1}"
       - "LLM_API_KEY=${LLM_API_KEY:-llama}"
@@ -37,9 +70,9 @@ services:
       - "ENABLE_WEB_UI=True"
       - "ENABLE_OTEL=True"
     ports:
-      - "9045:9045"
+      - "9013:9013"
     healthcheck:
-      test: [ "CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:9045/health')" ]
+      test: [ "CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:9013/health')" ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -78,7 +111,6 @@ services:
       - CHECK_SSL_VALIDITY=False
     ports:
       - "8000:8000"
-
   novnc:
     image: docker.io/theasp/novnc:latest
 
