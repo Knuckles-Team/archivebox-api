@@ -1,6 +1,4 @@
-#!/usr/bin/python
-# coding: utf-8
-from archivebox_api.mcp_server import archivebox_mcp
+from archivebox_api.agent_server import agent_server
 
 if __name__ == "__main__":
-    archivebox_mcp()
+    agent_server()
