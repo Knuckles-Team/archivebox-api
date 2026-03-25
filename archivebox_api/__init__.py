@@ -8,7 +8,7 @@ from typing import List
 __all__: List[str] = []
 
 CORE_MODULES = [
-    "archivebox_api.archivebox_api",
+    "archivebox_api.api_wrapper",
 ]
 
 OPTIONAL_MODULES = {
