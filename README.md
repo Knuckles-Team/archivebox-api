@@ -21,7 +21,7 @@
 ![PyPI - Wheel](https://img.shields.io/pypi/wheel/archivebox-api)
 ![PyPI - Implementation](https://img.shields.io/pypi/implementation/archivebox-api)
 
-*Version: 0.1.47*
+*Version: 0.1.48*
 
 ## Overview
 
@@ -144,7 +144,7 @@ stateDiagram-v2
   DomainNode --> [*]: Domain Result
 ```
 
-- **RouterNode**: A fast, lightweight LLM (e.g., `gpt-4o-mini`) that classifies the user's query into one of the specialized domains.
+- **RouterNode**: A fast, lightweight LLM (e.g., `nvidia/nemotron-3-super`) that classifies the user's query into one of the specialized domains.
 - **DomainNode**: The executor node. For the selected domain, it dynamically sets environment variables to temporarily enable ONLY the tools relevant to that domain, creating a highly focused sub-agent (e.g., `gpt-4o`) to complete the request. This preserves LLM context and prevents tool hallucination.
 
 ## Usage
@@ -298,7 +298,7 @@ docker run -d \
   -e ARCHIVEBOX_PASSWORD=pass \
   -e ARCHIVEBOX_TOKEN=token \
   -e ARCHIVEBOX_API_KEY=api_key \
-  -e ARCHIVEBOX_VERIFY=False \
+  -e ARCHIVEBOX_SSL_VERIFY=False \
   archivebox/archivebox:latest
 ```
 
@@ -324,7 +324,7 @@ docker run -d \
   -e ARCHIVEBOX_PASSWORD=pass \
   -e ARCHIVEBOX_TOKEN=token \
   -e ARCHIVEBOX_API_KEY=api_key \
-  -e ARCHIVEBOX_VERIFY=False \
+  -e ARCHIVEBOX_SSL_VERIFY=False \
   archivebox/archivebox:latest
 ```
 
@@ -347,7 +347,7 @@ services:
       - ARCHIVEBOX_PASSWORD=pass
       - ARCHIVEBOX_TOKEN=token
       - ARCHIVEBOX_API_KEY=api_key
-      - ARCHIVEBOX_VERIFY=False
+      - ARCHIVEBOX_SSL_VERIFY=False
     ports:
       - 8004:8004
 ```
@@ -375,7 +375,7 @@ services:
       - ARCHIVEBOX_PASSWORD=pass
       - ARCHIVEBOX_TOKEN=token
       - ARCHIVEBOX_API_KEY=api_key
-      - ARCHIVEBOX_VERIFY=False
+      - ARCHIVEBOX_SSL_VERIFY=False
     ports:
       - 8004:8004
     volumes:

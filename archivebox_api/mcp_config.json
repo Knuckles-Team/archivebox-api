@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "archivebox": {
+      "command": "archivebox-mcp",
+      "args": ["--transport", "stdio"],
+      "env": {
+        "ARCHIVEBOX_URL": "${ARCHIVEBOX_URL:-http://localhost:8080}",
+        "ARCHIVEBOX_TOKEN": "${ARCHIVEBOX_TOKEN}"
+      }
+    }
+  }
+}

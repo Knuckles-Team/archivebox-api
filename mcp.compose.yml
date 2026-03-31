@@ -26,7 +26,7 @@ services:
       - "ARCHIVEBOX_URL=${ARCHIVEBOX_URL:-http://archivebox:8000}"
       - "ARCHIVEBOX_USERNAME=${ARCHIVEBOX_USERNAME:-admin}"
       - "ARCHIVEBOX_PASSWORD=${ARCHIVEBOX_PASSWORD:-admin}"
-      - "ARCHIVEBOX_VERIFY=${ARCHIVEBOX_VERIFY:-False}"
+      - "ARCHIVEBOX_SSL_VERIFY=${ARCHIVEBOX_SSL_VERIFY:-False}"
     ports:
       - "8013:8013"
     healthcheck:
