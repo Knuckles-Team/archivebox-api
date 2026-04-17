@@ -6,6 +6,7 @@ with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     try:
         from requests.exceptions import RequestsDependencyWarning
+
         warnings.filterwarnings("ignore", category=RequestsDependencyWarning)
     except ImportError:
         pass
@@ -32,14 +33,17 @@ from agent_utilities.mcp_utilities import (
     create_mcp_server,
 )
 
-__version__ = "0.1.53"
+__version__ = "0.1.54"
 
 logger = get_logger(name="TokenMiddleware")
 logger.setLevel(logging.DEBUG)
 
 
 def register_misc_tools(mcp: FastMCP):
-    async def health_check(request: Request) -> JSONResponse:
+    pass
+    pass
+
+    async def health_check(_request: Request) -> JSONResponse:
         return JSONResponse({"status": "OK"})
 
 
