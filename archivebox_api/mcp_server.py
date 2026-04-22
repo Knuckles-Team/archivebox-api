@@ -15,23 +15,24 @@ with warnings.catch_warnings():
 warnings.filterwarnings("ignore", message=".*urllib3.*or chardet.*")
 warnings.filterwarnings("ignore", message=".*urllib3.*or charset_normalizer.*")
 
-from dotenv import load_dotenv, find_dotenv
+import logging
 import os
 import sys
-import logging
-from typing import Any, Optional, List, Dict, Union
+from typing import Any
 
-from fastmcp.exceptions import ResourceError
-from pydantic import Field
-from starlette.requests import Request
-from starlette.responses import JSONResponse
-from fastmcp import FastMCP, Context
-from fastmcp.utilities.logging import get_logger
-from archivebox_api.api_wrapper import Api
 from agent_utilities.base_utilities import to_boolean
 from agent_utilities.mcp_utilities import (
     create_mcp_server,
 )
+from dotenv import find_dotenv, load_dotenv
+from fastmcp import Context, FastMCP
+from fastmcp.exceptions import ResourceError
+from fastmcp.utilities.logging import get_logger
+from pydantic import Field
+from starlette.requests import Request
+from starlette.responses import JSONResponse
+
+from archivebox_api.api_wrapper import Api
 
 __version__ = "0.1.54"
 
@@ -60,25 +61,25 @@ def register_authentication_tools(mcp: FastMCP):
         tags={"authentication"},
     )
     async def get_api_token(
-        username: Optional[str] = Field(
+        username: str | None = Field(
             description="The username for authentication",
         ),
-        password: Optional[str] = Field(
+        password: str | None = Field(
             description="The password for authentication",
         ),
-        archivebox_url: str = Field(
+        archivebox_url: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_URL", None),
             description="The URL of the ArchiveBox instance (e.g., https://yourinstance.archivebox.com)",
         ),
-        token: Optional[str] = Field(
+        token: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_TOKEN", None),
             description="Bearer token for authentication",
         ),
-        api_key: Optional[str] = Field(
+        api_key: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_API_KEY", None),
             description="API key for authentication",
         ),
-        verify: Optional[bool] = Field(
+        verify: bool = Field(
             default=to_boolean(os.environ.get("ARCHIVEBOX_VERIFY", "True")),
             description="Whether to verify SSL certificates",
         ),
@@ -112,27 +113,27 @@ def register_authentication_tools(mcp: FastMCP):
         token: str = Field(
             description="The API token to validate",
         ),
-        archivebox_url: str = Field(
+        archivebox_url: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_URL", None),
             description="The URL of the ArchiveBox instance (e.g., https://yourinstance.archivebox.com)",
         ),
-        username: Optional[str] = Field(
+        username: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_USERNAME", None),
             description="Username for authentication",
         ),
-        password: Optional[str] = Field(
+        password: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_PASSWORD", None),
             description="Password for authentication",
         ),
-        token_param: Optional[str] = Field(
+        token_param: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_TOKEN", None),
             description="Bearer token for authentication",
         ),
-        api_key: Optional[str] = Field(
+        api_key: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_API_KEY", None),
             description="API key for authentication",
         ),
-        verify: Optional[bool] = Field(
+        verify: bool = Field(
             default=to_boolean(os.environ.get("ARCHIVEBOX_VERIFY", "True")),
             description="Whether to verify SSL certificates",
         ),
@@ -165,43 +166,43 @@ def register_core_tools(mcp: FastMCP):
         tags={"core"},
     )
     async def get_snapshots(
-        id: Optional[str] = Field(None, description="Filter by snapshot ID"),
-        abid: Optional[str] = Field(None, description="Filter by snapshot abid"),
-        created_by_id: Optional[str] = Field(None, description="Filter by creator ID"),
-        created_by_username: Optional[str] = Field(
+        id: str | None = Field(None, description="Filter by snapshot ID"),
+        abid: str | None = Field(None, description="Filter by snapshot abid"),
+        created_by_id: str | None = Field(None, description="Filter by creator ID"),
+        created_by_username: str | None = Field(
             None, description="Filter by creator username"
         ),
-        created_at__gte: Optional[str] = Field(
+        created_at__gte: str | None = Field(
             None, description="Filter by creation date >= (ISO 8601)"
         ),
-        created_at__lt: Optional[str] = Field(
+        created_at__lt: str | None = Field(
             None, description="Filter by creation date < (ISO 8601)"
         ),
-        created_at: Optional[str] = Field(
+        created_at: str | None = Field(
             None, description="Filter by exact creation date (ISO 8601)"
         ),
-        modified_at: Optional[str] = Field(
+        modified_at: str | None = Field(
             None, description="Filter by exact modification date (ISO 8601)"
         ),
-        modified_at__gte: Optional[str] = Field(
+        modified_at__gte: str | None = Field(
             None, description="Filter by modification date >= (ISO 8601)"
         ),
-        modified_at__lt: Optional[str] = Field(
+        modified_at__lt: str | None = Field(
             None, description="Filter by modification date < (ISO 8601)"
         ),
-        search: Optional[str] = Field(
+        search: str | None = Field(
             None, description="Search across url, title, tags, id, abid, timestamp"
         ),
-        url: Optional[str] = Field(None, description="Filter by URL (exact)"),
-        tag: Optional[str] = Field(None, description="Filter by tag name (exact)"),
-        title: Optional[str] = Field(None, description="Filter by title (icontains)"),
-        timestamp: Optional[str] = Field(
+        url: str | None = Field(None, description="Filter by URL (exact)"),
+        tag: str | None = Field(None, description="Filter by tag name (exact)"),
+        title: str | None = Field(None, description="Filter by title (icontains)"),
+        timestamp: str | None = Field(
             None, description="Filter by timestamp (startswith)"
         ),
-        bookmarked_at__gte: Optional[str] = Field(
+        bookmarked_at__gte: str | None = Field(
             None, description="Filter by bookmark date >= (ISO 8601)"
         ),
-        bookmarked_at__lt: Optional[str] = Field(
+        bookmarked_at__lt: str | None = Field(
             None, description="Filter by bookmark date < (ISO 8601)"
         ),
         with_archiveresults: bool = Field(
@@ -210,30 +211,30 @@ def register_core_tools(mcp: FastMCP):
         limit: int = Field(10, description="Number of results to return"),
         offset: int = Field(0, description="Offset for pagination"),
         page: int = Field(0, description="Page number for pagination"),
-        api_key_param: Optional[str] = Field(
+        api_key_param: str | None = Field(
             None, description="API key for QueryParamTokenAuth"
         ),
-        archivebox_url: str = Field(
+        archivebox_url: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_URL", None),
             description="The URL of the ArchiveBox instance",
         ),
-        username: Optional[str] = Field(
+        username: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_USERNAME", None),
             description="Username for authentication",
         ),
-        password: Optional[str] = Field(
+        password: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_PASSWORD", None),
             description="Password for authentication",
         ),
-        token: Optional[str] = Field(
+        token: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_TOKEN", None),
             description="Bearer token for authentication",
         ),
-        api_key: Optional[str] = Field(
+        api_key: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_API_KEY", None),
             description="API key for authentication",
         ),
-        verify: Optional[bool] = Field(
+        verify: bool = Field(
             default=to_boolean(os.environ.get("ARCHIVEBOX_VERIFY", "True")),
             description="Whether to verify SSL certificates",
         ),
@@ -293,27 +294,27 @@ def register_core_tools(mcp: FastMCP):
         with_archiveresults: bool = Field(
             True, description="Whether to include archiveresults"
         ),
-        archivebox_url: str = Field(
+        archivebox_url: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_URL", None),
             description="The URL of the ArchiveBox instance",
         ),
-        username: Optional[str] = Field(
+        username: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_USERNAME", None),
             description="Username for authentication",
         ),
-        password: Optional[str] = Field(
+        password: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_PASSWORD", None),
             description="Password for authentication",
         ),
-        token: Optional[str] = Field(
+        token: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_TOKEN", None),
             description="Bearer token for authentication",
         ),
-        api_key: Optional[str] = Field(
+        api_key: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_API_KEY", None),
             description="API key for authentication",
         ),
-        verify: Optional[bool] = Field(
+        verify: bool = Field(
             default=to_boolean(os.environ.get("ARCHIVEBOX_VERIFY", "True")),
             description="Whether to verify SSL certificates",
         ),
@@ -347,58 +348,56 @@ def register_core_tools(mcp: FastMCP):
         tags={"core"},
     )
     async def get_archiveresults(
-        id: Optional[str] = Field(None, description="Filter by ID"),
-        search: Optional[str] = Field(
+        id: str | None = Field(None, description="Filter by ID"),
+        search: str | None = Field(
             None,
             description="Search across snapshot url, title, tags, extractor, output, id",
         ),
-        snapshot_id: Optional[str] = Field(None, description="Filter by snapshot ID"),
-        snapshot_url: Optional[str] = Field(None, description="Filter by snapshot URL"),
-        snapshot_tag: Optional[str] = Field(None, description="Filter by snapshot tag"),
-        status: Optional[str] = Field(None, description="Filter by status"),
-        output: Optional[str] = Field(None, description="Filter by output"),
-        extractor: Optional[str] = Field(None, description="Filter by extractor"),
-        cmd: Optional[str] = Field(None, description="Filter by command"),
-        pwd: Optional[str] = Field(None, description="Filter by working directory"),
-        cmd_version: Optional[str] = Field(
-            None, description="Filter by command version"
-        ),
-        created_at: Optional[str] = Field(
+        snapshot_id: str | None = Field(None, description="Filter by snapshot ID"),
+        snapshot_url: str | None = Field(None, description="Filter by snapshot URL"),
+        snapshot_tag: str | None = Field(None, description="Filter by snapshot tag"),
+        status: str | None = Field(None, description="Filter by status"),
+        output: str | None = Field(None, description="Filter by output"),
+        extractor: str | None = Field(None, description="Filter by extractor"),
+        cmd: str | None = Field(None, description="Filter by command"),
+        pwd: str | None = Field(None, description="Filter by working directory"),
+        cmd_version: str | None = Field(None, description="Filter by command version"),
+        created_at: str | None = Field(
             None, description="Filter by exact creation date (ISO 8601)"
         ),
-        created_at__gte: Optional[str] = Field(
+        created_at__gte: str | None = Field(
             None, description="Filter by creation date >= (ISO 8601)"
         ),
-        created_at__lt: Optional[str] = Field(
+        created_at__lt: str | None = Field(
             None, description="Filter by creation date < (ISO 8601)"
         ),
         limit: int = Field(10, description="Number of results to return"),
         offset: int = Field(0, description="Offset for pagination"),
         page: int = Field(0, description="Page number for pagination"),
-        api_key_param: Optional[str] = Field(
+        api_key_param: str | None = Field(
             None, description="API key for QueryParamTokenAuth"
         ),
-        archivebox_url: str = Field(
+        archivebox_url: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_URL", None),
             description="The URL of the ArchiveBox instance",
         ),
-        username: Optional[str] = Field(
+        username: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_USERNAME", None),
             description="Username for authentication",
         ),
-        password: Optional[str] = Field(
+        password: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_PASSWORD", None),
             description="Password for authentication",
         ),
-        token: Optional[str] = Field(
+        token: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_TOKEN", None),
             description="Bearer token for authentication",
         ),
-        api_key: Optional[str] = Field(
+        api_key: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_API_KEY", None),
             description="API key for authentication",
         ),
-        verify: Optional[bool] = Field(
+        verify: bool = Field(
             default=to_boolean(os.environ.get("ARCHIVEBOX_VERIFY", "True")),
             description="Whether to verify SSL certificates",
         ),
@@ -452,27 +451,27 @@ def register_core_tools(mcp: FastMCP):
             description="The ID or abid of the tag",
         ),
         with_snapshots: bool = Field(True, description="Whether to include snapshots"),
-        archivebox_url: str = Field(
+        archivebox_url: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_URL", None),
             description="The URL of the ArchiveBox instance",
         ),
-        username: Optional[str] = Field(
+        username: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_USERNAME", None),
             description="Username for authentication",
         ),
-        password: Optional[str] = Field(
+        password: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_PASSWORD", None),
             description="Password for authentication",
         ),
-        token: Optional[str] = Field(
+        token: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_TOKEN", None),
             description="Bearer token for authentication",
         ),
-        api_key: Optional[str] = Field(
+        api_key: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_API_KEY", None),
             description="API key for authentication",
         ),
-        verify: Optional[bool] = Field(
+        verify: bool = Field(
             default=to_boolean(os.environ.get("ARCHIVEBOX_VERIFY", "True")),
             description="Whether to verify SSL certificates",
         ),
@@ -509,27 +508,27 @@ def register_core_tools(mcp: FastMCP):
         abid: str = Field(
             description="The abid of the Snapshot, ArchiveResult, or Tag",
         ),
-        archivebox_url: str = Field(
+        archivebox_url: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_URL", None),
             description="The URL of the ArchiveBox instance",
         ),
-        username: Optional[str] = Field(
+        username: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_USERNAME", None),
             description="Username for authentication",
         ),
-        password: Optional[str] = Field(
+        password: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_PASSWORD", None),
             description="Password for authentication",
         ),
-        token: Optional[str] = Field(
+        token: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_TOKEN", None),
             description="Bearer token for authentication",
         ),
-        api_key: Optional[str] = Field(
+        api_key: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_API_KEY", None),
             description="API key for authentication",
         ),
-        verify: Optional[bool] = Field(
+        verify: bool = Field(
             default=to_boolean(os.environ.get("ARCHIVEBOX_VERIFY", "True")),
             description="Whether to verify SSL certificates",
         ),
@@ -562,7 +561,7 @@ def register_cli_tools(mcp: FastMCP):
         tags={"cli"},
     )
     async def cli_add(
-        urls: List[str] = Field(
+        urls: list[str] = Field(
             description="List of URLs to archive",
         ),
         tag: str = Field("", description="Comma-separated tags"),
@@ -576,40 +575,39 @@ def register_cli_tools(mcp: FastMCP):
             "", description="Comma-separated list of extractors to use"
         ),
         parser: str = Field("auto", description="Parser type"),
-        extra_data: Optional[Dict] = Field(
+        extra_data: dict | None = Field(
             None, description="Additional parameters as a dictionary"
         ),
-        archivebox_url: str = Field(
+        archivebox_url: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_URL", None),
             description="The URL of the ArchiveBox instance",
         ),
-        username: Optional[str] = Field(
+        username: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_USERNAME", None),
             description="Username for authentication",
         ),
-        password: Optional[str] = Field(
+        password: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_PASSWORD", None),
             description="Password for authentication",
         ),
-        token: Optional[str] = Field(
+        token: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_TOKEN", None),
             description="Bearer token for authentication",
         ),
-        api_key: Optional[str] = Field(
+        api_key: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_API_KEY", None),
             description="API key for authentication",
         ),
-        verify: Optional[bool] = Field(
+        verify: bool = Field(
             default=to_boolean(os.environ.get("ARCHIVEBOX_VERIFY", "True")),
             description="Whether to verify SSL certificates",
         ),
-        ctx: Context = None,
+        ctx: Context | None = None,
     ) -> dict:
         """
         Execute archivebox add command.
         """
         if ctx:
-
             pass
 
         client = Api(
@@ -647,58 +645,55 @@ def register_cli_tools(mcp: FastMCP):
         tags={"cli"},
     )
     async def cli_update(
-        resume: Optional[float] = Field(0, description="Resume from timestamp"),
+        resume: float | None = Field(0, description="Resume from timestamp"),
         only_new: bool = Field(True, description="Update only new snapshots"),
         index_only: bool = Field(False, description="Index without archiving"),
         overwrite: bool = Field(False, description="Overwrite existing files"),
-        after: Optional[float] = Field(
-            0, description="Filter snapshots after timestamp"
-        ),
-        before: Optional[float] = Field(
+        after: float | None = Field(0, description="Filter snapshots after timestamp"),
+        before: float | None = Field(
             999999999999999, description="Filter snapshots before timestamp"
         ),
-        status: Optional[str] = Field("unarchived", description="Filter by status"),
-        filter_type: Optional[str] = Field("substring", description="Filter type"),
-        filter_patterns: Optional[List[str]] = Field(
+        status: str | None = Field("unarchived", description="Filter by status"),
+        filter_type: str | None = Field("substring", description="Filter type"),
+        filter_patterns: list[str] | None = Field(
             None, description="List of filter patterns"
         ),
-        extractors: Optional[str] = Field(
+        extractors: str | None = Field(
             "", description="Comma-separated list of extractors"
         ),
-        extra_data: Optional[Dict] = Field(
+        extra_data: dict | None = Field(
             None, description="Additional parameters as a dictionary"
         ),
-        archivebox_url: str = Field(
+        archivebox_url: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_URL", None),
             description="The URL of the ArchiveBox instance",
         ),
-        username: Optional[str] = Field(
+        username: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_USERNAME", None),
             description="Username for authentication",
         ),
-        password: Optional[str] = Field(
+        password: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_PASSWORD", None),
             description="Password for authentication",
         ),
-        token: Optional[str] = Field(
+        token: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_TOKEN", None),
             description="Bearer token for authentication",
         ),
-        api_key: Optional[str] = Field(
+        api_key: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_API_KEY", None),
             description="API key for authentication",
         ),
-        verify: Optional[bool] = Field(
+        verify: bool = Field(
             default=to_boolean(os.environ.get("ARCHIVEBOX_VERIFY", "True")),
             description="Whether to verify SSL certificates",
         ),
-        ctx: Context = None,
+        ctx: Context | None = None,
     ) -> dict:
         """
         Execute archivebox update command.
         """
         if ctx:
-
             pass
 
         client = Api(
@@ -736,9 +731,9 @@ def register_cli_tools(mcp: FastMCP):
         tags={"cli"},
     )
     async def cli_schedule(
-        import_path: Optional[str] = Field(None, description="Path to import file"),
+        import_path: str | None = Field(None, description="Path to import file"),
         add: bool = Field(False, description="Enable adding new URLs"),
-        every: Optional[str] = Field(
+        every: str | None = Field(
             None, description="Schedule frequency (e.g., 'daily')"
         ),
         tag: str = Field("", description="Comma-separated tags"),
@@ -746,30 +741,30 @@ def register_cli_tools(mcp: FastMCP):
         overwrite: bool = Field(False, description="Overwrite existing files"),
         update: bool = Field(False, description="Update existing snapshots"),
         clear: bool = Field(False, description="Clear existing schedules"),
-        extra_data: Optional[Dict] = Field(
+        extra_data: dict | None = Field(
             None, description="Additional parameters as a dictionary"
         ),
-        archivebox_url: str = Field(
+        archivebox_url: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_URL", None),
             description="The URL of the ArchiveBox instance",
         ),
-        username: Optional[str] = Field(
+        username: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_USERNAME", None),
             description="Username for authentication",
         ),
-        password: Optional[str] = Field(
+        password: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_PASSWORD", None),
             description="Password for authentication",
         ),
-        token: Optional[str] = Field(
+        token: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_TOKEN", None),
             description="Bearer token for authentication",
         ),
-        api_key: Optional[str] = Field(
+        api_key: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_API_KEY", None),
             description="API key for authentication",
         ),
-        verify: Optional[bool] = Field(
+        verify: bool = Field(
             default=to_boolean(os.environ.get("ARCHIVEBOX_VERIFY", "True")),
             description="Whether to verify SSL certificates",
         ),
@@ -810,48 +805,46 @@ def register_cli_tools(mcp: FastMCP):
         tags={"cli"},
     )
     async def cli_list(
-        filter_patterns: Optional[List[str]] = Field(
+        filter_patterns: list[str] | None = Field(
             None, description="List of filter patterns"
         ),
         filter_type: str = Field("substring", description="Filter type"),
-        status: Optional[str] = Field("indexed", description="Filter by status"),
-        after: Optional[float] = Field(
-            0, description="Filter snapshots after timestamp"
-        ),
-        before: Optional[float] = Field(
+        status: str | None = Field("indexed", description="Filter by status"),
+        after: float | None = Field(0, description="Filter snapshots after timestamp"),
+        before: float | None = Field(
             999999999999999, description="Filter snapshots before timestamp"
         ),
         sort: str = Field("bookmarked_at", description="Sort field"),
         as_json: bool = Field(True, description="Output as JSON"),
         as_html: bool = Field(False, description="Output as HTML"),
-        as_csv: Union[str, bool] = Field(
+        as_csv: str | bool = Field(
             "timestamp,url", description="Output as CSV or fields to include"
         ),
         with_headers: bool = Field(False, description="Include headers in output"),
-        extra_data: Optional[Dict] = Field(
+        extra_data: dict | None = Field(
             None, description="Additional parameters as a dictionary"
         ),
-        archivebox_url: str = Field(
+        archivebox_url: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_URL", None),
             description="The URL of the ArchiveBox instance",
         ),
-        username: Optional[str] = Field(
+        username: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_USERNAME", None),
             description="Username for authentication",
         ),
-        password: Optional[str] = Field(
+        password: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_PASSWORD", None),
             description="Password for authentication",
         ),
-        token: Optional[str] = Field(
+        token: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_TOKEN", None),
             description="Bearer token for authentication",
         ),
-        api_key: Optional[str] = Field(
+        api_key: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_API_KEY", None),
             description="API key for authentication",
         ),
-        verify: Optional[bool] = Field(
+        verify: bool = Field(
             default=to_boolean(os.environ.get("ARCHIVEBOX_VERIFY", "True")),
             description="Whether to verify SSL certificates",
         ),
@@ -895,50 +888,47 @@ def register_cli_tools(mcp: FastMCP):
     )
     async def cli_remove(
         delete: bool = Field(True, description="Delete matching snapshots"),
-        after: Optional[float] = Field(
-            0, description="Filter snapshots after timestamp"
-        ),
-        before: Optional[float] = Field(
+        after: float | None = Field(0, description="Filter snapshots after timestamp"),
+        before: float | None = Field(
             999999999999999, description="Filter snapshots before timestamp"
         ),
         filter_type: str = Field("exact", description="Filter type"),
-        filter_patterns: Optional[List[str]] = Field(
+        filter_patterns: list[str] | None = Field(
             None, description="List of filter patterns"
         ),
-        extra_data: Optional[Dict] = Field(
+        extra_data: dict | None = Field(
             None, description="Additional parameters as a dictionary"
         ),
-        archivebox_url: str = Field(
+        archivebox_url: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_URL", None),
             description="The URL of the ArchiveBox instance",
         ),
-        username: Optional[str] = Field(
+        username: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_USERNAME", None),
             description="Username for authentication",
         ),
-        password: Optional[str] = Field(
+        password: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_PASSWORD", None),
             description="Password for authentication",
         ),
-        token: Optional[str] = Field(
+        token: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_TOKEN", None),
             description="Bearer token for authentication",
         ),
-        api_key: Optional[str] = Field(
+        api_key: str | None = Field(
             default=os.environ.get("ARCHIVEBOX_API_KEY", None),
             description="API key for authentication",
         ),
-        verify: Optional[bool] = Field(
+        verify: bool = Field(
             default=to_boolean(os.environ.get("ARCHIVEBOX_VERIFY", "True")),
             description="Whether to verify SSL certificates",
         ),
-        ctx: Context = None,
+        ctx: Context | None = None,
     ) -> dict:
         """
         Execute archivebox remove command.
         """
         if ctx:
-
             pass
 
         client = Api(
@@ -1117,7 +1107,7 @@ def get_mcp_instance() -> tuple[Any, Any, Any, Any]:
 
     for mw in middlewares:
         mcp.add_middleware(mw)
-    registered_tags = []
+    registered_tags: list[str] = []
     return mcp, args, middlewares, registered_tags
 
 

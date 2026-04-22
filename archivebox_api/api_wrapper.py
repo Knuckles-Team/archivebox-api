@@ -1,28 +1,28 @@
 #!/usr/bin/python
 
 
+from typing import Any
+
 import requests
 import urllib3
-from pydantic import ValidationError
-from typing import Optional, Dict, List, Union
-
 from agent_utilities.decorators import require_auth
 from agent_utilities.exceptions import (
     AuthError,
-    UnauthorizedError,
-    ParameterError,
     MissingParameterError,
+    ParameterError,
+    UnauthorizedError,
 )
+from pydantic import ValidationError
 
 
-class Api(object):
+class Api:
     def __init__(
         self,
-        url: str = None,
-        token: str = None,
-        username: str = None,
-        password: str = None,
-        api_key: str = None,
+        url: str | None = None,
+        token: str | None = None,
+        username: str | None = None,
+        password: str | None = None,
+        api_key: str | None = None,
         verify: bool = True,
     ):
         if url is None:
@@ -49,10 +49,13 @@ class Api(object):
                     raise AuthError("Failed to retrieve API token")
                 self.headers["Authorization"] = f"Bearer {fetched_token}"
             else:
-                print(f"Authentication Error: {response.content}")
+                print(f"Authentication Error: {response.content!r}")
                 raise AuthError
+        elif not api_key and not token:
+            # Check if we have enough info for auth later or if we are just probing
+            pass
 
-        test_params = {"limit": 1}
+        test_params: dict[str, Any] = {"limit": 1}
         if api_key and "X-ArchiveBox-API-Key" not in self.headers:
             test_params["api_key"] = api_key
 
@@ -64,17 +67,17 @@ class Api(object):
         )
 
         if response.status_code == 403:
-            print(f"Unauthorized Error: {response.content}")
+            print(f"Unauthorized Error: {response.content!r}")
             raise UnauthorizedError
         elif response.status_code == 401:
-            print(f"Authentication Error: {response.content}")
+            print(f"Authentication Error: {response.content!r}")
             raise AuthError
         elif response.status_code == 404:
-            print(f"Parameter Error: {response.content}")
+            print(f"Parameter Error: {response.content!r}")
             raise ParameterError
 
     def get_api_token(
-        self, username: Optional[str] = None, password: Optional[str] = None
+        self, username: str | None = None, password: str | None = None
     ) -> requests.Response:
         """
         Generate an API token for a given username & password
@@ -90,7 +93,7 @@ class Api(object):
             ParameterError: If the provided parameters are invalid.
         """
         try:
-            data = {}
+            data: dict[str, Any] = {}
             if username is not None:
                 data["username"] = username
             if password is not None:
@@ -102,7 +105,7 @@ class Api(object):
                 verify=self.verify,
             )
         except ValidationError as e:
-            raise ParameterError(f"Invalid parameters: {e.errors()}")
+            raise ParameterError(f"Invalid parameters: {e.errors()}") from e
         return response
 
     def check_api_token(self, token: str) -> requests.Response:
@@ -126,60 +129,60 @@ class Api(object):
                 verify=self.verify,
             )
         except ValidationError as e:
-            raise ParameterError(f"Invalid parameters: {e.errors()}")
+            raise ParameterError(f"Invalid parameters: {e.errors()}") from e
         return response
 
     @require_auth
     def get_snapshots(
         self,
-        id: Optional[str] = None,
-        abid: Optional[str] = None,
-        created_by_id: Optional[str] = None,
-        created_by_username: Optional[str] = None,
-        created_at__gte: Optional[str] = None,
-        created_at__lt: Optional[str] = None,
-        created_at: Optional[str] = None,
-        modified_at: Optional[str] = None,
-        modified_at__gte: Optional[str] = None,
-        modified_at__lt: Optional[str] = None,
-        search: Optional[str] = None,
-        url: Optional[str] = None,
-        tag: Optional[str] = None,
-        title: Optional[str] = None,
-        timestamp: Optional[str] = None,
-        bookmarked_at__gte: Optional[str] = None,
-        bookmarked_at__lt: Optional[str] = None,
+        id: str | None = None,
+        abid: str | None = None,
+        created_by_id: str | None = None,
+        created_by_username: str | None = None,
+        created_at__gte: str | None = None,
+        created_at__lt: str | None = None,
+        created_at: str | None = None,
+        modified_at: str | None = None,
+        modified_at__gte: str | None = None,
+        modified_at__lt: str | None = None,
+        search: str | None = None,
+        url: str | None = None,
+        tag: str | None = None,
+        title: str | None = None,
+        timestamp: str | None = None,
+        bookmarked_at__gte: str | None = None,
+        bookmarked_at__lt: str | None = None,
         with_archiveresults: bool = False,
         limit: int = 200,
         offset: int = 0,
         page: int = 0,
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
     ) -> requests.Response:
         """
         Retrieve list of snapshots
 
         Args:
-            id: Filter by snapshot ID (startswith, icontains, timestamp__startswith).
-            abid: Filter by snapshot abid (icontains).
+            id: Filter by snapshot ID.
+            abid: Filter by snapshot abid.
             created_by_id: Filter by creator ID.
-            created_by_username: Filter by creator username (icontains).
+            created_by_username: Filter by creator username.
             created_at__gte: Filter by creation date >= (ISO 8601 format).
             created_at__lt: Filter by creation date < (ISO 8601 format).
             created_at: Filter by exact creation date (ISO 8601 format).
             modified_at: Filter by exact modification date (ISO 8601 format).
             modified_at__gte: Filter by modification date >= (ISO 8601 format).
             modified_at__lt: Filter by modification date < (ISO 8601 format).
-            search: Search across url, title, tags, id, abid, timestamp (icontains).
+            search: Search across url, title, tags, id, abid, timestamp.
             url: Filter by URL (exact).
             tag: Filter by tag name (exact).
             title: Filter by title (icontains).
             timestamp: Filter by timestamp (startswith).
             bookmarked_at__gte: Filter by bookmark date >= (ISO 8601 format).
             bookmarked_at__lt: Filter by bookmark date < (ISO 8601 format).
-            with_archiveresults: Include archiveresults in response (default: False).
-            limit: Number of results to return (default: 200).
-            offset: Offset for pagination (default: 0).
-            page: Page number for pagination (default: 0).
+            with_archiveresults: Include archiveresults in response.
+            limit: Number of results to return.
+            offset: Offset for pagination.
+            page: Page number for pagination.
             api_key: API key for QueryParamTokenAuth (optional).
 
         Returns:
@@ -203,7 +206,7 @@ class Api(object):
                 verify=self.verify,
             )
         except ValidationError as e:
-            raise ParameterError(f"Invalid parameters: {e.errors()}")
+            raise ParameterError(f"Invalid parameters: {e.errors()}") from e
         return response
 
     @require_auth
@@ -215,7 +218,7 @@ class Api(object):
 
         Args:
             snapshot_id: The ID or abid of the snapshot.
-            with_archiveresults: Whether to include archiveresults (default: True).
+            with_archiveresults: Whether to include archiveresults.
 
         Returns:
             Response: The response object from the GET request.
@@ -231,52 +234,52 @@ class Api(object):
                 verify=self.verify,
             )
         except ValidationError as e:
-            raise ParameterError(f"Invalid parameters: {e.errors()}")
+            raise ParameterError(f"Invalid parameters: {e.errors()}") from e
         return response
 
     @require_auth
     def get_archiveresults(
         self,
-        id: Optional[str] = None,
-        search: Optional[str] = None,
-        snapshot_id: Optional[str] = None,
-        snapshot_url: Optional[str] = None,
-        snapshot_tag: Optional[str] = None,
-        status: Optional[str] = None,
-        output: Optional[str] = None,
-        extractor: Optional[str] = None,
-        cmd: Optional[str] = None,
-        pwd: Optional[str] = None,
-        cmd_version: Optional[str] = None,
-        created_at: Optional[str] = None,
-        created_at__gte: Optional[str] = None,
-        created_at__lt: Optional[str] = None,
+        id: str | None = None,
+        search: str | None = None,
+        snapshot_id: str | None = None,
+        snapshot_url: str | None = None,
+        snapshot_tag: str | None = None,
+        status: str | None = None,
+        output: str | None = None,
+        extractor: str | None = None,
+        cmd: str | None = None,
+        pwd: str | None = None,
+        cmd_version: str | None = None,
+        created_at: str | None = None,
+        created_at__gte: str | None = None,
+        created_at__lt: str | None = None,
         limit: int = 200,
         offset: int = 0,
         page: int = 0,
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
     ) -> requests.Response:
         """
         List all ArchiveResult entries matching these filters
 
         Args:
-            id: Filter by ID (startswith, icontains, snapshot-related fields).
+            id: Filter by ID.
             search: Search across snapshot url, title, tags, extractor, output, id.
-            snapshot_id: Filter by snapshot ID (startswith, icontains).
-            snapshot_url: Filter by snapshot URL (icontains).
-            snapshot_tag: Filter by snapshot tag (icontains).
-            status: Filter by status (exact).
-            output: Filter by output (icontains).
-            extractor: Filter by extractor (icontains).
-            cmd: Filter by command (icontains).
-            pwd: Filter by working directory (icontains).
-            cmd_version: Filter by command version (exact).
+            snapshot_id: Filter by snapshot ID.
+            snapshot_url: Filter by snapshot URL.
+            snapshot_tag: Filter by snapshot tag.
+            status: Filter by status.
+            output: Filter by output.
+            extractor: Filter by extractor.
+            cmd: Filter by command.
+            pwd: Filter by working directory.
+            cmd_version: Filter by command version.
             created_at: Filter by exact creation date (ISO 8601 format).
             created_at__gte: Filter by creation date >= (ISO 8601 format).
             created_at__lt: Filter by creation date < (ISO 8601 format).
-            limit: Number of results to return (default: 200).
-            offset: Offset for pagination (default: 0).
-            page: Page number for pagination (default: 0).
+            limit: Number of results to return.
+            offset: Offset for pagination.
+            page: Page number for pagination.
             api_key: API key for QueryParamTokenAuth (optional).
 
         Returns:
@@ -300,7 +303,7 @@ class Api(object):
                 verify=self.verify,
             )
         except ValidationError as e:
-            raise ParameterError(f"Invalid parameters: {e.errors()}")
+            raise ParameterError(f"Invalid parameters: {e.errors()}") from e
         return response
 
     @require_auth
@@ -324,7 +327,7 @@ class Api(object):
                 verify=self.verify,
             )
         except ValidationError as e:
-            raise ParameterError(f"Invalid parameters: {e.errors()}")
+            raise ParameterError(f"Invalid parameters: {e.errors()}") from e
         return response
 
     @require_auth
@@ -333,15 +336,15 @@ class Api(object):
         limit: int = 200,
         offset: int = 0,
         page: int = 0,
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
     ) -> requests.Response:
         """
         Retrieve list of tags
 
         Args:
-            limit: Number of results to return (default: 200).
-            offset: Offset for pagination (default: 0).
-            page: Page number for pagination (default: 0).
+            limit: Number of results to return.
+            offset: Offset for pagination.
+            page: Page number for pagination.
             api_key: API key for QueryParamTokenAuth (optional).
 
         Returns:
@@ -365,7 +368,7 @@ class Api(object):
                 verify=self.verify,
             )
         except ValidationError as e:
-            raise ParameterError(f"Invalid parameters: {e.errors()}")
+            raise ParameterError(f"Invalid parameters: {e.errors()}") from e
         return response
 
     @require_auth
@@ -375,7 +378,7 @@ class Api(object):
 
         Args:
             tag_id: The ID or abid of the tag.
-            with_snapshots: Whether to include snapshots (default: True).
+            with_snapshots: Whether to include snapshots.
 
         Returns:
             Response: The response object from the GET request.
@@ -391,7 +394,7 @@ class Api(object):
                 verify=self.verify,
             )
         except ValidationError as e:
-            raise ParameterError(f"Invalid parameters: {e.errors()}")
+            raise ParameterError(f"Invalid parameters: {e.errors()}") from e
         return response
 
     @require_auth
@@ -415,13 +418,13 @@ class Api(object):
                 verify=self.verify,
             )
         except ValidationError as e:
-            raise ParameterError(f"Invalid parameters: {e.errors()}")
+            raise ParameterError(f"Invalid parameters: {e.errors()}") from e
         return response
 
     @require_auth
     def cli_add(
         self,
-        urls: List[str],
+        urls: list[str],
         tag: str = "",
         depth: int = 0,
         update: bool = False,
@@ -431,23 +434,23 @@ class Api(object):
         init: bool = False,
         extractors: str = "",
         parser: str = "auto",
-        extra_data: Optional[Dict] = None,
+        extra_data: dict | None = None,
     ) -> requests.Response:
         """
         Execute archivebox add command
 
         Args:
             urls: List of URLs to archive.
-            tag: Comma-separated tags (default: "").
-            depth: Crawl depth (default: 0).
-            update: Update existing snapshots (default: False).
-            update_all: Update all snapshots (default: False).
-            index_only: Index without archiving (default: False).
-            overwrite: Overwrite existing files (default: False).
-            init: Initialize collection if needed (default: False).
-            extractors: Comma-separated list of extractors to use (default: "").
-            parser: Parser type (default: "auto").
-            extra_data: Additional parameters as a dictionary (optional).
+            tag: Comma-separated tags.
+            depth: Crawl depth.
+            update: Update existing snapshots.
+            update_all: Update all snapshots.
+            index_only: Index without archiving.
+            overwrite: Overwrite existing files.
+            init: Initialize collection if needed.
+            extractors: Comma-separated list of extractors to use.
+            parser: Parser type.
+            extra_data: Additional parameters as a dictionary.
 
         Returns:
             Response: The response object from the POST request.
@@ -455,7 +458,7 @@ class Api(object):
         Raises:
             ParameterError: If the provided parameters are invalid.
         """
-        data = {
+        data: dict[str, Any] = {
             "urls": urls,
             "tag": tag,
             "depth": depth,
@@ -477,39 +480,39 @@ class Api(object):
                 verify=self.verify,
             )
         except ValidationError as e:
-            raise ParameterError(f"Invalid parameters: {e.errors()}")
+            raise ParameterError(f"Invalid parameters: {e.errors()}") from e
         return response
 
     @require_auth
     def cli_update(
         self,
-        resume: Optional[float] = 0,
+        resume: float | None = 0,
         only_new: bool = True,
         index_only: bool = False,
         overwrite: bool = False,
-        after: Optional[float] = 0,
-        before: Optional[float] = 999999999999999,
-        status: Optional[str] = "unarchived",
-        filter_type: Optional[str] = "substring",
-        filter_patterns: Optional[List[str]] = None,
-        extractors: Optional[str] = "",
-        extra_data: Optional[Dict] = None,
+        after: float | None = 0,
+        before: float | None = 999999999999999,
+        status: str | None = "unarchived",
+        filter_type: str | None = "substring",
+        filter_patterns: list[str] | None = None,
+        extractors: str | None = "",
+        extra_data: dict | None = None,
     ) -> requests.Response:
         """
         Execute archivebox update command
 
         Args:
-            resume: Resume from timestamp (default: 0).
-            only_new: Update only new snapshots (default: True).
-            index_only: Index without archiving (default: False).
-            overwrite: Overwrite existing files (default: False).
-            after: Filter snapshots after timestamp (default: 0).
-            before: Filter snapshots before timestamp (default: 999999999999999).
-            status: Filter by status (default: "unarchived").
-            filter_type: Filter type (default: "substring").
-            filter_patterns: List of filter patterns (default: ["https://example.com"]).
-            extractors: Comma-separated list of extractors (default: "").
-            extra_data: Additional parameters as a dictionary (optional).
+            resume: Resume from timestamp.
+            only_new: Update only new snapshots.
+            index_only: Index without archiving.
+            overwrite: Overwrite existing files.
+            after: Filter snapshots after timestamp.
+            before: Filter snapshots before timestamp.
+            status: Filter by status.
+            filter_type: Filter type.
+            filter_patterns: List of filter patterns.
+            extractors: Comma-separated list of extractors.
+            extra_data: Additional parameters as a dictionary.
 
         Returns:
             Response: The response object from the POST request.
@@ -534,35 +537,35 @@ class Api(object):
                 verify=self.verify,
             )
         except ValidationError as e:
-            raise ParameterError(f"Invalid parameters: {e.errors()}")
+            raise ParameterError(f"Invalid parameters: {e.errors()}") from e
         return response
 
     @require_auth
     def cli_schedule(
         self,
-        import_path: Optional[str] = None,
+        import_path: str | None = None,
         add: bool = False,
-        every: Optional[str] = None,
+        every: str | None = None,
         tag: str = "",
         depth: int = 0,
         overwrite: bool = False,
         update: bool = False,
         clear: bool = False,
-        extra_data: Optional[Dict] = None,
+        extra_data: dict | None = None,
     ) -> requests.Response:
         """
         Execute archivebox schedule command
 
         Args:
-            import_path: Path to import file (optional).
-            add: Enable adding new URLs (default: False).
-            every: Schedule frequency (e.g., "daily").
-            tag: Comma-separated tags (default: "").
-            depth: Crawl depth (default: 0).
-            overwrite: Overwrite existing files (default: False).
-            update: Update existing snapshots (default: False).
-            clear: Clear existing schedules (default: False).
-            extra_data: Additional parameters as a dictionary (optional).
+            import_path: Path to import file.
+            add: Enable adding new URLs.
+            every: Schedule frequency.
+            tag: Comma-separated tags.
+            depth: Crawl depth.
+            overwrite: Overwrite existing files.
+            update: Update existing snapshots.
+            clear: Clear existing schedules.
+            extra_data: Additional parameters as a dictionary.
 
         Returns:
             Response: The response object from the POST request.
@@ -585,39 +588,39 @@ class Api(object):
                 verify=self.verify,
             )
         except ValidationError as e:
-            raise ParameterError(f"Invalid parameters: {e.errors()}")
+            raise ParameterError(f"Invalid parameters: {e.errors()}") from e
         return response
 
     @require_auth
     def cli_list(
         self,
-        filter_patterns: Optional[List[str]] = None,
+        filter_patterns: list[str] | None = None,
         filter_type: str = "substring",
-        status: Optional[str] = "indexed",
-        after: Optional[float] = 0,
-        before: Optional[float] = 999999999999999,
+        status: str | None = "indexed",
+        after: float | None = 0,
+        before: float | None = 999999999999999,
         sort: str = "bookmarked_at",
         as_json: bool = True,
         as_html: bool = False,
-        as_csv: Union[str, bool] = "timestamp,url",
+        as_csv: str | bool = "timestamp,url",
         with_headers: bool = False,
-        extra_data: Optional[Dict] = None,
+        extra_data: dict | None = None,
     ) -> requests.Response:
         """
         Execute archivebox list command
 
         Args:
-            filter_patterns: List of filter patterns (default: ["https://example.com"]).
-            filter_type: Filter type (default: "substring").
-            status: Filter by status (default: "indexed").
-            after: Filter snapshots after timestamp (default: 0).
-            before: Filter snapshots before timestamp (default: 999999999999999).
-            sort: Sort field (default: "bookmarked_at").
-            as_json: Output as JSON (default: True).
-            as_html: Output as HTML (default: False).
-            as_csv: Output as CSV or fields to include (default: "timestamp,url").
-            with_headers: Include headers in output (default: False).
-            extra_data: Additional parameters as a dictionary (optional).
+            filter_patterns: List of filter patterns.
+            filter_type: Filter type.
+            status: Filter by status.
+            after: Filter snapshots after timestamp.
+            before: Filter snapshots before timestamp.
+            sort: Sort field.
+            as_json: Output as JSON.
+            as_html: Output as HTML.
+            as_csv: Output as CSV or fields to include.
+            with_headers: Include headers in output.
+            extra_data: Additional parameters as a dictionary.
 
         Returns:
             Response: The response object from the POST request.
@@ -642,29 +645,29 @@ class Api(object):
                 verify=self.verify,
             )
         except ValidationError as e:
-            raise ParameterError(f"Invalid parameters: {e.errors()}")
+            raise ParameterError(f"Invalid parameters: {e.errors()}") from e
         return response
 
     @require_auth
     def cli_remove(
         self,
         delete: bool = True,
-        after: Optional[float] = 0,
-        before: Optional[float] = 999999999999999,
+        after: float | None = 0,
+        before: float | None = 999999999999999,
         filter_type: str = "exact",
-        filter_patterns: Optional[List[str]] = None,
-        extra_data: Optional[Dict] = None,
+        filter_patterns: list[str] | None = None,
+        extra_data: dict | None = None,
     ) -> requests.Response:
         """
         Execute archivebox remove command
 
         Args:
-            delete: Delete matching snapshots (default: True).
-            after: Filter snapshots after timestamp (default: 0).
-            before: Filter snapshots before timestamp (default: 999999999999999).
-            filter_type: Filter type (default: "exact").
-            filter_patterns: List of filter patterns (default: ["https://example.com"]).
-            extra_data: Additional parameters as a dictionary (optional).
+            delete: Delete matching snapshots.
+            after: Filter snapshots after timestamp.
+            before: Filter snapshots before timestamp.
+            filter_type: Filter type.
+            filter_patterns: List of filter patterns.
+            extra_data: Additional parameters as a dictionary.
 
         Returns:
             Response: The response object from the POST request.
@@ -689,5 +692,5 @@ class Api(object):
                 verify=self.verify,
             )
         except ValidationError as e:
-            raise ParameterError(f"Invalid parameters: {e.errors()}")
+            raise ParameterError(f"Invalid parameters: {e.errors()}") from e
         return response
