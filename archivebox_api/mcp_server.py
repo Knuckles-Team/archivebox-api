@@ -23,6 +23,8 @@ from typing import Any
 from agent_utilities.base_utilities import to_boolean
 from agent_utilities.mcp_utilities import (
     create_mcp_server,
+    ctx_confirm_destructive,
+    ctx_progress,
 )
 from dotenv import find_dotenv, load_dotenv
 from fastmcp import Context, FastMCP
@@ -32,7 +34,7 @@ from pydantic import Field
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
-from archivebox_api.api_wrapper import Api
+from archivebox_api.api_client import Api
 
 __version__ = "0.1.54"
 
@@ -82,6 +84,9 @@ def register_authentication_tools(mcp: FastMCP):
         verify: bool = Field(
             default=to_boolean(os.environ.get("ARCHIVEBOX_VERIFY", "True")),
             description="Whether to verify SSL certificates",
+        ),
+        ctx: Context = Field(
+            description="MCP context for progress reporting", default=None
         ),
     ) -> dict:
         """
@@ -136,6 +141,9 @@ def register_authentication_tools(mcp: FastMCP):
         verify: bool = Field(
             default=to_boolean(os.environ.get("ARCHIVEBOX_VERIFY", "True")),
             description="Whether to verify SSL certificates",
+        ),
+        ctx: Context = Field(
+            description="MCP context for progress reporting", default=None
         ),
     ) -> dict:
         """
@@ -238,6 +246,9 @@ def register_core_tools(mcp: FastMCP):
             default=to_boolean(os.environ.get("ARCHIVEBOX_VERIFY", "True")),
             description="Whether to verify SSL certificates",
         ),
+        ctx: Context = Field(
+            description="MCP context for progress reporting", default=None
+        ),
     ) -> dict:
         """
         Retrieve list of snapshots.
@@ -317,6 +328,9 @@ def register_core_tools(mcp: FastMCP):
         verify: bool = Field(
             default=to_boolean(os.environ.get("ARCHIVEBOX_VERIFY", "True")),
             description="Whether to verify SSL certificates",
+        ),
+        ctx: Context = Field(
+            description="MCP context for progress reporting", default=None
         ),
     ) -> dict:
         """
@@ -401,6 +415,9 @@ def register_core_tools(mcp: FastMCP):
             default=to_boolean(os.environ.get("ARCHIVEBOX_VERIFY", "True")),
             description="Whether to verify SSL certificates",
         ),
+        ctx: Context = Field(
+            description="MCP context for progress reporting", default=None
+        ),
     ) -> dict:
         """
         List all ArchiveResult entries matching these filters.
@@ -475,6 +492,9 @@ def register_core_tools(mcp: FastMCP):
             default=to_boolean(os.environ.get("ARCHIVEBOX_VERIFY", "True")),
             description="Whether to verify SSL certificates",
         ),
+        ctx: Context = Field(
+            description="MCP context for progress reporting", default=None
+        ),
     ) -> dict:
         """
         Get a specific Tag by id or abid.
@@ -531,6 +551,9 @@ def register_core_tools(mcp: FastMCP):
         verify: bool = Field(
             default=to_boolean(os.environ.get("ARCHIVEBOX_VERIFY", "True")),
             description="Whether to verify SSL certificates",
+        ),
+        ctx: Context = Field(
+            description="MCP context for progress reporting", default=None
         ),
     ) -> dict:
         """
@@ -768,6 +791,9 @@ def register_cli_tools(mcp: FastMCP):
             default=to_boolean(os.environ.get("ARCHIVEBOX_VERIFY", "True")),
             description="Whether to verify SSL certificates",
         ),
+        ctx: Context = Field(
+            description="MCP context for progress reporting", default=None
+        ),
     ) -> dict:
         """
         Execute archivebox schedule command.
@@ -847,6 +873,9 @@ def register_cli_tools(mcp: FastMCP):
         verify: bool = Field(
             default=to_boolean(os.environ.get("ARCHIVEBOX_VERIFY", "True")),
             description="Whether to verify SSL certificates",
+        ),
+        ctx: Context = Field(
+            description="MCP context for progress reporting", default=None
         ),
     ) -> dict:
         """
@@ -928,6 +957,9 @@ def register_cli_tools(mcp: FastMCP):
         """
         Execute archivebox remove command.
         """
+        if not await ctx_confirm_destructive(ctx, "cli remove"):
+            return {"status": "cancelled", "message": "Operation cancelled by user"}
+        await ctx_progress(ctx, 0, 100)
         if ctx:
             pass
 

@@ -1,0 +1,17 @@
+# Vulture ignore file
+list_recent_snapshots_prompt
+update_snapshots_prompt
+schedule_archiving_prompt
+remove_snapshots_prompt
+list_archiveresults_prompt
+get_tag_details_prompt
+get_archivebox_client
+get_archiveresult
+get_tags
+health_check
+get_instance_config
+add_url_prompt
+search_snapshots_prompt
+get_snapshot_details_prompt
+DEFAULT_AGENT_DESCRIPTION
+DEFAULT_AGENT_SYSTEM_PROMPT

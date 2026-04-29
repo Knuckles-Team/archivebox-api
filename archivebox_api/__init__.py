@@ -7,7 +7,7 @@ import inspect
 __all__: list[str] = []
 
 CORE_MODULES = [
-    "archivebox_api.api_wrapper",
+    "archivebox_api.api_client",
 ]
 
 OPTIONAL_MODULES = {

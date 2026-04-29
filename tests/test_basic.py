@@ -1,5 +1,5 @@
 from unittest.mock import patch, MagicMock
-from archivebox_api.api_wrapper import Api
+from archivebox_api.api_client import Api
 
 @patch("requests.Session.get")
 def test_api_init(mock_get):
