@@ -28,7 +28,8 @@ def mock_session():
         session.request.return_value = response
         yield session
 
-def test_archivebox_api_brute_force(_mock_session):
+def test_archivebox_api_brute_force(mock_session):
+    _ = mock_session
     from archivebox_api.api_client import Api
     api = Api(url="http://test", username="test", password="test")
 
@@ -62,7 +63,8 @@ def test_archivebox_api_brute_force(_mock_session):
             method(**kwargs)
         except: pass
 
-def test_mcp_server_coverage(_mock_session):
+def test_mcp_server_coverage(mock_session):
+    _ = mock_session
     from archivebox_api.mcp_server import get_mcp_instance
     from fastmcp.server.middleware.rate_limiting import RateLimitingMiddleware
 

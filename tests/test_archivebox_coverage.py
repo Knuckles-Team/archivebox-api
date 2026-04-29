@@ -23,7 +23,8 @@ def mock_session():
 
         yield session
 
-def test_api_brute_force(_mock_session):
+def test_api_brute_force(mock_session):
+    _ = mock_session
     # Test init paths
     try:
         Api(url="http://test.com", token="token")
@@ -80,7 +81,8 @@ def test_api_brute_force(_mock_session):
         except Exception as e:
             print(f"Failed calling {name}: {e}")
 
-def test_mcp_server_coverage(_mock_session):
+def test_mcp_server_coverage(mock_session):
+    _ = mock_session
     from archivebox_api.mcp_server import get_mcp_instance
     from fastmcp.server.middleware.rate_limiting import RateLimitingMiddleware
 
