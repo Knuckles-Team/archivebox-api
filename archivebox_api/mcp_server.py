@@ -36,7 +36,7 @@ from starlette.responses import JSONResponse
 
 from archivebox_api.api_client import Api
 
-__version__ = "0.6.1"
+__version__ = "0.6.2"
 
 logger = get_logger(name="TokenMiddleware")
 logger.setLevel(logging.DEBUG)
