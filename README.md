@@ -21,7 +21,7 @@
 ![PyPI - Wheel](https://img.shields.io/pypi/wheel/archivebox-api)
 ![PyPI - Implementation](https://img.shields.io/pypi/implementation/archivebox-api)
 
-*Version: 0.4.0*
+*Version: 0.5.0*
 
 ## Overview
 
@@ -537,3 +537,74 @@ python -m pip install archivebox-api[all]
 ![GitHub followers](https://img.shields.io/github/followers/Knucklessg1)
 
 ![GitHub User's stars](https://img.shields.io/github/stars/Knucklessg1)
+
+
+## MCP Configuration Examples
+
+### 1. Standard IO (stdio) Deployment
+
+```json
+{
+  "mcpServers": {
+    "archivebox-api": {
+      "command": "uv",
+      "args": [
+        "run",
+        "archivebox-mcp"
+      ],
+      "env": {
+        "AGENT_DESCRIPTION": "<YOUR_AGENT_DESCRIPTION>",
+        "AGENT_SYSTEM_PROMPT": "<YOUR_AGENT_SYSTEM_PROMPT>",
+        "ARCHIVEBOX_API_KEY": "<YOUR_ARCHIVEBOX_API_KEY>",
+        "ARCHIVEBOX_PASSWORD": "<YOUR_ARCHIVEBOX_PASSWORD>",
+        "ARCHIVEBOX_TOKEN": "<YOUR_ARCHIVEBOX_TOKEN>",
+        "ARCHIVEBOX_URL": "<YOUR_ARCHIVEBOX_URL>",
+        "ARCHIVEBOX_USERNAME": "<YOUR_ARCHIVEBOX_USERNAME>",
+        "ARCHIVEBOX_VERIFY": "<YOUR_ARCHIVEBOX_VERIFY>",
+        "AUTHENTICATIONTOOL": "True",
+        "CLITOOL": "True",
+        "CORETOOL": "True",
+        "DEFAULT_AGENT_NAME": "<YOUR_DEFAULT_AGENT_NAME>",
+        "MISCTOOL": "True"
+      }
+    }
+  }
+}
+```
+
+### 2. Streamable HTTP (SSE) Deployment
+
+```json
+{
+  "mcpServers": {
+    "archivebox-api": {
+      "command": "uv",
+      "args": [
+        "run",
+        "archivebox-mcp",
+        "--transport",
+        "http",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8000"
+      ],
+      "env": {
+        "AGENT_DESCRIPTION": "<YOUR_AGENT_DESCRIPTION>",
+        "AGENT_SYSTEM_PROMPT": "<YOUR_AGENT_SYSTEM_PROMPT>",
+        "ARCHIVEBOX_API_KEY": "<YOUR_ARCHIVEBOX_API_KEY>",
+        "ARCHIVEBOX_PASSWORD": "<YOUR_ARCHIVEBOX_PASSWORD>",
+        "ARCHIVEBOX_TOKEN": "<YOUR_ARCHIVEBOX_TOKEN>",
+        "ARCHIVEBOX_URL": "<YOUR_ARCHIVEBOX_URL>",
+        "ARCHIVEBOX_USERNAME": "<YOUR_ARCHIVEBOX_USERNAME>",
+        "ARCHIVEBOX_VERIFY": "<YOUR_ARCHIVEBOX_VERIFY>",
+        "AUTHENTICATIONTOOL": "True",
+        "CLITOOL": "True",
+        "CORETOOL": "True",
+        "DEFAULT_AGENT_NAME": "<YOUR_DEFAULT_AGENT_NAME>",
+        "MISCTOOL": "True"
+      }
+    }
+  }
+}
+```
