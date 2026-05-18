@@ -1,3 +1,23 @@
 {
-  "mcpServers": {}
+  "mcpServers": {
+    "archivebox-api": {
+      "command": "uv",
+      "args": [
+        "run",
+        "archivebox-mcp"
+      ],
+      "env": {
+        "ARCHIVEBOX_API_KEY": "<YOUR_ARCHIVEBOX_API_KEY>",
+        "ARCHIVEBOX_PASSWORD": "<YOUR_ARCHIVEBOX_PASSWORD>",
+        "ARCHIVEBOX_TOKEN": "<YOUR_ARCHIVEBOX_TOKEN>",
+        "ARCHIVEBOX_URL": "<YOUR_ARCHIVEBOX_URL>",
+        "ARCHIVEBOX_USERNAME": "<YOUR_ARCHIVEBOX_USERNAME>",
+        "ARCHIVEBOX_VERIFY": "<YOUR_ARCHIVEBOX_VERIFY>",
+        "AUTHENTICATIONTOOL": "True",
+        "CLITOOL": "True",
+        "CORETOOL": "True",
+        "MISCTOOL": "True"
+      }
+    }
+  }
 }

@@ -21,7 +21,7 @@
 ![PyPI - Wheel](https://img.shields.io/pypi/wheel/archivebox-api)
 ![PyPI - Implementation](https://img.shields.io/pypi/implementation/archivebox-api)
 
-*Version: 0.10.0*
+*Version: 0.11.0*
 
 ## Overview
 
@@ -56,22 +56,15 @@ If your API call isn't supported, you can extend the functionality by adding cus
 
 All the available API Calls above are wrapped in MCP Tools. You can find those below with their tool descriptions and associated tag.
 
-### MCP Tools
+### Available MCP Tools
 
-| Function Name        | Description                                                    | Tag(s)           |
-|:---------------------|:---------------------------------------------------------------|:-----------------|
-| `get_api_token`      | Generate an API token for a given username & password.         | `authentication` |
-| `check_api_token`    | Validate an API token to make sure it's valid and non-expired. | `authentication` |
-| `get_snapshots`      | Retrieve list of snapshots.                                    | `core`           |
-| `get_snapshot`       | Get a specific Snapshot by abid or id.                         | `core`           |
-| `get_archiveresults` | List all ArchiveResult entries matching these filters.         | `core`           |
-| `get_tag`            | Get a specific Tag by id or abid.                              | `core`           |
-| `get_any`            | Get a specific Snapshot, ArchiveResult, or Tag by abid.        | `core`           |
-| `cli_add`            | Execute archivebox add command.                                | `cli`            |
-| `cli_update`         | Execute archivebox update command.                             | `cli`            |
-| `cli_schedule`       | Execute archivebox schedule command.                           | `cli`            |
-| `cli_list`           | Execute archivebox list command.                               | `cli`            |
-| `cli_remove`         | Execute archivebox remove command.                             | `cli`            |
+This server utilizes dynamic Action-Routed tools to optimize token overhead and maximize IDE compatibility.
+
+| Tool Name | Description |
+|-----------|-------------|
+| `archivebox_authentication` | Consolidated Action-Routed tool for authentication. Methods: get_api_token, check_api_token |
+| `archivebox_cli` | Consolidated Action-Routed tool for cli. Methods: cli_add, cli_update, cli_schedule, cli_list, cli_remove |
+| `archivebox_core` | Consolidated Action-Routed tool for core. Methods: get_snapshots, get_snapshot, get_archiveresults, get_tag, get_any |
 
 ## A2A Agent
 

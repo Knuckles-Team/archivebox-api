@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 
+import sys
 from typing import Any
 
 import requests
@@ -49,7 +50,7 @@ class Api:
                     raise AuthError("Failed to retrieve API token")
                 self.headers["Authorization"] = f"Bearer {fetched_token}"
             else:
-                print(f"Authentication Error: {response.content!r}")
+                print(f"Authentication Error: {response.content!r}", file=sys.stderr)
                 raise AuthError
         elif not api_key and not token:
             # Check if we have enough info for auth later or if we are just probing
@@ -67,13 +68,13 @@ class Api:
         )
 
         if response.status_code == 403:
-            print(f"Unauthorized Error: {response.content!r}")
+            print(f"Unauthorized Error: {response.content!r}", file=sys.stderr)
             raise UnauthorizedError
         elif response.status_code == 401:
-            print(f"Authentication Error: {response.content!r}")
+            print(f"Authentication Error: {response.content!r}", file=sys.stderr)
             raise AuthError
         elif response.status_code == 404:
-            print(f"Parameter Error: {response.content!r}")
+            print(f"Parameter Error: {response.content!r}", file=sys.stderr)
             raise ParameterError
 
     def get_api_token(

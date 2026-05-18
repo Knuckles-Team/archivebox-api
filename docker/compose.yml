@@ -3,15 +3,14 @@ services:
   archivebox-agent:
     # image: docker.io/knucklessg1/archivebox-mcp:latest
     build:
-      context: .
-      dockerfile: debug.Dockerfile
+      context: ..
+      dockerfile: docker/debug.Dockerfile
     container_name: archivebox-agent
     hostname: archivebox-agent
     command: [ "archivebox-agent" ]
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    depends_on:
-      - archivebox-mcp
+
     logging:
       driver: json-file
       options:
@@ -19,7 +18,7 @@ services:
         max-file: "3"
     restart: always
     env_file:
-      - .env
+      - ../.env
     environment:
       - "PYTHONUNBUFFERED=1"
       - "HOST=0.0.0.0"
@@ -53,7 +52,7 @@ services:
     # Use this temporary command to fix a bug in archivebox:dev
     command: /bin/sh -c "sed -i 's/settings.BINARIES.to_dict()/settings.BINARIES.dict()/g' /app/archivebox/index/json.py && archivebox init && archivebox server --quick-init 0.0.0.0:8000"
     volumes:
-      - ./mcp/archivebox:/data
+      - ../mcp/archivebox:/data
     depends_on:
       - novnc
     extra_hosts:

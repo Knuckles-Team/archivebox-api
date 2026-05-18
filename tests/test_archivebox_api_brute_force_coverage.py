@@ -73,7 +73,7 @@ def test_mcp_server_coverage(mock_session):
         return await call_next(context)
 
     with patch.object(RateLimitingMiddleware, "on_request", mock_on_request):
-        with patch("archivebox_api.mcp_server.Api") as mock_api:
+        with patch("archivebox_api.auth.get_client") as mock_api:
             mcp_data = get_mcp_instance()
             mcp = mcp_data[0] if isinstance(mcp_data, tuple) else mcp_data
 
