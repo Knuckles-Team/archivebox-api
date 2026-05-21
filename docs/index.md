@@ -553,8 +553,6 @@ python -m pip install archivebox-api[all]
         "archivebox-mcp"
       ],
       "env": {
-        "AGENT_DESCRIPTION": "<YOUR_AGENT_DESCRIPTION>",
-        "AGENT_SYSTEM_PROMPT": "<YOUR_AGENT_SYSTEM_PROMPT>",
         "ARCHIVEBOX_API_KEY": "<YOUR_ARCHIVEBOX_API_KEY>",
         "ARCHIVEBOX_PASSWORD": "<YOUR_ARCHIVEBOX_PASSWORD>",
         "ARCHIVEBOX_TOKEN": "<YOUR_ARCHIVEBOX_TOKEN>",
@@ -564,7 +562,6 @@ python -m pip install archivebox-api[all]
         "AUTHENTICATIONTOOL": "True",
         "CLITOOL": "True",
         "CORETOOL": "True",
-        "DEFAULT_AGENT_NAME": "<YOUR_DEFAULT_AGENT_NAME>",
         "MISCTOOL": "True"
       }
     }
@@ -590,8 +587,6 @@ python -m pip install archivebox-api[all]
         "8000"
       ],
       "env": {
-        "AGENT_DESCRIPTION": "<YOUR_AGENT_DESCRIPTION>",
-        "AGENT_SYSTEM_PROMPT": "<YOUR_AGENT_SYSTEM_PROMPT>",
         "ARCHIVEBOX_API_KEY": "<YOUR_ARCHIVEBOX_API_KEY>",
         "ARCHIVEBOX_PASSWORD": "<YOUR_ARCHIVEBOX_PASSWORD>",
         "ARCHIVEBOX_TOKEN": "<YOUR_ARCHIVEBOX_TOKEN>",
@@ -601,7 +596,6 @@ python -m pip install archivebox-api[all]
         "AUTHENTICATIONTOOL": "True",
         "CLITOOL": "True",
         "CORETOOL": "True",
-        "DEFAULT_AGENT_NAME": "<YOUR_DEFAULT_AGENT_NAME>",
         "MISCTOOL": "True"
       }
     }
