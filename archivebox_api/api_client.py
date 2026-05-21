@@ -193,10 +193,29 @@ class Api:
             ParameterError: If the provided parameters are invalid.
         """
         params = {
-            k: v
-            for k, v in locals().items()
-            if k != "self" and v is not None and k != "api_key"
+            "id": id,
+            "abid": abid,
+            "created_by_id": created_by_id,
+            "created_by_username": created_by_username,
+            "created_at__gte": created_at__gte,
+            "created_at__lt": created_at__lt,
+            "created_at": created_at,
+            "modified_at": modified_at,
+            "modified_at__gte": modified_at__gte,
+            "modified_at__lt": modified_at__lt,
+            "search": search,
+            "url": url,
+            "tag": tag,
+            "title": title,
+            "timestamp": timestamp,
+            "bookmarked_at__gte": bookmarked_at__gte,
+            "bookmarked_at__lt": bookmarked_at__lt,
+            "with_archiveresults": with_archiveresults,
+            "limit": limit,
+            "offset": offset,
+            "page": page,
         }
+        params = {k: v for k, v in params.items() if v is not None}
         if api_key:
             params["api_key"] = api_key
         try:
@@ -290,10 +309,25 @@ class Api:
             ParameterError: If the provided parameters are invalid.
         """
         params = {
-            k: v
-            for k, v in locals().items()
-            if k != "self" and v is not None and k != "api_key"
+            "id": id,
+            "search": search,
+            "snapshot_id": snapshot_id,
+            "snapshot_url": snapshot_url,
+            "snapshot_tag": snapshot_tag,
+            "status": status,
+            "output": output,
+            "extractor": extractor,
+            "cmd": cmd,
+            "pwd": pwd,
+            "cmd_version": cmd_version,
+            "created_at": created_at,
+            "created_at__gte": created_at__gte,
+            "created_at__lt": created_at__lt,
+            "limit": limit,
+            "offset": offset,
+            "page": page,
         }
+        params = {k: v for k, v in params.items() if v is not None}
         if api_key:
             params["api_key"] = api_key
         try:
@@ -354,11 +388,8 @@ class Api:
         Raises:
             ParameterError: If the provided parameters are invalid.
         """
-        params = {
-            k: v
-            for k, v in locals().items()
-            if k != "self" and v is not None and k != "api_key"
-        }
+        params: dict[str, Any] = {"limit": limit, "offset": offset, "page": page}
+        params = {k: v for k, v in params.items() if v is not None}
         if api_key:
             params["api_key"] = api_key
         try:
@@ -522,10 +553,18 @@ class Api:
             ParameterError: If the provided parameters are invalid.
         """
         data = {
-            k: v
-            for k, v in locals().items()
-            if k != "self" and v is not None and k != "extra_data"
+            "resume": resume,
+            "only_new": only_new,
+            "index_only": index_only,
+            "overwrite": overwrite,
+            "after": after,
+            "before": before,
+            "status": status,
+            "filter_type": filter_type,
+            "filter_patterns": filter_patterns,
+            "extractors": extractors,
         }
+        data = {k: v for k, v in data.items() if v is not None}
         if filter_patterns is None:
             data["filter_patterns"] = ["https://example.com"]
         if extra_data:
@@ -575,10 +614,16 @@ class Api:
             ParameterError: If the provided parameters are invalid.
         """
         data = {
-            k: v
-            for k, v in locals().items()
-            if k != "self" and v is not None and k != "extra_data"
+            "import_path": import_path,
+            "add": add,
+            "every": every,
+            "tag": tag,
+            "depth": depth,
+            "overwrite": overwrite,
+            "update": update,
+            "clear": clear,
         }
+        data = {k: v for k, v in data.items() if v is not None}
         if extra_data:
             data.update(extra_data)
         try:
@@ -630,10 +675,18 @@ class Api:
             ParameterError: If the provided parameters are invalid.
         """
         data = {
-            k: v
-            for k, v in locals().items()
-            if k != "self" and v is not None and k != "extra_data"
+            "filter_patterns": filter_patterns,
+            "filter_type": filter_type,
+            "status": status,
+            "after": after,
+            "before": before,
+            "sort": sort,
+            "as_json": as_json,
+            "as_html": as_html,
+            "as_csv": as_csv,
+            "with_headers": with_headers,
         }
+        data = {k: v for k, v in data.items() if v is not None}
         if filter_patterns is None:
             data["filter_patterns"] = ["https://example.com"]
         if extra_data:
@@ -677,10 +730,13 @@ class Api:
             ParameterError: If the provided parameters are invalid.
         """
         data = {
-            k: v
-            for k, v in locals().items()
-            if k != "self" and v is not None and k != "extra_data"
+            "delete": delete,
+            "after": after,
+            "before": before,
+            "filter_type": filter_type,
+            "filter_patterns": filter_patterns,
         }
+        data = {k: v for k, v in data.items() if v is not None}
         if filter_patterns is None:
             data["filter_patterns"] = ["https://example.com"]
         if extra_data:
