@@ -77,13 +77,13 @@ Configure your IDE's `mcp.json` to launch the MCP server via `uvx`:
       ],
       "env": {
         "ARCHIVEBOX_BASE_URL": "your_archivebox_base_url_here",
-        "ARCHIVEBOX_USERNAME": "your_archivebox_username_here",
-        "ARCHIVEBOX_SSL_VERIFY": "your_archivebox_ssl_verify_here",
-        "DEBUG": "your_debug_here",
-        "PYTHONUNBUFFERED": "your_pythonunbuffered_here",
         "ARCHIVEBOX_API_KEY": "your_archivebox_api_key_here",
         "ARCHIVEBOX_TOKEN": "your_archivebox_token_here",
-        "ARCHIVEBOX_PASSWORD": "your_archivebox_password_here"
+        "ARCHIVEBOX_USERNAME": "your_archivebox_username_here",
+        "ARCHIVEBOX_PASSWORD": "your_archivebox_password_here",
+        "ARCHIVEBOX_SSL_VERIFY": "your_archivebox_ssl_verify_here",
+        "DEBUG": "your_debug_here",
+        "PYTHONUNBUFFERED": "your_pythonunbuffered_here"
       }
     }
   }
@@ -91,37 +91,7 @@ Configure your IDE's `mcp.json` to launch the MCP server via `uvx`:
 ```
 
 #### Streamable-HTTP Transport (Recommended for production deployments)
-Configure your client's `mcp.json` to launch the Streamable-HTTP server via `uvx` with explicit host and port definition:
-
-```json
-{
-  "mcpServers": {
-    "archivebox-api": {
-      "command": "uvx",
-      "args": [
-        "--from",
-        "archivebox-api",
-        "archivebox-mcp"
-      ],
-      "env": {
-        "TRANSPORT": "streamable-http",
-        "HOST": "0.0.0.0",
-        "PORT": "8000",
-        "ARCHIVEBOX_BASE_URL": "your_archivebox_base_url_here",
-        "ARCHIVEBOX_USERNAME": "your_archivebox_username_here",
-        "ARCHIVEBOX_SSL_VERIFY": "your_archivebox_ssl_verify_here",
-        "DEBUG": "your_debug_here",
-        "PYTHONUNBUFFERED": "your_pythonunbuffered_here",
-        "ARCHIVEBOX_API_KEY": "your_archivebox_api_key_here",
-        "ARCHIVEBOX_TOKEN": "your_archivebox_token_here",
-        "ARCHIVEBOX_PASSWORD": "your_archivebox_password_here"
-      }
-    }
-  }
-}
-```
-
-Alternatively, connect to a pre-deployed remote or local Streamable-HTTP instance:
+To run the server as a long-running Streamable-HTTP service:
 
 ```json
 {
@@ -142,13 +112,13 @@ docker run -d \
   -e TRANSPORT=streamable-http \
   -e PORT=8000 \
   -e ARCHIVEBOX_BASE_URL="your_value" \
+  -e ARCHIVEBOX_API_KEY="your_value" \
+  -e ARCHIVEBOX_TOKEN="your_value" \
   -e ARCHIVEBOX_USERNAME="your_value" \
+  -e ARCHIVEBOX_PASSWORD="your_value" \
   -e ARCHIVEBOX_SSL_VERIFY="your_value" \
   -e DEBUG="your_value" \
   -e PYTHONUNBUFFERED="your_value" \
-  -e ARCHIVEBOX_API_KEY="your_value" \
-  -e ARCHIVEBOX_TOKEN="your_value" \
-  -e ARCHIVEBOX_PASSWORD="your_value" \
   knucklessg1/archivebox-api:latest
 ```
 
@@ -164,13 +134,13 @@ To start the interactive command-line agent:
 ```bash
 # Set credentials
 export ARCHIVEBOX_BASE_URL="your_value"
+export ARCHIVEBOX_API_KEY="your_value"
+export ARCHIVEBOX_TOKEN="your_value"
 export ARCHIVEBOX_USERNAME="your_value"
+export ARCHIVEBOX_PASSWORD="your_value"
 export ARCHIVEBOX_SSL_VERIFY="your_value"
 export DEBUG="your_value"
 export PYTHONUNBUFFERED="your_value"
-export ARCHIVEBOX_API_KEY="your_value"
-export ARCHIVEBOX_TOKEN="your_value"
-export ARCHIVEBOX_PASSWORD="your_value"
 
 # Run the agent server
 archivebox-agent --provider openai --model-id gpt-4o
