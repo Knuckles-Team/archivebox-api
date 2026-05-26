@@ -45,6 +45,7 @@ __version__ = "0.14.0"
 logger = get_logger(name="archivebox-api")
 logger.setLevel(logging.INFO)
 
+
 def register_authentication_tools(mcp: FastMCP):
     """Register authentication management tools.
 
@@ -81,6 +82,7 @@ def register_authentication_tools(mcp: FastMCP):
         if action == "check_api_token":
             return client.check_api_token(**kwargs)
         raise ValueError(f"Unknown action: {action}")
+
 
 def register_core_tools(mcp: FastMCP):
     @mcp.tool(tags={"core"})
@@ -120,6 +122,7 @@ def register_core_tools(mcp: FastMCP):
             return client.get_any(**kwargs)
         raise ValueError(f"Unknown action: {action}")
 
+
 def register_cli_tools(mcp: FastMCP):
     @mcp.tool(tags={"cli"})
     async def archivebox_cli(
@@ -158,6 +161,7 @@ def register_cli_tools(mcp: FastMCP):
             return client.cli_remove(**kwargs)
         raise ValueError(f"Unknown action: {action}")
 
+
 def get_mcp_instance() -> tuple[Any, ...]:
     """Initialize and return the MCP instance."""
     load_dotenv(find_dotenv())
@@ -185,6 +189,7 @@ def get_mcp_instance() -> tuple[Any, ...]:
         mcp.add_middleware(mw)
     return mcp, args, middlewares
 
+
 def mcp_server() -> None:
     mcp, args, middlewares = get_mcp_instance()
     print(f"archivebox-api MCP v{__version__}", file=sys.stderr)
@@ -201,6 +206,7 @@ def mcp_server() -> None:
     else:
         logger.error("Invalid transport", extra={"transport": args.transport})
         sys.exit(1)
+
 
 if __name__ == "__main__":
     mcp_server()
