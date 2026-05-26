@@ -1,0 +1,2020 @@
+{
+  "project": "archivebox-api",
+  "path": "/home/apps/workspace/agent-packages/agents/archivebox-api",
+  "domain_results": [
+    {
+      "domain": "Project Analysis",
+      "score": 74,
+      "grade": "C",
+      "findings": [
+        "Detected ecosystem marker: agent-utilities \u2192 Agent-Utilities Ecosystem",
+        "Protocol support: MCP"
+      ],
+      "justifications": [
+        {
+          "criterion": "has_pyproject",
+          "points": 10,
+          "evidence": "pyproject.toml and requirements.txt",
+          "reasoning": "Both pyproject.toml and requirements.txt exist, fulfilling mandatory Python project requirements"
+        },
+        {
+          "criterion": "project_type_detected",
+          "points": 10,
+          "evidence": "Agent-Utilities Ecosystem",
+          "reasoning": "Identified 1 ecosystem marker(s) in dependencies"
+        },
+        {
+          "criterion": "externalized_prompts",
+          "points": 0,
+          "evidence": "/home/apps/workspace/agent-packages/agents/archivebox-api",
+          "reasoning": "No prompts/ directory found. Prompts may be hardcoded in source."
+        },
+        {
+          "criterion": "observability",
+          "points": 0,
+          "evidence": "dependency list",
+          "reasoning": "No observability tools (logfire, sentry, opentelemetry) found"
+        },
+        {
+          "criterion": "testing_suite",
+          "points": 10,
+          "evidence": "tests dir: True, pytest dep: True",
+          "reasoning": "Tests directory exists, pytest in dependencies"
+        },
+        {
+          "criterion": "agents_md",
+          "points": 10,
+          "evidence": "/home/apps/workspace/agent-packages/agents/archivebox-api/AGENTS.md (5309 bytes)",
+          "reasoning": "AGENTS.md exists with comprehensive content"
+        },
+        {
+          "criterion": "pre_commit_hooks",
+          "points": 10,
+          "evidence": "/home/apps/workspace/agent-packages/agents/archivebox-api/.pre-commit-config.yaml",
+          "reasoning": "Pre-commit configuration found for automated code quality checks"
+        },
+        {
+          "criterion": "gitignore",
+          "points": 10,
+          "evidence": "/home/apps/workspace/agent-packages/agents/archivebox-api/.gitignore",
+          "reasoning": ".gitignore exists to prevent committing build artifacts and secrets"
+        },
+        {
+          "criterion": "env_template",
+          "points": 10,
+          "evidence": "/home/apps/workspace/agent-packages/agents/archivebox-api/.env.example",
+          "reasoning": "Environment template exists for onboarding and secret management"
+        },
+        {
+          "criterion": "protocol_support",
+          "points": 4,
+          "evidence": "MCP",
+          "reasoning": "1 communication protocol(s) detected"
+        }
+      ],
+      "details": {
+        "has_pyproject": true,
+        "has_requirements": true,
+        "dep_count": 5,
+        "project_types": [
+          "Agent-Utilities Ecosystem"
+        ],
+        "has_agent_skills": false
+      }
+    },
+    {
+      "domain": "Dependency Audit",
+      "score": 100,
+      "grade": "A",
+      "findings": [],
+      "justifications": [
+        {
+          "criterion": "dependency_freshness",
+          "points": 100,
+          "evidence": "source=/home/apps/workspace/agent-packages/agents/archivebox-api/pyproject.toml total=5 major=0 minor=0 patch=0 not_installed=0",
+          "reasoning": "Audited 5 deps (5 installed, 0 constraint-only). 0 major, 0 minor, 0 patch updates."
+        }
+      ],
+      "packages": {
+        "pytest-xdist": {
+          "current": "3.8.0",
+          "constraint": "3.6.0",
+          "installed": "3.8.0",
+          "latest": "3.8.0",
+          "status": "up-to-date",
+          "version_source": "installed",
+          "summary": "pytest xdist plugin for distributed testing, most importantly across multiple CPUs"
+        },
+        "pytest-asyncio": {
+          "current": "1.3.0",
+          "constraint": "Any",
+          "installed": "1.3.0",
+          "latest": "1.3.0",
+          "status": "up-to-date",
+          "version_source": "installed",
+          "summary": "Pytest support for asyncio"
+        },
+        "agent-utilities": {
+          "current": "0.16.0",
+          "constraint": "0.16.0",
+          "installed": "0.16.0",
+          "latest": "0.16.0",
+          "status": "up-to-date",
+          "version_source": "installed",
+          "summary": "Agent Utilities for Pydantic AI Agents"
+        },
+        "pytest-cov": {
+          "current": "7.1.0",
+          "constraint": "Any",
+          "installed": "7.1.0",
+          "latest": "7.1.0",
+          "status": "up-to-date",
+          "version_source": "installed",
+          "summary": "Pytest plugin for measuring coverage."
+        },
+        "pytest": {
+          "current": "9.0.3",
+          "constraint": "Any",
+          "installed": "9.0.3",
+          "latest": "9.0.3",
+          "status": "up-to-date",
+          "version_source": "installed",
+          "summary": "pytest: simple powerful testing with Python"
+        }
+      }
+    },
+    {
+      "domain": "Codebase Optimization",
+      "score": 79,
+      "grade": "C",
+      "findings": [
+        "9 functions with nesting depth >4"
+      ],
+      "justifications": [
+        {
+          "criterion": "code_quality",
+          "points": 79,
+          "evidence": "{\"file_count\": 18, \"total_lines\": 2477, \"function_count\": 78, \"avg_complexity\": 5.01, \"max_complexity\": 30, \"avg_function_length\": 29.0, \"max_function_length\": 99, \"max_nesting_depth\": 9, \"duplication_ratio\": 0.024, \"long_functions\": 12, \"complex_functions\": 5, \"deep_nesting_functions\": 9, \"parse_errors\": 0, \"structural_issues\": 0, \"truly_monolithic\": 0}",
+          "reasoning": "Analyzed 18 files, 78 functions. Avg CC=5.0, max length=99, duplication=2.4%, 0 structural issues (0 monolithic)."
+        }
+      ],
+      "metrics": {
+        "file_count": 18,
+        "total_lines": 2477,
+        "function_count": 78,
+        "avg_complexity": 5.01,
+        "max_complexity": 30,
+        "avg_function_length": 29.0,
+        "max_function_length": 99,
+        "max_nesting_depth": 9,
+        "duplication_ratio": 0.024,
+        "long_functions": 12,
+        "complex_functions": 5,
+        "deep_nesting_functions": 9,
+        "parse_errors": 0,
+        "structural_issues": 0,
+        "truly_monolithic": 0
+      },
+      "top_complex": [
+        {
+          "name": "test_api_brute_force",
+          "line": 34,
+          "length": 78,
+          "complexity": 30,
+          "nesting_depth": 9,
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage.py"
+        },
+        {
+          "name": "main",
+          "line": 177,
+          "length": 99,
+          "complexity": 19,
+          "nesting_depth": 4,
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/scripts/verify_api_integration.py"
+        },
+        {
+          "name": "__init__",
+          "line": 15,
+          "length": 59,
+          "complexity": 16,
+          "nesting_depth": 5,
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/api/api_client_base.py"
+        },
+        {
+          "name": "parse_mcp_server",
+          "line": 94,
+          "length": 41,
+          "complexity": 14,
+          "nesting_depth": 5,
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/scripts/verify_api_integration.py"
+        },
+        {
+          "name": "__getattr__",
+          "line": 46,
+          "length": 26,
+          "complexity": 12,
+          "nesting_depth": 3,
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/__init__.py"
+        }
+      ],
+      "top_long": [
+        {
+          "name": "main",
+          "line": 177,
+          "length": 99,
+          "complexity": 19,
+          "nesting_depth": 4,
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/scripts/verify_api_integration.py"
+        },
+        {
+          "name": "get_snapshots",
+          "line": 15,
+          "length": 94,
+          "complexity": 4,
+          "nesting_depth": 2,
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/api/api_client_core.py"
+        },
+        {
+          "name": "get_archiveresults",
+          "line": 139,
+          "length": 82,
+          "complexity": 4,
+          "nesting_depth": 2,
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/api/api_client_core.py"
+        },
+        {
+          "name": "test_api_brute_force",
+          "line": 34,
+          "length": 78,
+          "complexity": 30,
+          "nesting_depth": 9,
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage.py"
+        },
+        {
+          "name": "test_mcp_server_coverage",
+          "line": 114,
+          "length": 70,
+          "complexity": 7,
+          "nesting_depth": 7,
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage.py"
+        }
+      ],
+      "structural_issues": [],
+      "flat_directories": []
+    },
+    {
+      "domain": "Security Analysis",
+      "score": 100,
+      "grade": "A",
+      "findings": [],
+      "justifications": [
+        {
+          "criterion": "security_posture",
+          "points": 100,
+          "evidence": "high=0 med=0 low=0 attack_surface={\"subprocess_calls\": 0, \"file_io_calls\": 4, \"network_endpoints\": 0, \"eval_exec_usage\": 0, \"sql_usage\": 0}",
+          "reasoning": "Scanned 18 files. Found 0 security findings. High: -0pts, Med: -0pts, Low: -0pts."
+        }
+      ],
+      "vulnerabilities": [],
+      "attack_surface": {
+        "subprocess_calls": 0,
+        "file_io_calls": 4,
+        "network_endpoints": 0,
+        "eval_exec_usage": 0,
+        "sql_usage": 0
+      }
+    },
+    {
+      "domain": "Test Coverage",
+      "score": 65,
+      "grade": "D",
+      "findings": [
+        "6 tests without assertions",
+        "Test suite lacks intent diversity (only one type)",
+        "15 potential doc-test drift items"
+      ],
+      "justifications": [
+        {
+          "criterion": "test_coverage_quality",
+          "points": 65,
+          "evidence": "{\"test_file_count\": 6, \"test_count\": 30, \"source_file_count\": 18, \"test_to_source_ratio\": 1.67, \"intent_distribution\": {\"unit\": 30}, \"tests_without_assertions\": 6, \"concept_traced_tests\": 0, \"drift_items\": 15}",
+          "reasoning": "30 tests across 6 files. Ratio: 1.67. Intent: {'unit': 30}. 6 without assertions, 15 drift items."
+        }
+      ],
+      "metrics": {
+        "test_file_count": 6,
+        "test_count": 30,
+        "source_file_count": 18,
+        "test_to_source_ratio": 1.67,
+        "intent_distribution": {
+          "unit": 30
+        },
+        "tests_without_assertions": 6,
+        "concept_traced_tests": 0,
+        "drift_items": 15
+      },
+      "tests": [
+        {
+          "name": "test_server_startup",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_startup.py",
+          "line": 1,
+          "length": 12,
+          "intent": "unit",
+          "markers": [],
+          "concept_id": "",
+          "has_assertions": false
+        },
+        {
+          "name": "test_api_init",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_basic.py",
+          "line": 7,
+          "length": 10,
+          "intent": "unit",
+          "markers": [],
+          "concept_id": "",
+          "has_assertions": true
+        },
+        {
+          "name": "test_concept_parity",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_concept_parity.py",
+          "line": 58,
+          "length": 30,
+          "intent": "unit",
+          "markers": [],
+          "concept_id": "",
+          "has_assertions": true
+        },
+        {
+          "name": "test_init_import_module_safely",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 26,
+          "length": 6,
+          "intent": "unit",
+          "markers": [],
+          "concept_id": "",
+          "has_assertions": true
+        },
+        {
+          "name": "test_init_getattr",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 34,
+          "length": 23,
+          "intent": "unit",
+          "markers": [],
+          "concept_id": "",
+          "has_assertions": true
+        },
+        {
+          "name": "test_init_lazy_expose_members",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 59,
+          "length": 10,
+          "intent": "unit",
+          "markers": [],
+          "concept_id": "",
+          "has_assertions": true
+        },
+        {
+          "name": "test_init_dir",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 71,
+          "length": 4,
+          "intent": "unit",
+          "markers": [],
+          "concept_id": "",
+          "has_assertions": true
+        },
+        {
+          "name": "test_auth_get_client_errors",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 82,
+          "length": 8,
+          "intent": "unit",
+          "markers": [],
+          "concept_id": "",
+          "has_assertions": true
+        },
+        {
+          "name": "test_auth_get_client_combinations",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 93,
+          "length": 22,
+          "intent": "unit",
+          "markers": [],
+          "concept_id": "",
+          "has_assertions": true
+        },
+        {
+          "name": "test_base_api_missing_url",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 121,
+          "length": 3,
+          "intent": "unit",
+          "markers": [],
+          "concept_id": "",
+          "has_assertions": true
+        },
+        {
+          "name": "test_base_api_ssl_verify_false",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 127,
+          "length": 9,
+          "intent": "unit",
+          "markers": [],
+          "concept_id": "",
+          "has_assertions": true
+        },
+        {
+          "name": "test_base_api_username_password_auth_failures",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 140,
+          "length": 22,
+          "intent": "unit",
+          "markers": [],
+          "concept_id": "",
+          "has_assertions": true
+        },
+        {
+          "name": "test_base_api_probe_http_errors",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 165,
+          "length": 24,
+          "intent": "unit",
+          "markers": [],
+          "concept_id": "",
+          "has_assertions": true
+        },
+        {
+          "name": "test_base_api_api_key_param",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 192,
+          "length": 10,
+          "intent": "unit",
+          "markers": [],
+          "concept_id": "",
+          "has_assertions": true
+        },
+        {
+          "name": "test_client_validation_errors",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 217,
+          "length": 45,
+          "intent": "unit",
+          "markers": [],
+          "concept_id": "",
+          "has_assertions": true
+        },
+        {
+          "name": "test_mcp_authentication_tool",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 269,
+          "length": 48,
+          "intent": "unit",
+          "markers": [
+            "asyncio"
+          ],
+          "concept_id": "",
+          "has_assertions": true
+        },
+        {
+          "name": "test_mcp_core_tool",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 320,
+          "length": 40,
+          "intent": "unit",
+          "markers": [
+            "asyncio"
+          ],
+          "concept_id": "",
+          "has_assertions": true
+        },
+        {
+          "name": "test_mcp_cli_tool",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 363,
+          "length": 40,
+          "intent": "unit",
+          "markers": [
+            "asyncio"
+          ],
+          "concept_id": "",
+          "has_assertions": true
+        },
+        {
+          "name": "test_mcp_health_check",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 406,
+          "length": 28,
+          "intent": "unit",
+          "markers": [
+            "asyncio"
+          ],
+          "concept_id": "",
+          "has_assertions": true
+        },
+        {
+          "name": "test_mcp_server_run_options",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 437,
+          "length": 29,
+          "intent": "unit",
+          "markers": [],
+          "concept_id": "",
+          "has_assertions": true
+        },
+        {
+          "name": "test_mcp_server_import_error_handling",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 468,
+          "length": 14,
+          "intent": "unit",
+          "markers": [],
+          "concept_id": "",
+          "has_assertions": false
+        },
+        {
+          "name": "test_mcp_server_main_execution",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 484,
+          "length": 17,
+          "intent": "unit",
+          "markers": [],
+          "concept_id": "",
+          "has_assertions": true
+        },
+        {
+          "name": "test_agent_server_run",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 508,
+          "length": 13,
+          "intent": "unit",
+          "markers": [],
+          "concept_id": "",
+          "has_assertions": true
+        },
+        {
+          "name": "test_agent_server_main_execution",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 523,
+          "length": 32,
+          "intent": "unit",
+          "markers": [],
+          "concept_id": "",
+          "has_assertions": true
+        },
+        {
+          "name": "test_main_block_import",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 557,
+          "length": 6,
+          "intent": "unit",
+          "markers": [],
+          "concept_id": "",
+          "has_assertions": true
+        },
+        {
+          "name": "test_api_brute_force",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage.py",
+          "line": 34,
+          "length": 78,
+          "intent": "unit",
+          "markers": [],
+          "concept_id": "",
+          "has_assertions": false
+        },
+        {
+          "name": "test_mcp_server_coverage",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage.py",
+          "line": 114,
+          "length": 70,
+          "intent": "unit",
+          "markers": [],
+          "concept_id": "",
+          "has_assertions": false
+        },
+        {
+          "name": "test_archivebox_api_brute_force",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_api_brute_force_coverage.py",
+          "line": 38,
+          "length": 39,
+          "intent": "unit",
+          "markers": [],
+          "concept_id": "",
+          "has_assertions": false
+        },
+        {
+          "name": "test_mcp_server_coverage",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_api_brute_force_coverage.py",
+          "line": 79,
+          "length": 63,
+          "intent": "unit",
+          "markers": [],
+          "concept_id": "",
+          "has_assertions": false
+        },
+        {
+          "name": "test_agent_server_coverage",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_api_brute_force_coverage.py",
+          "line": 144,
+          "length": 11,
+          "intent": "unit",
+          "markers": [],
+          "concept_id": "",
+          "has_assertions": true
+        }
+      ],
+      "drift": [
+        {
+          "type": "untested_feature",
+          "source": "README.md",
+          "feature": "overview",
+          "detail": "Feature heading in README has no corresponding test"
+        },
+        {
+          "type": "untested_feature",
+          "source": "README.md",
+          "feature": "key features",
+          "detail": "Feature heading in README has no corresponding test"
+        },
+        {
+          "type": "untested_feature",
+          "source": "README.md",
+          "feature": "cli or api",
+          "detail": "Feature heading in README has no corresponding test"
+        },
+        {
+          "type": "untested_feature",
+          "source": "README.md",
+          "feature": "mcp",
+          "detail": "Feature heading in README has no corresponding test"
+        },
+        {
+          "type": "untested_feature",
+          "source": "README.md",
+          "feature": "available mcp tools",
+          "detail": "Feature heading in README has no corresponding test"
+        },
+        {
+          "type": "untested_feature",
+          "source": "README.md",
+          "feature": "mcp configuration examples",
+          "detail": "Feature heading in README has no corresponding test"
+        },
+        {
+          "type": "untested_feature",
+          "source": "README.md",
+          "feature": "stdio transport (recommended for local ides e.g., cursor, claude desktop)",
+          "detail": "Feature heading in README has no corresponding test"
+        },
+        {
+          "type": "untested_feature",
+          "source": "README.md",
+          "feature": "streamable-http transport (recommended for production deployments)",
+          "detail": "Feature heading in README has no corresponding test"
+        },
+        {
+          "type": "untested_feature",
+          "source": "README.md",
+          "feature": "docker compose orchestration",
+          "detail": "Feature heading in README has no corresponding test"
+        },
+        {
+          "type": "untested_feature",
+          "source": "README.md",
+          "feature": "security & governance",
+          "detail": "Feature heading in README has no corresponding test"
+        }
+      ]
+    },
+    {
+      "domain": "Documentation & Governance",
+      "score": 97,
+      "grade": "A",
+      "findings": [
+        "README.md missing sections: usage|quick start",
+        "2 broken internal links in README.md",
+        "README missing: Has a Table of Contents",
+        "README missing: Has usage examples with code blocks"
+      ],
+      "justifications": [
+        {
+          "criterion": "documentation_quality",
+          "points": 97,
+          "evidence": "{\"README.md\": {\"exists\": true, \"missing\": [\"usage|quick start\"]}, \"AGENTS.md\": {\"exists\": true, \"missing\": []}, \"STANDARDS.md\": {\"exists\": false, \"missing\": []}, \"CONTRIBUTING.md\": {\"exists\": false, \"missing\": []}, \"CHANGELOG.md\": {\"exists\": true, \"missing\": []}, \"LICENSE\": {\"exists\": true, \"missing\": []}, \"docs/\": {\"exists\": true, \"missing\": []}}",
+          "reasoning": "Audited 6 standard docs + docs/ directory. 0 broken references, 5 docs present. README industry grade: B (81.2%)."
+        }
+      ],
+      "doc_results": {
+        "README.md": {
+          "exists": true,
+          "size": 10748,
+          "headings": [
+            "Archivebox Api",
+            "CLI or API | MCP | Agent",
+            "Overview",
+            "Key Features",
+            "CLI or API",
+            "MCP",
+            "Available MCP Tools",
+            "MCP Configuration Examples",
+            "stdio Transport (Recommended for local IDEs e.g., Cursor, Claude Desktop)",
+            "Streamable-HTTP Transport (Recommended for production deployments)",
+            "Agent",
+            "Running the Agent CLI",
+            "Set credentials",
+            "Run the agent server",
+            "Docker Compose Orchestration",
+            "Security & Governance",
+            "Access Control & Policy Enforcement",
+            "Runtime Security Grid",
+            "Installation",
+            "Using uv (highly recommended)"
+          ],
+          "missing_sections": [
+            "usage|quick start"
+          ],
+          "heading_count": 23,
+          "stale": false,
+          "last_modified": "2026-05-22 08:16:36 -0500",
+          "category": "project_overview"
+        },
+        "AGENTS.md": {
+          "exists": true,
+          "size": 5023,
+          "headings": [
+            "AGENTS.md",
+            "Tech Stack & Architecture",
+            "Architecture Diagram",
+            "Workflow Diagram",
+            "Commands (run these exactly)",
+            "Installation",
+            "Quality & Linting (run from project root)",
+            "Execution Commands",
+            "archivebox-mcp\\narchivebox_api.mcp:mcp_server\\n# archivebox-agent\\narchivebox_api.agent:agent_server",
+            "Project Structure Quick Reference",
+            "File Tree",
+            "Code Style & Conventions",
+            "Dos and Don'ts",
+            "Safety & Boundaries",
+            "When Stuck",
+            "Graph Architecture",
+            "Testing with Timeout"
+          ],
+          "missing_sections": [],
+          "heading_count": 17,
+          "stale": false,
+          "last_modified": "2026-05-05 09:23:54 -0500",
+          "category": "agentic_metadata"
+        },
+        "STANDARDS.md": {
+          "exists": false,
+          "missing_sections": [],
+          "size": 0,
+          "headings": [],
+          "stale": true,
+          "last_modified": "unknown",
+          "category": "standards"
+        },
+        "CONTRIBUTING.md": {
+          "exists": false,
+          "missing_sections": [],
+          "size": 0,
+          "headings": [],
+          "stale": true,
+          "last_modified": "unknown",
+          "category": "contributing"
+        },
+        "CHANGELOG.md": {
+          "exists": true,
+          "size": 365,
+          "headings": [
+            "Changelog",
+            "[Unreleased]",
+            "Added",
+            "Changed",
+            "Fixed",
+            "[0.1.54] - 2026-04-29",
+            "Added"
+          ],
+          "missing_sections": [],
+          "heading_count": 7,
+          "stale": false,
+          "last_modified": "2026-04-30 08:18:25 -0500",
+          "category": "changelog"
+        },
+        "LICENSE": {
+          "exists": true,
+          "size": 1060,
+          "headings": [],
+          "missing_sections": [],
+          "heading_count": 0,
+          "stale": false,
+          "last_modified": "2025-10-20 22:56:49 -0500",
+          "category": "license"
+        },
+        "docs/": {
+          "exists": true,
+          "file_count": 3,
+          "files": [
+            "docs/legacy_readme.md",
+            "docs/overview.md",
+            "docs/index.md"
+          ]
+        }
+      },
+      "drift": [
+        {
+          "type": "info",
+          "doc": "README.md",
+          "reference": "archivebox-api[all], archivebox-api[all]",
+          "detail": "README references 2 install commands"
+        }
+      ],
+      "readme_grade": {
+        "score": 26,
+        "max_score": 32,
+        "percentage": 81.2,
+        "grade": "B",
+        "criteria": {
+          "has_title": true,
+          "has_badges": true,
+          "has_description": true,
+          "has_toc": false,
+          "has_installation": true,
+          "has_usage": false,
+          "has_api_docs": true,
+          "has_architecture": true,
+          "has_contributing": true,
+          "has_license": false,
+          "has_code_blocks": true,
+          "has_docs_refs": true,
+          "no_broken_links": false,
+          "reasonable_length": true,
+          "has_cli_api_details": true,
+          "has_mcp_configs": true,
+          "has_agent_configs": true,
+          "has_env_var_docs": true,
+          "has_mcp_tool_table": true,
+          "has_deployment_docs": true
+        },
+        "findings": [
+          "2 broken internal links in README.md",
+          "README missing: Has a Table of Contents",
+          "README missing: Has usage examples with code blocks"
+        ]
+      }
+    },
+    {
+      "domain": "Architecture & Design Patterns",
+      "score": 75,
+      "grade": "C",
+      "findings": [
+        "SRP: 1 modules exceed 500 lines (god modules)",
+        "No discernible layer architecture (no domain/service/adapter separation)"
+      ],
+      "justifications": [
+        {
+          "criterion": "architecture_quality",
+          "points": 75,
+          "evidence": "{\"layers\": 0, \"di_ratio\": 0.17, \"solid_violations\": 1}",
+          "reasoning": "Analyzed 18 files. 0/5 architecture layers present, DI ratio: 17%, 1 SOLID violations."
+        }
+      ],
+      "analysis": {
+        "solid_findings": [
+          {
+            "principle": "SRP",
+            "status": "violation",
+            "detail": "1 modules exceed 500 lines (god modules)",
+            "items": [
+              {
+                "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+                "lines": 562
+              }
+            ]
+          }
+        ],
+        "layer_architecture": {
+          "has_domain_layer": false,
+          "has_adapter_layer": false,
+          "has_port_interfaces": false,
+          "has_service_layer": false,
+          "has_model_layer": false
+        },
+        "dependency_injection": {
+          "total_classes": 6,
+          "di_classes": 1,
+          "di_ratio": 0.17
+        },
+        "event_driven": {
+          "event_classes": 0,
+          "callback_patterns": 0,
+          "observer_patterns": 0,
+          "signal_patterns": 0
+        },
+        "file_count": 18
+      }
+    },
+    {
+      "domain": "Concept Traceability",
+      "score": 30,
+      "grade": "F",
+      "findings": [
+        "Low traceability ratio: 0% concepts fully traced",
+        "30 test functions missing concept markers",
+        "30 significant functions (>10 lines) missing concept markers in docstrings"
+      ],
+      "justifications": [
+        {
+          "criterion": "concept_traceability",
+          "points": 30,
+          "evidence": "{\"total_concepts\": 5, \"well_traced\": 0, \"orphans\": 5, \"drift\": 0, \"code_concepts\": 0, \"doc_concepts\": 7, \"test_concepts\": 0, \"decorator_concepts\": 0, \"tests_missing_markers\": 30, \"functions_missing_docstrings\": 30, \"registry_concepts\": 0, \"unimplemented_concepts\": 0}",
+          "reasoning": "5 unique concepts found. 0 fully traced (code+docs+tests), 5 orphans, 0 drifted. 30 tests without concept markers. 30 functions without concept docstrings."
+        }
+      ],
+      "metrics": {
+        "total_concepts": 5,
+        "well_traced": 0,
+        "orphans": 5,
+        "drift": 0,
+        "code_concepts": 0,
+        "doc_concepts": 7,
+        "test_concepts": 0,
+        "decorator_concepts": 0,
+        "tests_missing_markers": 30,
+        "functions_missing_docstrings": 30,
+        "registry_concepts": 0,
+        "unimplemented_concepts": 0
+      },
+      "concept_map": {
+        "OS-5.4": {
+          "code": 0,
+          "docs": 2,
+          "test": 0,
+          "test_decorator": 0,
+          "test_docstring": 0
+        },
+        "OS-5.1": {
+          "code": 0,
+          "docs": 1,
+          "test": 0,
+          "test_decorator": 0,
+          "test_docstring": 0
+        },
+        "OS-5.3": {
+          "code": 0,
+          "docs": 2,
+          "test": 0,
+          "test_decorator": 0,
+          "test_docstring": 0
+        },
+        "ORCH-1.4": {
+          "code": 0,
+          "docs": 1,
+          "test": 0,
+          "test_decorator": 0,
+          "test_docstring": 0
+        },
+        "OS-5.2": {
+          "code": 0,
+          "docs": 1,
+          "test": 0,
+          "test_decorator": 0,
+          "test_docstring": 0
+        }
+      },
+      "orphans": [
+        {
+          "concept_id": "OS-5.4",
+          "present_in": [
+            "docs"
+          ],
+          "missing_from": [
+            "code",
+            "test"
+          ]
+        },
+        {
+          "concept_id": "OS-5.1",
+          "present_in": [
+            "docs"
+          ],
+          "missing_from": [
+            "code",
+            "test"
+          ]
+        },
+        {
+          "concept_id": "OS-5.3",
+          "present_in": [
+            "docs"
+          ],
+          "missing_from": [
+            "code",
+            "test"
+          ]
+        },
+        {
+          "concept_id": "ORCH-1.4",
+          "present_in": [
+            "docs"
+          ],
+          "missing_from": [
+            "code",
+            "test"
+          ]
+        },
+        {
+          "concept_id": "OS-5.2",
+          "present_in": [
+            "docs"
+          ],
+          "missing_from": [
+            "code",
+            "test"
+          ]
+        }
+      ],
+      "drift": [],
+      "tests_missing_markers": [
+        {
+          "test_name": "test_server_startup",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_startup.py",
+          "line": 1
+        },
+        {
+          "test_name": "test_api_init",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_basic.py",
+          "line": 7
+        },
+        {
+          "test_name": "test_concept_parity",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_concept_parity.py",
+          "line": 58
+        },
+        {
+          "test_name": "test_init_import_module_safely",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 26
+        },
+        {
+          "test_name": "test_init_getattr",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 34
+        },
+        {
+          "test_name": "test_init_lazy_expose_members",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 59
+        },
+        {
+          "test_name": "test_init_dir",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 71
+        },
+        {
+          "test_name": "test_auth_get_client_errors",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 82
+        },
+        {
+          "test_name": "test_auth_get_client_combinations",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 93
+        },
+        {
+          "test_name": "test_base_api_missing_url",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 121
+        },
+        {
+          "test_name": "test_base_api_ssl_verify_false",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 127
+        },
+        {
+          "test_name": "test_base_api_username_password_auth_failures",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 140
+        },
+        {
+          "test_name": "test_base_api_probe_http_errors",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 165
+        },
+        {
+          "test_name": "test_base_api_api_key_param",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 192
+        },
+        {
+          "test_name": "test_client_validation_errors",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 217
+        },
+        {
+          "test_name": "test_mcp_authentication_tool",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 269
+        },
+        {
+          "test_name": "test_mcp_core_tool",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 320
+        },
+        {
+          "test_name": "test_mcp_cli_tool",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 363
+        },
+        {
+          "test_name": "test_mcp_health_check",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 406
+        },
+        {
+          "test_name": "test_mcp_server_run_options",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "line": 437
+        }
+      ],
+      "functions_missing_docstrings": [
+        {
+          "function": "parse_api_client",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/scripts/verify_api_integration.py",
+          "line": 33,
+          "length": 26
+        },
+        {
+          "function": "parse_mcp_server",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/scripts/verify_api_integration.py",
+          "line": 94,
+          "length": 41
+        },
+        {
+          "function": "verify_agent",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/scripts/verify_api_integration.py",
+          "line": 137,
+          "length": 38
+        },
+        {
+          "function": "main",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/scripts/verify_api_integration.py",
+          "line": 177,
+          "length": 99
+        },
+        {
+          "function": "register_authentication_tools",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/mcp_server.py",
+          "line": 41,
+          "length": 31
+        },
+        {
+          "function": "register_core_tools",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/mcp_server.py",
+          "line": 74,
+          "length": 37
+        },
+        {
+          "function": "register_cli_tools",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/mcp_server.py",
+          "line": 113,
+          "length": 37
+        },
+        {
+          "function": "get_mcp_instance",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/mcp_server.py",
+          "line": 152,
+          "length": 26
+        },
+        {
+          "function": "mcp_server",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/mcp_server.py",
+          "line": 180,
+          "length": 16
+        },
+        {
+          "function": "archivebox_authentication",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/mcp_server.py",
+          "line": 43,
+          "length": 29
+        },
+        {
+          "function": "archivebox_core",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/mcp_server.py",
+          "line": 76,
+          "length": 35
+        },
+        {
+          "function": "archivebox_cli",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/mcp_server.py",
+          "line": 115,
+          "length": 35
+        },
+        {
+          "function": "get_client",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/auth.py",
+          "line": 12,
+          "length": 18
+        },
+        {
+          "function": "agent_server",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/agent_server.py",
+          "line": 22,
+          "length": 60
+        },
+        {
+          "function": "__getattr__",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/__init__.py",
+          "line": 46,
+          "length": 26
+        },
+        {
+          "function": "__init__",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/api/api_client_base.py",
+          "line": 15,
+          "length": 59
+        },
+        {
+          "function": "get_snapshots",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/api/api_client_core.py",
+          "line": 15,
+          "length": 94
+        },
+        {
+          "function": "get_snapshot",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/api/api_client_core.py",
+          "line": 111,
+          "length": 26
+        },
+        {
+          "function": "get_archiveresults",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/api/api_client_core.py",
+          "line": 139,
+          "length": 82
+        },
+        {
+          "function": "get_archiveresult",
+          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/api/api_client_core.py",
+          "line": 223,
+          "length": 22
+        }
+      ],
+      "unimplemented_concepts": []
+    },
+    {
+      "domain": "Linting & Formatting",
+      "score": 100,
+      "grade": "A",
+      "findings": [
+        "Total lint findings: 0 (high/error: 0, medium/warning: 0, low: 0)"
+      ],
+      "justifications": [
+        {
+          "criterion": "lint_compliance",
+          "points": 100,
+          "evidence": "ruff=0, bandit=0, mypy=0",
+          "reasoning": "0 total findings across 3 tools. High/error: -0pts, Med/warning: -0pts, Low: -0pt."
+        }
+      ],
+      "tool_results": {
+        "ruff": {
+          "available": true,
+          "finding_count": 0,
+          "returncode": 1
+        },
+        "bandit": {
+          "available": true,
+          "finding_count": 0,
+          "returncode": 1
+        },
+        "mypy": {
+          "available": true,
+          "finding_count": 0,
+          "returncode": 1
+        }
+      },
+      "all_findings": []
+    },
+    {
+      "domain": "Pre-Commit Compliance",
+      "score": 84,
+      "grade": "B",
+      "findings": [
+        "2/27 pre-commit hooks failed: don't commit to branch, mypy",
+        "2 hook(s) may be outdated: ruff-pre-commit, uv-pre-commit",
+        "Pytest hooks skipped (handled by CE-016 Test Execution): pytest, local-pytest"
+      ],
+      "justifications": [
+        {
+          "criterion": "precommit_compliance",
+          "points": 84,
+          "evidence": "{\"total_hooks\": 27, \"passed\": 24, \"failed\": 2, \"skipped\": 1, \"outdated_hooks\": 2, \"pytest_hooks_skipped\": 2, \"exit_code\": 1}",
+          "reasoning": "Ran pre-commit with 27 hooks: 24 passed, 2 failed, 1 skipped. 2 potentially outdated. 2 pytest hooks deferred to CE-016."
+        }
+      ],
+      "hook_results": [
+        {
+          "hook": "check for added large files",
+          "status": "passed"
+        },
+        {
+          "hook": "check python ast",
+          "status": "passed"
+        },
+        {
+          "hook": "check yaml",
+          "status": "passed"
+        },
+        {
+          "hook": "check toml",
+          "status": "passed"
+        },
+        {
+          "hook": "check json",
+          "status": "passed"
+        },
+        {
+          "hook": "fix utf-8 byte order marker",
+          "status": "passed"
+        },
+        {
+          "hook": "check for merge conflicts",
+          "status": "passed"
+        },
+        {
+          "hook": "detect private key",
+          "status": "passed"
+        },
+        {
+          "hook": "trim trailing whitespace",
+          "status": "passed"
+        },
+        {
+          "hook": "fix end of files",
+          "status": "passed"
+        },
+        {
+          "hook": "don't commit to branch",
+          "status": "failed"
+        },
+        {
+          "hook": "ruff check",
+          "status": "passed"
+        },
+        {
+          "hook": "ruff format",
+          "status": "passed"
+        },
+        {
+          "hook": "mypy",
+          "status": "failed"
+        },
+        {
+          "hook": "vulture",
+          "status": "passed"
+        },
+        {
+          "hook": "codespell",
+          "status": "passed"
+        },
+        {
+          "hook": "bandit",
+          "status": "passed"
+        },
+        {
+          "hook": "nbqa-ruff",
+          "status": "passed"
+        },
+        {
+          "hook": "uv-lock",
+          "status": "passed"
+        },
+        {
+          "hook": "mermaid-validate",
+          "status": "passed"
+        },
+        {
+          "hook": "check agent standards",
+          "status": "passed"
+        },
+        {
+          "hook": "check cli help",
+          "status": "passed"
+        },
+        {
+          "hook": "validate bumpversion config",
+          "status": "passed"
+        },
+        {
+          "hook": "pytest",
+          "status": "skipped"
+        },
+        {
+          "hook": "Hadolint",
+          "status": "passed"
+        },
+        {
+          "hook": "Validate docker compose files",
+          "status": "passed"
+        },
+        {
+          "hook": "Verify API-to-MCP Integration Coverage",
+          "status": "passed"
+        }
+      ],
+      "pytest_hooks_skipped": [
+        "pytest",
+        "local-pytest"
+      ],
+      "outdated_hooks": [
+        {
+          "repo": "https://github.com/astral-sh/ruff-pre-commit",
+          "current_rev": "v0.15.12",
+          "issue": "Pre-1.0 version \u2014 check for updates"
+        },
+        {
+          "repo": "https://github.com/astral-sh/uv-pre-commit",
+          "current_rev": "0.11.8",
+          "issue": "Pre-1.0 version \u2014 check for updates"
+        }
+      ],
+      "metrics": {
+        "total_hooks": 27,
+        "passed": 24,
+        "failed": 2,
+        "skipped": 1,
+        "outdated_hooks": 2,
+        "pytest_hooks_skipped": 2,
+        "exit_code": 1
+      }
+    },
+    {
+      "domain": "Test Execution",
+      "score": 25,
+      "grade": "F",
+      "findings": [
+        "No tests were executed (test framework detected but no tests found)"
+      ],
+      "justifications": [
+        {
+          "criterion": "test_execution",
+          "points": 25,
+          "evidence": "{\"frameworks_detected\": 1, \"total_passed\": 0, \"total_failed\": 0, \"total_errors\": 0, \"pass_rate\": 0.0, \"timeout\": 300}",
+          "reasoning": "Executed 1 framework(s). 0 passed, 0 failed, 0 errors. Pass rate: 0%."
+        }
+      ],
+      "framework_results": [
+        {
+          "language": "python",
+          "framework": "pytest",
+          "command": [
+            "python",
+            "-m",
+            "pytest",
+            "--tb=line",
+            "-q",
+            "--timeout=300",
+            "--no-header"
+          ],
+          "status": "failed",
+          "exit_code": 4,
+          "parsed": {
+            "passed": 0,
+            "failed": 0,
+            "errors": 0,
+            "warnings": 0,
+            "skipped": 0,
+            "failures": []
+          }
+        }
+      ],
+      "metrics": {
+        "frameworks_detected": 1,
+        "total_passed": 0,
+        "total_failed": 0,
+        "total_errors": 0,
+        "pass_rate": 0.0,
+        "timeout": 300
+      }
+    },
+    {
+      "domain": "Directory Organization",
+      "score": 100,
+      "grade": "A",
+      "findings": [],
+      "justifications": [
+        {
+          "criterion": "directory_organization",
+          "points": 100,
+          "evidence": "{\"total_source_files\": 42, \"total_directories\": 9, \"max_depth\": 3, \"avg_depth\": 1.3, \"crowded_dirs_20plus\": 0, \"severely_crowded_40plus\": 0, \"monolithic_dirs\": 0, \"empty_dirs\": 2, \"avg_files_per_dir\": 4.7, \"rogue_scripts\": 0}",
+          "reasoning": "42 files across 9 directories. Max depth: 3, avg files/dir: 4.7. 0 crowded, 0 severely crowded, 0 monolithic, 0 rogue scripts."
+        }
+      ],
+      "metrics": {
+        "total_source_files": 42,
+        "total_directories": 9,
+        "max_depth": 3,
+        "avg_depth": 1.3,
+        "crowded_dirs_20plus": 0,
+        "severely_crowded_40plus": 0,
+        "monolithic_dirs": 0,
+        "empty_dirs": 2,
+        "avg_files_per_dir": 4.7,
+        "rogue_scripts": 0
+      },
+      "crowded_dirs": [],
+      "monolithic_dirs": [],
+      "suggestions": [],
+      "rogue_scripts": []
+    },
+    {
+      "domain": "Version Sync Analysis",
+      "score": 100,
+      "grade": "A",
+      "findings": [
+        "All version '0.14.0' declarations appear to be tracked correctly."
+      ],
+      "justifications": [
+        {
+          "criterion": "bumpversion_exists",
+          "points": 20,
+          "evidence": "/home/apps/workspace/agent-packages/agents/archivebox-api/.bumpversion.cfg",
+          "reasoning": ".bumpversion.cfg found"
+        },
+        {
+          "criterion": "current_version_defined",
+          "points": 20,
+          "evidence": "0.14.0",
+          "reasoning": "Current version tracked is 0.14.0"
+        },
+        {
+          "criterion": "files_tracked",
+          "points": 20,
+          "evidence": "5 files tracked",
+          "reasoning": "Found 5 files tracked in .bumpversion.cfg"
+        },
+        {
+          "criterion": "version_drift_check",
+          "points": 40,
+          "evidence": "0 drifted files",
+          "reasoning": "No version drift detected in codebase files"
+        }
+      ],
+      "details": {
+        "tracked_files": [
+          "pyproject.toml",
+          "README.md",
+          "docker/Dockerfile",
+          "archivebox_api/agent_server.py",
+          "archivebox_api/mcp_server.py"
+        ],
+        "drifted_files": []
+      }
+    },
+    {
+      "domain": "Changelog Audit",
+      "score": 75,
+      "grade": "C",
+      "findings": [
+        "CHANGELOG.md exists but could not be parsed \u2014 check format compliance",
+        "No changelog entries within the last 30 days",
+        "keepachangelog not installed \u2014 pip install 'universal-skills[code-enhancer]'"
+      ],
+      "justifications": [
+        {
+          "criterion": "changelog_quality",
+          "points": 75,
+          "evidence": "{\"exists\": true, \"parseable\": false, \"version_count\": 0, \"has_drift\": false, \"dep_deltas_found\": 0}",
+          "reasoning": "CHANGELOG.md exists. 0 versions tracked. 0 dependency changelogs analyzed."
+        }
+      ],
+      "format_validation": {
+        "exists": true,
+        "parseable": false,
+        "has_unreleased": false,
+        "version_count": 0,
+        "uses_semver": true,
+        "valid_categories": true,
+        "has_dates": true,
+        "has_header": true,
+        "issues": [
+          "keepachangelog not installed \u2014 pip install 'universal-skills[code-enhancer]'"
+        ]
+      },
+      "version_drift": {
+        "has_drift": false,
+        "changelog_version": null,
+        "pyproject_version": "0.14.0"
+      },
+      "dependency_deltas": {}
+    },
+    {
+      "domain": "Pytest Quality",
+      "score": 73,
+      "grade": "C",
+      "findings": [
+        "1 test files exceed 500 lines \u2014 split into focused modules",
+        "Test directory lacks subdirectory organization (consider unit/, integration/, e2e/)",
+        "Missing conftest.py for shared fixtures",
+        "No @pytest.mark.parametrize usage \u2014 consider data-driven tests",
+        "No shared fixtures in conftest.py",
+        "6 tests have no assertions"
+      ],
+      "justifications": [
+        {
+          "criterion": "pytest_quality",
+          "points": 73,
+          "evidence": "{\"test_files\": 6, \"total_tests\": 30, \"descriptive_name_ratio\": 0.93, \"generic_names\": 0, \"fixture_usage_ratio\": 0.43, \"parametrize_users\": 0, \"conftest_fixtures\": 0, \"no_assertion_tests\": 6, \"weak_assertion_tests\": 1, \"duplicate_groups\": 0, \"large_files\": 1, \"over_mocked_tests\": 1, \"very_long_tests\": 0, \"subscores\": {\"naming\": 20, \"structure\": 12, \"fixtures\": 11, \"assertions\": 10, \"ai_slop\": 20}}",
+          "reasoning": "30 tests across 6 files. Naming: 20/20, Structure: 12/20, Fixtures: 11/20, Assertions: 10/20, AI Slop: 20/20."
+        }
+      ],
+      "metrics": {
+        "test_files": 6,
+        "total_tests": 30,
+        "descriptive_name_ratio": 0.93,
+        "generic_names": 0,
+        "fixture_usage_ratio": 0.43,
+        "parametrize_users": 0,
+        "conftest_fixtures": 0,
+        "no_assertion_tests": 6,
+        "weak_assertion_tests": 1,
+        "duplicate_groups": 0,
+        "large_files": 1,
+        "over_mocked_tests": 1,
+        "very_long_tests": 0,
+        "subscores": {
+          "naming": 20,
+          "structure": 12,
+          "fixtures": 11,
+          "assertions": 10,
+          "ai_slop": 20
+        }
+      },
+      "conftest": {
+        "conftest_count": 0,
+        "total_shared_fixtures": 0,
+        "has_root_conftest": false
+      },
+      "duplicates": [],
+      "large_files": [
+        {
+          "file": "test_archivebox_coverage_extra.py",
+          "lines": 562
+        }
+      ]
+    },
+    {
+      "domain": "Environment Variables",
+      "score": 93,
+      "grade": "A",
+      "findings": [
+        "Undocumented env vars: ARCHIVEBOX_URL, AUTHENTICATIONTOOL, AUTH_TYPE, CLITOOL, CORETOOL, EUNOMIA_POLICY_FILE, EUNOMIA_TYPE, OTEL_EXPORTER_OTLP_ENDPOINT",
+        "1 Python env vars not in .env.example: ARCHIVEBOX_URL"
+      ],
+      "justifications": [
+        {
+          "criterion": "env_var_documentation",
+          "points": 93,
+          "evidence": "{\"total_vars\": 20, \"python_vars\": 10, \"dockerfile_vars\": 4, \"compose_vars\": 0, \"dotenv_vars\": 18, \"readme_documented\": 12, \"readme_undocumented\": 8, \"documentation_coverage\": 0.6}",
+          "reasoning": "Found 20 unique env vars across 54 occurrences. README documents 12/20. Has .env.example."
+        }
+      ],
+      "metrics": {
+        "total_vars": 20,
+        "python_vars": 10,
+        "dockerfile_vars": 4,
+        "compose_vars": 0,
+        "dotenv_vars": 18,
+        "readme_documented": 12,
+        "readme_undocumented": 8,
+        "documentation_coverage": 0.6
+      },
+      "variables": {
+        "ARCHIVEBOX_URL": {
+          "name": "ARCHIVEBOX_URL",
+          "sources": [
+            "tests/test_archivebox_api_brute_force_coverage.py:4"
+          ],
+          "defaults": [],
+          "source_types": [
+            "python"
+          ]
+        },
+        "ARCHIVEBOX_USERNAME": {
+          "name": "ARCHIVEBOX_USERNAME",
+          "sources": [
+            "tests/test_archivebox_api_brute_force_coverage.py:5",
+            "archivebox_api/auth.py:16",
+            ".env:24",
+            ".env.example:24"
+          ],
+          "defaults": [],
+          "source_types": [
+            "dotenv",
+            "python"
+          ]
+        },
+        "ARCHIVEBOX_PASSWORD": {
+          "name": "ARCHIVEBOX_PASSWORD",
+          "sources": [
+            "tests/test_archivebox_api_brute_force_coverage.py:6",
+            "archivebox_api/auth.py:17",
+            ".env:30"
+          ],
+          "defaults": [],
+          "source_types": [
+            "dotenv",
+            "python"
+          ]
+        },
+        "AUTHENTICATIONTOOL": {
+          "name": "AUTHENTICATIONTOOL",
+          "sources": [
+            "archivebox_api/mcp_server.py:165",
+            ".env:33",
+            ".env.example:33"
+          ],
+          "defaults": [
+            "True"
+          ],
+          "source_types": [
+            "dotenv",
+            "python"
+          ]
+        },
+        "CORETOOL": {
+          "name": "CORETOOL",
+          "sources": [
+            "archivebox_api/mcp_server.py:168",
+            ".env:34",
+            ".env.example:34"
+          ],
+          "defaults": [
+            "True"
+          ],
+          "source_types": [
+            "dotenv",
+            "python"
+          ]
+        },
+        "CLITOOL": {
+          "name": "CLITOOL",
+          "sources": [
+            "archivebox_api/mcp_server.py:171",
+            ".env:35",
+            ".env.example:35"
+          ],
+          "defaults": [
+            "True"
+          ],
+          "source_types": [
+            "dotenv",
+            "python"
+          ]
+        },
+        "ARCHIVEBOX_BASE_URL": {
+          "name": "ARCHIVEBOX_BASE_URL",
+          "sources": [
+            "archivebox_api/auth.py:14",
+            ".env:23",
+            ".env.example:23"
+          ],
+          "defaults": [
+            "http://localhost:8000"
+          ],
+          "source_types": [
+            "dotenv",
+            "python"
+          ]
+        },
+        "ARCHIVEBOX_TOKEN": {
+          "name": "ARCHIVEBOX_TOKEN",
+          "sources": [
+            "archivebox_api/auth.py:15",
+            ".env:29"
+          ],
+          "defaults": [],
+          "source_types": [
+            "dotenv",
+            "python"
+          ]
+        },
+        "ARCHIVEBOX_API_KEY": {
+          "name": "ARCHIVEBOX_API_KEY",
+          "sources": [
+            "archivebox_api/auth.py:18",
+            ".env:28"
+          ],
+          "defaults": [],
+          "source_types": [
+            "dotenv",
+            "python"
+          ]
+        },
+        "ARCHIVEBOX_SSL_VERIFY": {
+          "name": "ARCHIVEBOX_SSL_VERIFY",
+          "sources": [
+            "archivebox_api/auth.py:19",
+            ".env:25",
+            ".env.example:25"
+          ],
+          "defaults": [
+            "False"
+          ],
+          "source_types": [
+            "dotenv",
+            "python"
+          ]
+        },
+        "HOST": {
+          "name": "HOST",
+          "sources": [
+            "docker/Dockerfile:8",
+            "docker/Dockerfile:3",
+            "docker/debug.Dockerfile:8",
+            "docker/debug.Dockerfile:3",
+            ".env:6"
+          ],
+          "defaults": [
+            "0.0.0.0"
+          ],
+          "source_types": [
+            "dockerfile",
+            "dotenv"
+          ]
+        },
+        "PORT": {
+          "name": "PORT",
+          "sources": [
+            "docker/Dockerfile:4",
+            "docker/debug.Dockerfile:4",
+            ".env:7",
+            ".env.example:7"
+          ],
+          "defaults": [
+            "8000"
+          ],
+          "source_types": [
+            "dockerfile",
+            "dotenv"
+          ]
+        },
+        "TRANSPORT": {
+          "name": "TRANSPORT",
+          "sources": [
+            "docker/Dockerfile:5",
+            "docker/debug.Dockerfile:5",
+            ".env:8",
+            ".env.example:8"
+          ],
+          "defaults": [
+            "stdio # options: stdio, streamable-http, sse",
+            "stdio"
+          ],
+          "source_types": [
+            "dockerfile",
+            "dotenv"
+          ]
+        },
+        "AUTH_TYPE": {
+          "name": "AUTH_TYPE",
+          "sources": [
+            "docker/Dockerfile:6",
+            "docker/debug.Dockerfile:6"
+          ],
+          "defaults": [],
+          "source_types": [
+            "dockerfile"
+          ]
+        },
+        "ENABLE_OTEL": {
+          "name": "ENABLE_OTEL",
+          "sources": [
+            ".env:11",
+            ".env.example:11"
+          ],
+          "defaults": [
+            "True"
+          ],
+          "source_types": [
+            "dotenv"
+          ]
+        },
+        "OTEL_EXPORTER_OTLP_ENDPOINT": {
+          "name": "OTEL_EXPORTER_OTLP_ENDPOINT",
+          "sources": [
+            ".env:12"
+          ],
+          "defaults": [
+            "http://langfuse.arpa/api/public/otel"
+          ],
+          "source_types": [
+            "dotenv"
+          ]
+        },
+        "EUNOMIA_TYPE": {
+          "name": "EUNOMIA_TYPE",
+          "sources": [
+            ".env:18",
+            ".env.example:18"
+          ],
+          "defaults": [
+            "none # options: none, embedded, remote",
+            "none"
+          ],
+          "source_types": [
+            "dotenv"
+          ]
+        },
+        "EUNOMIA_POLICY_FILE": {
+          "name": "EUNOMIA_POLICY_FILE",
+          "sources": [
+            ".env:19",
+            ".env.example:19"
+          ],
+          "defaults": [
+            "mcp_policies.json"
+          ],
+          "source_types": [
+            "dotenv"
+          ]
+        },
+        "DEBUG": {
+          "name": "DEBUG",
+          "sources": [
+            ".env:26",
+            ".env.example:26"
+          ],
+          "defaults": [
+            "False"
+          ],
+          "source_types": [
+            "dotenv"
+          ]
+        },
+        "PYTHONUNBUFFERED": {
+          "name": "PYTHONUNBUFFERED",
+          "sources": [
+            ".env:27",
+            ".env.example:27"
+          ],
+          "defaults": [
+            "1"
+          ],
+          "source_types": [
+            "dotenv"
+          ]
+        }
+      },
+      "readme_coverage": {
+        "documented": [
+          "ARCHIVEBOX_API_KEY",
+          "ARCHIVEBOX_BASE_URL",
+          "ARCHIVEBOX_PASSWORD",
+          "ARCHIVEBOX_SSL_VERIFY",
+          "ARCHIVEBOX_TOKEN",
+          "ARCHIVEBOX_USERNAME",
+          "DEBUG",
+          "ENABLE_OTEL",
+          "HOST",
+          "PORT",
+          "PYTHONUNBUFFERED",
+          "TRANSPORT"
+        ],
+        "undocumented": [
+          "ARCHIVEBOX_URL",
+          "AUTHENTICATIONTOOL",
+          "AUTH_TYPE",
+          "CLITOOL",
+          "CORETOOL",
+          "EUNOMIA_POLICY_FILE",
+          "EUNOMIA_TYPE",
+          "OTEL_EXPORTER_OTLP_ENDPOINT"
+        ],
+        "coverage": 0.6
+      }
+    }
+  ],
+  "gpa": 2.62,
+  "domain_count": 16,
+  "timing": {
+    "analyze_project": 0.19,
+    "audit_dependencies": 0.24,
+    "analyze_codebase": 0.28,
+    "analyze_security": 0.25,
+    "analyze_tests": 0.22,
+    "audit_documentation": 0.82,
+    "analyze_architecture": 0.07,
+    "trace_concepts": 0.61,
+    "run_linters": 0.36,
+    "run_precommit": 19.41,
+    "run_tests": 1.13,
+    "analyze_directory_density": 0.98,
+    "analyze_ui": 0.97,
+    "analyze_version_sync": 0.61,
+    "audit_changelog": 0.0,
+    "grade_pytest": 0.11,
+    "scan_env_vars": 0.68
+  }
+}

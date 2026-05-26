@@ -1,0 +1,57 @@
+# Tasks: Code Enhancement: archivebox-api
+
+Generated: 2026-05-22T21:05:20.550932+00:00
+Skipped informational: 6
+
+- [ ] [P] **T001** [Codebase Optimization] 9 functions with nesting depth >4
+  - Priority: P2-Medium | Effort: Medium
+- [ ] [P] **T002** [Test Coverage] 6 tests without assertions
+  - Priority: P2-Medium | Effort: Medium
+- [ ] [P] **T003** [Test Coverage] Test suite lacks intent diversity (only one type)
+  - Priority: P2-Medium | Effort: Medium
+- [ ] [P] **T004** [Test Coverage] 15 potential doc-test drift items
+  - Priority: P2-Medium | Effort: Medium
+- [ ] [P] **T005** [Documentation & Governance] README.md missing sections: usage|quick start
+  - Priority: P4-Enhancement | Effort: Small
+- [ ] [P] **T006** [Documentation & Governance] 2 broken internal links in README.md
+  - Priority: P4-Enhancement | Effort: Medium
+- [ ] [P] **T007** [Documentation & Governance] README missing: Has a Table of Contents
+  - Priority: P4-Enhancement | Effort: Small
+- [ ] [P] **T008** [Documentation & Governance] README missing: Has usage examples with code blocks
+  - Priority: P4-Enhancement | Effort: Small
+- [ ] [P] **T009** [Architecture & Design Patterns] SRP: 1 modules exceed 500 lines (god modules)
+  - Priority: P2-Medium | Effort: Large
+- [ ] [P] **T010** [Architecture & Design Patterns] No discernible layer architecture (no domain/service/adapter separation)
+  - Priority: P2-Medium | Effort: Medium
+- [ ] [P] **T011** [Concept Traceability] Low traceability ratio: 0% concepts fully traced
+  - Priority: P4-Enhancement | Effort: Medium
+- [ ] [P] **T012** [Concept Traceability] 30 test functions missing concept markers
+  - Priority: P4-Enhancement | Effort: Small
+- [ ] [P] **T013** [Concept Traceability] 30 significant functions (>10 lines) missing concept markers in docstrings
+  - Priority: P4-Enhancement | Effort: Small
+- [ ] [P] **T014** [Linting & Formatting] Total lint findings: 0 (high/error: 0, medium/warning: 0, low: 0)
+  - Priority: P4-Enhancement | Effort: Medium
+- [ ] [P] **T015** [Pre-Commit Compliance] 2 hook(s) may be outdated: ruff-pre-commit, uv-pre-commit
+  - Priority: P2-Medium | Effort: Small
+- [ ] [P] **T016** [Changelog Audit] CHANGELOG.md exists but could not be parsed — check format compliance
+  - Priority: P3-Low | Effort: Medium
+- [ ] [P] **T017** [Changelog Audit] No changelog entries within the last 30 days
+  - Priority: P3-Low | Effort: Medium
+- [ ] [P] **T018** [Changelog Audit] keepachangelog not installed — pip install 'universal-skills[code-enhancer]'
+  - Priority: P3-Low | Effort: Small
+- [ ] [P] **T019** [Pytest Quality] 1 test files exceed 500 lines — split into focused modules
+  - Priority: P2-Medium | Effort: Large
+- [ ] [P] **T020** [Pytest Quality] Test directory lacks subdirectory organization (consider unit/, integration/, e2
+  - Priority: P2-Medium | Effort: Medium
+- [ ] [P] **T021** [Pytest Quality] Missing conftest.py for shared fixtures
+  - Priority: P2-Medium | Effort: Small
+- [ ] [P] **T022** [Pytest Quality] No @pytest.mark.parametrize usage — consider data-driven tests
+  - Priority: P2-Medium | Effort: Medium
+- [ ] [P] **T023** [Pytest Quality] No shared fixtures in conftest.py
+  - Priority: P2-Medium | Effort: Medium
+- [ ] [P] **T024** [Pytest Quality] 6 tests have no assertions
+  - Priority: P2-Medium | Effort: Medium
+- [ ] [P] **T025** [Environment Variables] Undocumented env vars: ARCHIVEBOX_URL, AUTHENTICATIONTOOL, AUTH_TYPE, CLITOOL, C
+  - Priority: P4-Enhancement | Effort: Medium
+- [ ] [P] **T026** [Environment Variables] 1 Python env vars not in .env.example: ARCHIVEBOX_URL
+  - Priority: P4-Enhancement | Effort: Medium

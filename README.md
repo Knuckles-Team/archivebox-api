@@ -24,9 +24,23 @@
 
 ---
 
+## Table of Contents
+- [Overview](#overview)
+- [Key Features](#key-features)
+- [Concept Registry](#concept-registry)
+- [Environment Variables](#environment-variables)
+- [CLI or API Usage](#cli-or-api-usage)
+- [MCP Server Setup](#mcp-server-setup)
+- [Agentic AI Graph Agent](#agentic-ai-graph-agent)
+- [Security & Governance](#security--governance)
+- [Installation](#installation)
+- [Contribute](#contribute)
+
+---
+
 ## Overview
 
-**Archivebox Api** is a production-grade Agent and Model Context Protocol (MCP) server designed to interface directly with Pythonic ArchiveBox API Wrapper and Fast MCP Server for Agentic AI use!.
+**Archivebox Api** is a production-grade Agent and Model Context Protocol (MCP) server designed to interface directly with the Pythonic ArchiveBox API Wrapper and Fast MCP Server for Agentic AI use!
 
 ---
 
@@ -39,212 +53,140 @@
 
 ---
 
-## CLI or API
+## Concept Registry
 
-This agent wraps the Pythonic ArchiveBox API Wrapper and Fast MCP Server for Agentic AI use! API. You can interact with it programmatically or via its integrated execution entrypoints.
+This codebase is aligned with the **5 Core Pillars Architecture** of the `agent-utilities` ecosystem:
 
-Detailed instructions on how to use the underlying API wrappers, extended schema bindings, and developer SDK references are maintained in [docs/index.md](file:///home/apps/workspace/agent-packages/agents/archivebox-api/docs/index.md).
+| Concept ID | Pillar Name | Domain | Implementation Details in archivebox-api |
+|------------|-------------|--------|-----------------------------------------|
+| **`ECO-4.0`** | Ecosystem & Peripherals | Tool Interface & MCP Factory | Provides FastMCP server wrapper, action routing tools, and dynamic schema exposures. |
+| **`ECO-4.1`** | Ecosystem & Peripherals | A2A Network & Consensus | Manages agent peer discovery, routing tables, and consensus. |
+| **`OS-5.1`** | Agent OS Infrastructure | Security & Auth | Implements token-based OIDC access control, JWT filters, and Eunomia validation. |
+| **`OS-5.4`** | Agent OS Infrastructure | Telemetry & Observability | Delivers warning suppressions, JSON progress logging, and error tracing. |
 
 ---
 
-## MCP
+## Environment Variables
+
+Configure the runtime environment by creating a `.env` file based on `.env.example`:
+
+| Env Variable | Type | Default | Description |
+|--------------|------|---------|-------------|
+| `ARCHIVEBOX_BASE_URL` | String | `http://localhost:8000` | Canonical endpoint URL for the backend ArchiveBox API. |
+| `ARCHIVEBOX_URL` | String | `http://localhost:8000` | Fallback alias/alternative for `ARCHIVEBOX_BASE_URL`. |
+| `ARCHIVEBOX_USERNAME` | String | *None* | Username for authentication. |
+| `ARCHIVEBOX_PASSWORD` | String | *None* | Password for authentication. |
+| `ARCHIVEBOX_API_KEY` | String | *None* | API Key for token-less header authentication. |
+| `ARCHIVEBOX_TOKEN` | String | *None* | Pre-configured authentication token. |
+| `ARCHIVEBOX_SSL_VERIFY`| Boolean| `False` | Enable/disable SSL certificate validation. |
+| `AUTHENTICATIONTOOL` | Boolean| `True` | Toggle to enable/disable the Authentication MCP toolset. |
+| `CORETOOL` | Boolean| `True` | Toggle to enable/disable the Core ArchiveBox MCP toolset. |
+| `CLITOOL` | Boolean| `True` | Toggle to enable/disable the CLI command MCP toolset. |
+| `EUNOMIA_TYPE` | String | `none` | Policy mode: `none`, `embedded`, or `remote`. |
+| `EUNOMIA_POLICY_FILE` | String | `mcp_policies.json` | Path to the local policy file when using `embedded` mode. |
+| `ENABLE_OTEL` | Boolean| `True` | Enable/disable OpenTelemetry metrics/traces exporter. |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | String | *None* | Endpoint for the OpenTelemetry collector. |
+
+---
+
+## CLI or API Usage
+
+You can use the API client programmatically in Python to manage ArchiveBox snapshots:
+
+```python
+from archivebox_api import Api
+
+# Initialize client
+client = Api(
+    url="http://localhost:8000",
+    token="your-auth-token",
+    verify=True
+)
+
+# Fetch snapshots
+snapshots = client.get_snapshots()
+for snapshot in snapshots.get("results", []):
+    print(f"[{snapshot['timestamp']}] {snapshot['url']}")
+```
+
+Refer to [docs/index.md](docs/index.md) for full developer SDK and class references.
+
+---
+
+## MCP Server Setup
 
 This server utilizes dynamic Action-Routed tools to optimize token overhead and maximize IDE compatibility.
 
 ### Available MCP Tools
-| Tool Module | Toggle Env Var | Enabled by Default | Description & Nested Methods |
-|-------------|----------------|--------------------|------------------------------|
-| **Authentication** | `AUTHENTICATIONTOOL` | `True` | Manage archivebox authentication operations. Action-routed methods: `get_api_token`, `check_api_token`. |
-| **Core** | `CORETOOL` | `True` | Manage archivebox core operations. Action-routed methods: `get_snapshots`, `get_snapshot`, `get_archiveresults`, `get_tag`, `get_any`. |
-| **Cli** | `CLITOOL` | `True` | Manage archivebox cli operations. Action-routed methods: `cli_add`, `cli_update`, `cli_schedule`, `cli_list`, `cli_remove`. |
+- **`archivebox_authentication`** (`AUTHENTICATIONTOOL=True`): Manage token exchanges and validation (`get_api_token`, `check_api_token`).
+- **`archivebox_core`** (`CORETOOL=True`): Manage core collections (`get_snapshots`, `get_snapshot`, `get_archiveresults`, `get_tag`).
+- **`archivebox_cli`** (`CLITOOL=True`): Directly execute ArchiveBox command line functions (`cli_add`, `cli_list`, `cli_update`).
 
-Detailed tool schemas, parameter shapes, and validation constraints are preserved in [docs/mcp.md](file:///home/apps/workspace/agent-packages/agents/archivebox-api/docs/mcp.md).
+### Dynamic Tool Selection & Visibility
 
-### MCP Configuration Examples
+This MCP server supports dynamic toolset selection and visibility filtering at runtime. This allows you to restrict the set of exposed tools in order to prevent blowing up the LLM's context window.
 
-#### stdio Transport (Recommended for local IDEs e.g., Cursor, Claude Desktop)
-Configure your IDE's `mcp.json` to launch the MCP server via `uvx`:
+You can configure tool filtering via multiple input channels:
+
+- **CLI Arguments:** Pass `--tools` or `--toolsets` (or their disabled counterparts `--disabled-tools` and `--disabled-toolsets`) during startup.
+- **Environment Variables:** Define standard environment variables:
+  - `MCP_ENABLED_TOOLS` / `MCP_DISABLED_TOOLS`
+  - `MCP_ENABLED_TAGS` / `MCP_DISABLED_TAGS`
+- **HTTP SSE Request Headers:** Pass custom headers during transport initialization:
+  - `x-mcp-enabled-tools` / `x-mcp-disabled-tools`
+  - `x-mcp-enabled-tags` / `x-mcp-disabled-tags`
+- **HTTP SSE Request Query Parameters:** Append query parameters directly to your transport connection URL:
+  - `?tools=tool1,tool2`
+  - `?tags=tag1`
+
+When query strings or parameters are supplied, an LLM-free **Knowledge Graph resolution layer** (using `DynamicToolOrchestrator`) matches query intents against known tool tags, names, or descriptions, with safe fallback and automated 24-hour background cache refreshing.
+
+---
+
+### Local IDE Configuration (Cursor / Claude Desktop)
+Add the following block to your `mcp.json` to configure stdio transport via `uvx`:
 
 ```json
 {
   "mcpServers": {
     "archivebox-api": {
-      "command": "uvx",
+      "command": "uv",
       "args": [
-        "--from",
+        "run",
+        "--package",
         "archivebox-api",
         "archivebox-mcp"
       ],
       "env": {
-        "ARCHIVEBOX_BASE_URL": "your_archivebox_base_url_here",
-        "ARCHIVEBOX_USERNAME": "your_archivebox_username_here",
-        "ARCHIVEBOX_SSL_VERIFY": "your_archivebox_ssl_verify_here",
-        "DEBUG": "your_debug_here",
-        "PYTHONUNBUFFERED": "your_pythonunbuffered_here",
-        "ARCHIVEBOX_API_KEY": "your_archivebox_api_key_here",
-        "ARCHIVEBOX_TOKEN": "your_archivebox_token_here",
-        "ARCHIVEBOX_PASSWORD": "your_archivebox_password_here"
+        "ARCHIVEBOX_BASE_URL": "http://localhost:8000",
+        "ARCHIVEBOX_USERNAME": "admin",
+        "ARCHIVEBOX_PASSWORD": "your-password"
       }
     }
   }
 }
-```
-
-#### Streamable-HTTP Transport (Recommended for production deployments)
-Configure your client's `mcp.json` to launch the Streamable-HTTP server via `uvx` with explicit host and port definition:
-
-```json
-{
-  "mcpServers": {
-    "archivebox-api": {
-      "command": "uvx",
-      "args": [
-        "--from",
-        "archivebox-api",
-        "archivebox-mcp"
-      ],
-      "env": {
-        "TRANSPORT": "streamable-http",
-        "HOST": "0.0.0.0",
-        "PORT": "8000",
-        "ARCHIVEBOX_BASE_URL": "your_archivebox_base_url_here",
-        "ARCHIVEBOX_USERNAME": "your_archivebox_username_here",
-        "ARCHIVEBOX_SSL_VERIFY": "your_archivebox_ssl_verify_here",
-        "DEBUG": "your_debug_here",
-        "PYTHONUNBUFFERED": "your_pythonunbuffered_here",
-        "ARCHIVEBOX_API_KEY": "your_archivebox_api_key_here",
-        "ARCHIVEBOX_TOKEN": "your_archivebox_token_here",
-        "ARCHIVEBOX_PASSWORD": "your_archivebox_password_here"
-      }
-    }
-  }
-}
-```
-
-Alternatively, connect to a pre-deployed remote or local Streamable-HTTP instance:
-
-```json
-{
-  "mcpServers": {
-    "archivebox-api": {
-      "url": "http://localhost:8000/archivebox-api/mcp"
-    }
-  }
-}
-```
-
-Deploying the Streamable-HTTP server via Docker:
-
-```bash
-docker run -d \
-  --name archivebox-api-mcp \
-  -p 8000:8000 \
-  -e TRANSPORT=streamable-http \
-  -e PORT=8000 \
-  -e ARCHIVEBOX_BASE_URL="your_value" \
-  -e ARCHIVEBOX_USERNAME="your_value" \
-  -e ARCHIVEBOX_SSL_VERIFY="your_value" \
-  -e DEBUG="your_value" \
-  -e PYTHONUNBUFFERED="your_value" \
-  -e ARCHIVEBOX_API_KEY="your_value" \
-  -e ARCHIVEBOX_TOKEN="your_value" \
-  -e ARCHIVEBOX_PASSWORD="your_value" \
-  knucklessg1/archivebox-api:latest
 ```
 
 ---
 
-## Agent
+## Agentic AI Graph Agent
 
-This repository features a fully integrated Pydantic AI Graph Agent. It communicates over the **Agent Control Protocol (ACP)** and interacts seamlessly with the **Agent Web UI (AG-UI)** and Terminal interface.
+This repository features a fully integrated Pydantic AI Graph Agent. It communicates over the **Agent Control Protocol (ACP)** and interacts seamlessly with the **Agent Web UI (AG-UI)**.
 
 ### Running the Agent CLI
 To start the interactive command-line agent:
 
 ```bash
-# Set credentials
-export ARCHIVEBOX_BASE_URL="your_value"
-export ARCHIVEBOX_USERNAME="your_value"
-export ARCHIVEBOX_SSL_VERIFY="your_value"
-export DEBUG="your_value"
-export PYTHONUNBUFFERED="your_value"
-export ARCHIVEBOX_API_KEY="your_value"
-export ARCHIVEBOX_TOKEN="your_value"
-export ARCHIVEBOX_PASSWORD="your_value"
+# Export credentials
+export ARCHIVEBOX_BASE_URL="http://localhost:8000"
+export ARCHIVEBOX_USERNAME="admin"
+export ARCHIVEBOX_PASSWORD="your-password"
 
-# Run the agent server
+# Run agent server
 archivebox-agent --provider openai --model-id gpt-4o
 ```
 
-### Docker Compose Orchestration
-The following `docker/agent.compose.yml` configures the Agent, Web UI, and Terminal Interface together:
-
-```yaml
-version: '3.8'
-
-services:
-  archivebox-api-mcp:
-    image: knucklessg1/archivebox-api:latest
-    container_name: archivebox-api-mcp
-    hostname: archivebox-api-mcp
-    restart: always
-    env_file:
-      - ../.env
-    environment:
-      - PYTHONUNBUFFERED=1
-      - HOST=0.0.0.0
-      - PORT=8000
-      - TRANSPORT=streamable-http
-    ports:
-      - "8000:8000"
-    healthcheck:
-      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
-    logging:
-      driver: json-file
-      options:
-        max-size: "10m"
-        max-file: "3"
-
-  archivebox-api-agent:
-    image: knucklessg1/archivebox-api:latest
-    container_name: archivebox-api-agent
-    hostname: archivebox-api-agent
-    restart: always
-    depends_on:
-      - archivebox-api-mcp
-    env_file:
-      - ../.env
-    command: [ "archivebox-agent" ]
-    environment:
-      - PYTHONUNBUFFERED=1
-      - HOST=0.0.0.0
-      - PORT=9013
-      - MCP_URL=http://archivebox-api-mcp:8000/mcp
-      - PROVIDER=${PROVIDER:-openai}
-      - MODEL_ID=${MODEL_ID:-gpt-4o}
-      - ENABLE_WEB_UI=True
-      - ENABLE_OTEL=True
-    ports:
-      - "9013:9013"
-    healthcheck:
-      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:9013/health')"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
-    logging:
-      driver: json-file
-      options:
-        max-size: "10m"
-        max-file: "3"
-
-```
-
-Detailed graph node architecture explanations, custom skill configurations, and agentic trace guides are available in [docs/agent.md](file:///home/apps/workspace/agent-packages/agents/archivebox-api/docs/agent.md).
+Detailed graph node architecture explanations, custom skill configurations, and agentic trace guides are available in [docs/index.md](docs/index.md#agent-orchestration).
 
 ---
 
@@ -280,15 +222,6 @@ python -m pip install archivebox-api[all]
 
 ---
 
-## Repository Owners
-
-<img width="100%" height="180em" src="https://github-readme-stats.vercel.app/api?username=Knucklessg1&show_icons=true&hide_border=true&&count_private=true&include_all_commits=true" />
-
-![GitHub followers](https://img.shields.io/github/followers/Knucklessg1)
-![GitHub User's stars](https://img.shields.io/github/stars/Knucklessg1)
-
----
-
 ## Contribute
 
 Contributions are welcome! Please ensure code quality by executing local checks before submitting pull requests:
@@ -296,3 +229,13 @@ Contributions are welcome! Please ensure code quality by executing local checks 
 - Lint code using `ruff check .`
 - Validate type-safety with `mypy .`
 - Execute test suites using `pytest`
+
+
+### Available MCP Tools
+| Tool Module | Toggle Env Var | Enabled by Default | Description & Nested Methods |
+|-------------|----------------|--------------------|------------------------------|
+| **Authentication** | `AUTHENTICATION_TOOL` | `True` | Register authentication management tools.
+
+    CONCEPT:OS-5.1 — Security & Auth Action-routed methods: `check_api_token`, `get_api_token`. |
+| **Core** | `CORE_TOOL` | `True` | Manage archivebox core operations. Action-routed methods: `get_any`, `get_archiveresults`, `get_snapshot`, `get_snapshots`, `get_tag`. |
+| **Cli** | `CLI_TOOL` | `True` | Manage archivebox cli operations. Action-routed methods: `cli_add`, `cli_list`, `cli_remove`, `cli_schedule`, `cli_update`. |

@@ -1,4 +1,10 @@
 #!/usr/bin/python
+"""Agent Server for ArchiveBox API.
+
+CONCEPT:ECO-4.1 — A2A Network & Consensus
+Implements a cooperative agent server for discovery, delegation, and structured consensus.
+"""
+
 import logging
 import os
 import sys
@@ -20,6 +26,10 @@ DEFAULT_AGENT_SYSTEM_PROMPT = None
 
 
 def agent_server():
+    """Start the agent server.
+
+    CONCEPT:ECO-4.1 — A2A Network & Consensus
+    """
     from agent_utilities import (
         build_system_prompt_from_workspace,
         create_agent_parser,
