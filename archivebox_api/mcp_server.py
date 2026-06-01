@@ -67,7 +67,7 @@ def register_authentication_tools(mcp: FastMCP):
     ) -> dict:
         """Manage archivebox authentication operations."""
         if ctx:
-            ctx.info("Executing tool...")
+            await ctx.info("Executing tool...")
         import json
 
         try:
@@ -100,7 +100,7 @@ def register_core_tools(mcp: FastMCP):
     ) -> dict:
         """Manage archivebox core operations."""
         if ctx:
-            ctx.info("Executing tool...")
+            await ctx.info("Executing tool...")
         import json
 
         try:
@@ -139,7 +139,7 @@ def register_cli_tools(mcp: FastMCP):
     ) -> dict:
         """Manage archivebox cli operations."""
         if ctx:
-            ctx.info("Executing tool...")
+            await ctx.info("Executing tool...")
         import json
 
         try:

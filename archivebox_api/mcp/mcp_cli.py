@@ -26,7 +26,7 @@ def register_cli_tools(mcp: FastMCP):
     ) -> dict:
         """Manage archivebox cli operations."""
         if ctx:
-            ctx.info("Executing tool...")
+            await ctx.info("Executing tool...")
         import json
 
         try:

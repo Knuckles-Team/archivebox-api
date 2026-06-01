@@ -5,4 +5,4 @@ from archivebox_api.api.api_client_core import Api as CoreApi
 
 
 class Api(AuthApi, CliApi, CoreApi):
-    pass
+    __slots__ = ()

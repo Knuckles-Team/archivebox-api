@@ -2,6 +2,7 @@ import os
 import sys
 import importlib
 import warnings
+from typing import cast, Callable
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -219,12 +220,18 @@ def test_base_api_api_key_param(mock_get):
 def test_base_api_client_not_implemented_stub():
     from archivebox_api.api.api_client_base import BaseApiClient
 
+    class DummyClient(BaseApiClient):
+        def get_api_token(
+            self, username: str | None = None, password: str | None = None
+        ) -> requests.Response:
+            raise NotImplementedError()
+
     # Patch requests.Session.get inside constructor so initialization probe succeeds
     with patch("requests.Session.get") as mock_get:
         mock_resp = MagicMock()
         mock_resp.status_code = 200
         mock_get.return_value = mock_resp
-        client = BaseApiClient(url="http://test.com", token="my-token")
+        client = DummyClient(url="http://test.com", token="my-token")
         with pytest.raises(NotImplementedError):
             client.get_api_token()
 
@@ -313,7 +320,8 @@ async def test_mcp_authentication_tool(mock_client, mock_context):
     register_authentication_tools(mcp)
 
     tool_obj = await mcp.get_tool("archivebox_authentication")
-    tool = tool_obj.fn
+    assert tool_obj is not None
+    tool = cast(Callable, getattr(tool_obj, "fn", tool_obj))
 
     # 1. Test progress reporting (ctx is not None)
     res = await tool(
@@ -360,7 +368,8 @@ async def test_mcp_core_tool(mock_client, mock_context):
     register_core_tools(mcp)
 
     tool_obj = await mcp.get_tool("archivebox_core")
-    tool = tool_obj.fn
+    assert tool_obj is not None
+    tool = cast(Callable, getattr(tool_obj, "fn", tool_obj))
 
     # 1. Test progress reporting (ctx is not None)
     res = await tool(
@@ -404,7 +413,8 @@ async def test_mcp_cli_tool(mock_client, mock_context):
     register_cli_tools(mcp)
 
     tool_obj = await mcp.get_tool("archivebox_cli")
-    tool = tool_obj.fn
+    assert tool_obj is not None
+    tool = cast(Callable, getattr(tool_obj, "fn", tool_obj))
 
     # 1. Test progress reporting (ctx is not None)
     res = await tool(

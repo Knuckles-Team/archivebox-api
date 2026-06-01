@@ -1,4 +1,5 @@
 import sys
+from abc import ABC, abstractmethod
 from typing import Any
 
 import requests
@@ -11,7 +12,7 @@ from agent_utilities.core.exceptions import (
 )
 
 
-class BaseApiClient:
+class BaseApiClient(ABC):
     def __init__(
         self,
         url: str | None = None,
@@ -72,7 +73,8 @@ class BaseApiClient:
             print(f"Parameter Error: {response.content!r}", file=sys.stderr)
             raise ParameterError
 
+    @abstractmethod
     def get_api_token(
         self, username: str | None = None, password: str | None = None
     ) -> requests.Response:
-        raise NotImplementedError
+        raise NotImplementedError()
