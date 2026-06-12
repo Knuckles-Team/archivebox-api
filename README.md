@@ -262,3 +262,18 @@ Contributions are welcome! Please ensure code quality by executing local checks 
     CONCEPT:OS-5.1 — Security & Auth Action-routed methods: `check_api_token`, `get_api_token`. |
 | **Core** | `CORE_TOOL` | `True` | Manage archivebox core operations. Action-routed methods: `get_any`, `get_archiveresults`, `get_snapshot`, `get_snapshots`, `get_tag`. |
 | **Cli** | `CLI_TOOL` | `True` | Manage archivebox cli operations. Action-routed methods: `cli_add`, `cli_list`, `cli_remove`, `cli_schedule`, `cli_update`. |
+
+<!-- BEGIN GENERATED: additional-deployment-options -->
+### Additional Deployment Options
+
+`archivebox-api` can also run as a **local container** (Docker / Podman / `uv`) or be
+consumed from a **remote deployment**. The
+[Deployment guide](https://knuckles-team.github.io/archivebox-api/deployment/) has full, copy-paste
+`mcp_config.json` for all four transports — **stdio**, **streamable-http**,
+**local container / uv**, and **remote URL**:
+
+- **Local container / uv** — launch the server from `mcp_config.json` via `uvx`,
+  `docker run`, or `podman run`, or point at a local streamable-http container by `url`.
+- **Remote URL** — connect to a server deployed behind Caddy at
+  `http://archivebox-mcp.arpa/mcp` using the `"url"` key.
+<!-- END GENERATED: additional-deployment-options -->
