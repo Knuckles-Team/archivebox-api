@@ -20,7 +20,7 @@
 ![PyPI - Wheel](https://img.shields.io/pypi/wheel/archivebox-api)
 ![PyPI - Implementation](https://img.shields.io/pypi/implementation/archivebox-api)
 
-*Version: 0.30.0*
+*Version: 0.31.0*
 
 > **Documentation** — Installation, deployment, usage across the API, CLI, MCP, and
 > A2A agent interfaces, and guidance for provisioning the ArchiveBox platform are
