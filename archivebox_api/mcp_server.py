@@ -32,7 +32,11 @@ import sys
 from typing import Any
 
 from agent_utilities.base_utilities import to_boolean
-from agent_utilities.mcp_utilities import create_mcp_server, resolve_action
+from agent_utilities.mcp_utilities import (
+    create_mcp_server,
+    resolve_action,
+    run_blocking,
+)
 from dotenv import find_dotenv, load_dotenv
 from starlette.requests import Request
 from starlette.responses import JSONResponse
@@ -96,9 +100,9 @@ def register_authentication_tools(mcp: FastMCP):
         action = resolved
 
         if action == "get_api_token":
-            return client.get_api_token(**kwargs)
+            return await run_blocking(client.get_api_token, **kwargs)
         if action == "check_api_token":
-            return client.check_api_token(**kwargs)
+            return await run_blocking(client.check_api_token, **kwargs)
         raise ValueError(f"Unknown action: {action}")
 
 
@@ -134,15 +138,15 @@ def register_core_tools(mcp: FastMCP):
         action = resolved
 
         if action == "get_snapshots":
-            return client.get_snapshots(**kwargs)
+            return await run_blocking(client.get_snapshots, **kwargs)
         if action == "get_snapshot":
-            return client.get_snapshot(**kwargs)
+            return await run_blocking(client.get_snapshot, **kwargs)
         if action == "get_archiveresults":
-            return client.get_archiveresults(**kwargs)
+            return await run_blocking(client.get_archiveresults, **kwargs)
         if action == "get_tag":
-            return client.get_tag(**kwargs)
+            return await run_blocking(client.get_tag, **kwargs)
         if action == "get_any":
-            return client.get_any(**kwargs)
+            return await run_blocking(client.get_any, **kwargs)
         raise ValueError(f"Unknown action: {action}")
 
 
@@ -178,15 +182,15 @@ def register_cli_tools(mcp: FastMCP):
         action = resolved
 
         if action == "cli_add":
-            return client.cli_add(**kwargs)
+            return await run_blocking(client.cli_add, **kwargs)
         if action == "cli_update":
-            return client.cli_update(**kwargs)
+            return await run_blocking(client.cli_update, **kwargs)
         if action == "cli_schedule":
-            return client.cli_schedule(**kwargs)
+            return await run_blocking(client.cli_schedule, **kwargs)
         if action == "cli_list":
-            return client.cli_list(**kwargs)
+            return await run_blocking(client.cli_list, **kwargs)
         if action == "cli_remove":
-            return client.cli_remove(**kwargs)
+            return await run_blocking(client.cli_remove, **kwargs)
         raise ValueError(f"Unknown action: {action}")
 
 
