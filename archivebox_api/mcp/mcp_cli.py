@@ -3,7 +3,7 @@
 Auto-generated from mcp_server.py during ecosystem standardization.
 """
 
-from agent_utilities.mcp_utilities import resolve_action
+from agent_utilities.mcp_utilities import resolve_action, run_blocking
 from fastmcp import Context, FastMCP
 from fastmcp.dependencies import Depends
 from pydantic import Field
@@ -45,13 +45,13 @@ def register_cli_tools(mcp: FastMCP):
         action = resolved
 
         if action == "cli_add":
-            return client.cli_add(**kwargs)
+            return await run_blocking(client.cli_add, **kwargs)
         if action == "cli_update":
-            return client.cli_update(**kwargs)
+            return await run_blocking(client.cli_update, **kwargs)
         if action == "cli_schedule":
-            return client.cli_schedule(**kwargs)
+            return await run_blocking(client.cli_schedule, **kwargs)
         if action == "cli_list":
-            return client.cli_list(**kwargs)
+            return await run_blocking(client.cli_list, **kwargs)
         if action == "cli_remove":
-            return client.cli_remove(**kwargs)
+            return await run_blocking(client.cli_remove, **kwargs)
         raise ValueError(f"Unknown action: {action}")

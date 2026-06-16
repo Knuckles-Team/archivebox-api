@@ -3,7 +3,7 @@
 Auto-generated from mcp_server.py during ecosystem standardization.
 """
 
-from agent_utilities.mcp_utilities import resolve_action
+from agent_utilities.mcp_utilities import resolve_action, run_blocking
 from fastmcp import Context, FastMCP
 from fastmcp.dependencies import Depends
 from pydantic import Field
@@ -52,7 +52,7 @@ def register_authentication_tools(mcp: FastMCP):
         action = resolved
 
         if action == "get_api_token":
-            return client.get_api_token(**kwargs)
+            return await run_blocking(client.get_api_token, **kwargs)
         if action == "check_api_token":
-            return client.check_api_token(**kwargs)
+            return await run_blocking(client.check_api_token, **kwargs)
         raise ValueError(f"Unknown action: {action}")

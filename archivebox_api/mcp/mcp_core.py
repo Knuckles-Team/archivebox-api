@@ -3,7 +3,7 @@
 Auto-generated from mcp_server.py during ecosystem standardization.
 """
 
-from agent_utilities.mcp_utilities import resolve_action
+from agent_utilities.mcp_utilities import resolve_action, run_blocking
 from fastmcp import Context, FastMCP
 from fastmcp.dependencies import Depends
 from pydantic import Field
@@ -51,13 +51,13 @@ def register_core_tools(mcp: FastMCP):
         action = resolved
 
         if action == "get_snapshots":
-            return client.get_snapshots(**kwargs)
+            return await run_blocking(client.get_snapshots, **kwargs)
         if action == "get_snapshot":
-            return client.get_snapshot(**kwargs)
+            return await run_blocking(client.get_snapshot, **kwargs)
         if action == "get_archiveresults":
-            return client.get_archiveresults(**kwargs)
+            return await run_blocking(client.get_archiveresults, **kwargs)
         if action == "get_tag":
-            return client.get_tag(**kwargs)
+            return await run_blocking(client.get_tag, **kwargs)
         if action == "get_any":
-            return client.get_any(**kwargs)
+            return await run_blocking(client.get_any, **kwargs)
         raise ValueError(f"Unknown action: {action}")
