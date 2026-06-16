@@ -32,7 +32,7 @@ import sys
 from typing import Any
 
 from agent_utilities.base_utilities import to_boolean
-from agent_utilities.mcp_utilities import create_mcp_server
+from agent_utilities.mcp_utilities import create_mcp_server, resolve_action
 from dotenv import find_dotenv, load_dotenv
 from starlette.requests import Request
 from starlette.responses import JSONResponse
@@ -44,6 +44,17 @@ __version__ = "0.33.0"
 # Telemetry & Observability
 logger = get_logger(name="archivebox-api")
 logger.setLevel(logging.INFO)
+
+
+AUTHENTICATION_ACTIONS = ("get_api_token", "check_api_token")
+CORE_ACTIONS = (
+    "get_snapshots",
+    "get_snapshot",
+    "get_archiveresults",
+    "get_tag",
+    "get_any",
+)
+CLI_ACTIONS = ("cli_add", "cli_update", "cli_schedule", "cli_list", "cli_remove")
 
 
 def register_authentication_tools(mcp: FastMCP):
@@ -77,6 +88,13 @@ def register_authentication_tools(mcp: FastMCP):
 
         kwargs = {k: v for k, v in kwargs.items() if v is not None}
 
+        resolved = resolve_action(
+            action, AUTHENTICATION_ACTIONS, service="archivebox-api"
+        )
+        if isinstance(resolved, dict):
+            return resolved
+        action = resolved
+
         if action == "get_api_token":
             return client.get_api_token(**kwargs)
         if action == "check_api_token":
@@ -109,6 +127,11 @@ def register_core_tools(mcp: FastMCP):
             return {"error": f"Invalid params_json: {e}"}
 
         kwargs = {k: v for k, v in kwargs.items() if v is not None}
+
+        resolved = resolve_action(action, CORE_ACTIONS, service="archivebox-api")
+        if isinstance(resolved, dict):
+            return resolved
+        action = resolved
 
         if action == "get_snapshots":
             return client.get_snapshots(**kwargs)
@@ -148,6 +171,11 @@ def register_cli_tools(mcp: FastMCP):
             return {"error": f"Invalid params_json: {e}"}
 
         kwargs = {k: v for k, v in kwargs.items() if v is not None}
+
+        resolved = resolve_action(action, CLI_ACTIONS, service="archivebox-api")
+        if isinstance(resolved, dict):
+            return resolved
+        action = resolved
 
         if action == "cli_add":
             return client.cli_add(**kwargs)
