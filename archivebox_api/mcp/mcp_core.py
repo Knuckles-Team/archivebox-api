@@ -3,11 +3,20 @@
 Auto-generated from mcp_server.py during ecosystem standardization.
 """
 
+from agent_utilities.mcp_utilities import resolve_action
 from fastmcp import Context, FastMCP
 from fastmcp.dependencies import Depends
 from pydantic import Field
 
 from archivebox_api.auth import get_client
+
+CORE_ACTIONS = (
+    "get_snapshots",
+    "get_snapshot",
+    "get_archiveresults",
+    "get_tag",
+    "get_any",
+)
 
 
 def register_core_tools(mcp: FastMCP):
@@ -35,6 +44,11 @@ def register_core_tools(mcp: FastMCP):
             return {"error": f"Invalid params_json: {e}"}
 
         kwargs = {k: v for k, v in kwargs.items() if v is not None}
+
+        resolved = resolve_action(action, CORE_ACTIONS, service="archivebox-api")
+        if isinstance(resolved, dict):
+            return resolved
+        action = resolved
 
         if action == "get_snapshots":
             return client.get_snapshots(**kwargs)
