@@ -27,20 +27,20 @@ warnings.filterwarnings("ignore", message=".*urllib3.*or chardet.*")
 warnings.filterwarnings("ignore", message=".*urllib3.*or charset_normalizer.*")
 
 import logging
-import os
 import sys
 from typing import Any
 
-from agent_utilities.base_utilities import to_boolean
 from agent_utilities.mcp_utilities import (
     create_mcp_server,
     load_config,
+    register_tool_surface,
     resolve_action,
     run_blocking,
 )
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
+from archivebox_api.api_client import Api
 from archivebox_api.auth import get_client
 
 __version__ = "0.34.0"
@@ -207,15 +207,13 @@ def get_mcp_instance() -> tuple[Any, ...]:
     async def health_check(request: Request) -> JSONResponse:
         return JSONResponse({"status": "OK"})
 
-    DEFAULT_AUTHENTICATIONTOOL = to_boolean(os.getenv("AUTHENTICATIONTOOL", "True"))
-    if DEFAULT_AUTHENTICATIONTOOL:
-        register_authentication_tools(mcp)
-    DEFAULT_CORETOOL = to_boolean(os.getenv("CORETOOL", "True"))
-    if DEFAULT_CORETOOL:
-        register_core_tools(mcp)
-    DEFAULT_CLITOOL = to_boolean(os.getenv("CLITOOL", "True"))
-    if DEFAULT_CLITOOL:
-        register_cli_tools(mcp)
+    register_tool_surface(
+        mcp,
+        client_cls=Api,
+        get_client=get_client,
+        service="archivebox-api",
+        tools_module=sys.modules[__name__],
+    )
 
     for mw in middlewares:
         mcp.add_middleware(mw)
