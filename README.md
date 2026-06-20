@@ -121,10 +121,9 @@ Refer to [docs/index.md](docs/index.md) for full developer SDK and class referen
 
 This server utilizes dynamic Action-Routed tools to optimize token overhead and maximize IDE compatibility.
 
-### Available MCP Tools
-- **`archivebox_authentication`** (`AUTHENTICATIONTOOL=True`): Manage token exchanges and validation (`get_api_token`, `check_api_token`).
-- **`archivebox_core`** (`CORETOOL=True`): Manage core collections (`get_snapshots`, `get_snapshot`, `get_archiveresults`, `get_tag`).
-- **`archivebox_cli`** (`CLITOOL=True`): Directly execute ArchiveBox command line functions (`cli_add`, `cli_list`, `cli_update`).
+### Tool Catalog
+
+See the auto-generated [Available MCP Tools](#available-mcp-tools) table below for the full, live list of tools.
 
 ### Dynamic Tool Selection & Visibility
 
@@ -255,13 +254,19 @@ Contributions are welcome! Please ensure code quality by executing local checks 
 
 
 ### Available MCP Tools
-| Tool Module | Toggle Env Var | Enabled by Default | Description & Nested Methods |
-|-------------|----------------|--------------------|------------------------------|
-| **Authentication** | `AUTHENTICATION_TOOL` | `True` | Register authentication management tools.
 
-    CONCEPT:OS-5.1 — Security & Auth Action-routed methods: `check_api_token`, `get_api_token`. |
-| **Core** | `CORE_TOOL` | `True` | Manage archivebox core operations. Action-routed methods: `get_any`, `get_archiveresults`, `get_snapshot`, `get_snapshots`, `get_tag`. |
-| **Cli** | `CLI_TOOL` | `True` | Manage archivebox cli operations. Action-routed methods: `cli_add`, `cli_list`, `cli_remove`, `cli_schedule`, `cli_update`. |
+The table below is auto-generated from the live server — do not edit by hand.
+
+<!-- MCP-TOOLS-TABLE:START -->
+
+| MCP Tool | Toggle Env Var | Description |
+|----------|----------------|-------------|
+| `archivebox_authentication` | `AUTHENTICATIONTOOL` | Manage archivebox authentication operations. |
+| `archivebox_cli` | `CLITOOL` | Manage archivebox cli operations. |
+| `archivebox_core` | `CORETOOL` | Manage archivebox core operations. |
+
+_3 action-routed tools (default `MCP_TOOL_MODE=condensed`). Each is enabled unless its toggle is set false; set `MCP_TOOL_MODE=verbose` (or `both`) for the 1:1 per-operation surface. Auto-generated — do not edit._
+<!-- MCP-TOOLS-TABLE:END -->
 
 <!-- BEGIN GENERATED: additional-deployment-options -->
 ### Additional Deployment Options
