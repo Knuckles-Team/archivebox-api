@@ -12,7 +12,6 @@ from agent_utilities.core.exceptions import (
     AuthError,
     MissingParameterError,
     ParameterError,
-    UnauthorizedError,
 )
 
 # Core imports to test
@@ -181,39 +180,23 @@ def test_base_api_username_password_auth_failures(mock_post, mock_get):
 # CONCEPT:OS-5.1 — Security & Auth
 # CONCEPT:OS-5.4 — Telemetry & Observability
 @pytest.mark.concept("OS-5.1")
-@pytest.mark.parametrize(
-    "status_code,expected_exception",
-    [
-        (401, AuthError),
-        (403, UnauthorizedError),
-        (404, ParameterError),
-    ],
-)
 @patch("requests.Session.get")
-def test_base_api_probe_http_errors_parametrized(
-    mock_get, status_code, expected_exception
-):
-    # Test HTTP error status mappings in API client instantiation using data-driven param options
-    mock_resp = MagicMock()
-    mock_resp.status_code = status_code
-    mock_resp.content = b"HTTP Error details"
-    mock_get.return_value = mock_resp
-
-    with pytest.raises(expected_exception):
-        Api(url="http://test.com", token="token")
+def test_base_api_no_eager_probe(mock_get):
+    # The constructor must NOT issue any network request: it only configures auth
+    # headers. An eager probe made construction raise before any tool ran, which
+    # FastMCP surfaced as "Failed to resolve dependency 'client'".
+    Api(url="http://test.com", token="token")
+    assert not mock_get.called
 
 
 @pytest.mark.concept("OS-5.1")
 @patch("requests.Session.get")
-def test_base_api_api_key_param(mock_get):
-    # Test setting api_key adds it to test_params when "X-ArchiveBox-API-Key" is not in headers (e.g. token is passed)
-    mock_resp = MagicMock()
-    mock_resp.status_code = 200
-    mock_get.return_value = mock_resp
-
-    Api(url="http://test.com", token="my-token", api_key="my-key")
-    args, kwargs = mock_get.call_args
-    assert kwargs["params"]["api_key"] == "my-key"
+def test_base_api_api_key_header(mock_get):
+    # An api_key (with no token) sets the X-ArchiveBox-API-Key header and still
+    # performs no network I/O at construction time.
+    api = Api(url="http://test.com", api_key="my-key")
+    assert api.headers["X-ArchiveBox-API-Key"] == "my-key"
+    assert not mock_get.called
 
 
 @pytest.mark.concept("OS-5.1")
