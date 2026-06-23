@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   archivebox-api-mcp:
-    image: knucklessg1/archivebox-api:latest
+    image: knucklessg1/archivebox-api:mcp
     container_name: archivebox-api-mcp
     hostname: archivebox-api-mcp
     restart: always
