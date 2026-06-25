@@ -72,24 +72,54 @@ This codebase is aligned with the **5 Core Pillars Architecture** of the `agent-
 
 ## Environment Variables
 
-Configure the runtime environment by creating a `.env` file based on `.env.example`:
+Configure the runtime environment by creating a `.env` file based on `.env.example`.
+Every variable the server reads, grouped by concern.
 
-| Env Variable | Type | Default | Description |
-|--------------|------|---------|-------------|
-| `ARCHIVEBOX_BASE_URL` | String | `http://localhost:8000` | Canonical endpoint URL for the backend ArchiveBox API. |
-| `ARCHIVEBOX_URL` | String | `http://localhost:8000` | Fallback alias/alternative for `ARCHIVEBOX_BASE_URL`. |
-| `ARCHIVEBOX_USERNAME` | String | *None* | Username for authentication. |
-| `ARCHIVEBOX_PASSWORD` | String | *None* | Password for authentication. |
-| `ARCHIVEBOX_API_KEY` | String | *None* | API Key for token-less header authentication. |
-| `ARCHIVEBOX_TOKEN` | String | *None* | Pre-configured authentication token. |
-| `ARCHIVEBOX_SSL_VERIFY`| Boolean| `False` | Enable/disable SSL certificate validation. |
-| `AUTHENTICATIONTOOL` | Boolean| `True` | Toggle to enable/disable the Authentication MCP toolset. |
-| `CORETOOL` | Boolean| `True` | Toggle to enable/disable the Core ArchiveBox MCP toolset. |
-| `CLITOOL` | Boolean| `True` | Toggle to enable/disable the CLI command MCP toolset. |
-| `EUNOMIA_TYPE` | String | `none` | Policy mode: `none`, `embedded`, or `remote`. |
-| `EUNOMIA_POLICY_FILE` | String | `mcp_policies.json` | Path to the local policy file when using `embedded` mode. |
-| `ENABLE_OTEL` | Boolean| `True` | Enable/disable OpenTelemetry metrics/traces exporter. |
-| `OTEL_EXPORTER_OTLP_ENDPOINT` | String | *None* | Endpoint for the OpenTelemetry collector. |
+### Connection & Credentials
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `ARCHIVEBOX_BASE_URL` | Canonical endpoint URL for the backend ArchiveBox API | `http://localhost:8000` |
+| `ARCHIVEBOX_URL` | Fallback alias/alternative for `ARCHIVEBOX_BASE_URL` | `http://localhost:8000` |
+| `ARCHIVEBOX_USERNAME` | Username for authentication | — |
+| `ARCHIVEBOX_PASSWORD` | Password for authentication | — |
+| `ARCHIVEBOX_API_KEY` | API key for token-less header authentication | — |
+| `ARCHIVEBOX_TOKEN` | Pre-configured authentication token | — |
+| `ARCHIVEBOX_SSL_VERIFY` (alias `ARCHIVEBOX_VERIFY`) | Enable/disable SSL certificate validation | `False` |
+
+### MCP server / transport
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `TRANSPORT` | `stdio`, `streamable-http`, or `sse` | `stdio` |
+| `HOST` | Bind host (HTTP transports) | `0.0.0.0` |
+| `PORT` | Bind port (HTTP transports) | `8000` |
+| `MCP_TOOL_MODE` | Tool surface: `condensed`, `verbose`, or `both` | `condensed` |
+| `MCP_ENABLED_TOOLS` / `MCP_DISABLED_TOOLS` | Comma-separated tool allow/deny list | — |
+| `MCP_ENABLED_TAGS` / `MCP_DISABLED_TAGS` | Comma-separated tag allow/deny list | — |
+| `DEBUG` | Verbose logging | `False` |
+| `PYTHONUNBUFFERED` | Unbuffered stdout (recommended in containers) | `1` |
+
+### Tool toggles
+Each action-routed tool can be disabled individually via its toggle env var (set to `false`):
+`AUTHENTICATIONTOOL`, `CORETOOL`, `CLITOOL` (see the [Available MCP Tools](#available-mcp-tools) table below).
+
+### Telemetry & governance
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `ENABLE_OTEL` | Enable OpenTelemetry export | `True` |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | OTLP collector endpoint | — |
+| `OTEL_EXPORTER_OTLP_PUBLIC_KEY` / `OTEL_EXPORTER_OTLP_SECRET_KEY` | OTLP auth keys | — |
+| `OTEL_EXPORTER_OTLP_PROTOCOL` | OTLP protocol (e.g. `http/protobuf`) | — |
+| `EUNOMIA_TYPE` | Authorization mode: `none`, `embedded`, `remote` | `none` |
+| `EUNOMIA_POLICY_FILE` | Embedded policy file | `mcp_policies.json` |
+| `EUNOMIA_REMOTE_URL` | Remote Eunomia server URL | — |
+
+### Agent CLI (full `[agent]` runtime only)
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `MCP_URL` | URL of the MCP server the agent connects to | `http://localhost:8000/mcp` |
+| `PROVIDER` | LLM provider (e.g. `openai`) | `openai` |
+| `MODEL_ID` | Model id (e.g. `gpt-4o`) | `gpt-4o` |
+| `ENABLE_WEB_UI` | Serve the AG-UI web interface | `True` |
 
 ---
 
@@ -118,6 +148,13 @@ Refer to [docs/index.md](docs/index.md) for full developer SDK and class referen
 ---
 
 ## MCP Server Setup
+
+> **Install the slim `[mcp]` extra.** Install `archivebox-api[mcp]` — the MCP-server
+> extra that pulls only the FastMCP / FastAPI tooling (`agent-utilities[mcp]`). It
+> deliberately **excludes** the heavy agent runtime (the epistemic-graph engine,
+> `pydantic-ai`, `dspy`, `llama-index`, `tree-sitter`), so `uvx`/container installs are
+> dramatically smaller and faster. Use the full `[agent]` extra only when you need the
+> integrated Pydantic AI agent (see [Installation](#installation)).
 
 This server utilizes dynamic Action-Routed tools to optimize token overhead and maximize IDE compatibility.
 
@@ -213,15 +250,51 @@ Built directly upon the enterprise-ready [`agent-utilities`](https://github.com/
 
 ## Installation
 
-Install the Python package locally:
+Pick the extra that matches what you want to run:
+
+| Extra | Installs | Use when |
+|-------|----------|----------|
+| `archivebox-api[mcp]` | Slim MCP server only (`agent-utilities[mcp]` — FastMCP/FastAPI) | You only run the **MCP server** (smallest install / image) |
+| `archivebox-api[agent]` | Full agent runtime (`agent-utilities[agent,logfire]` — Pydantic AI + the epistemic-graph engine) | You run the **integrated agent** |
+| `archivebox-api[all]` | Everything (`mcp` + `agent` + `logfire`) | Development / both surfaces |
 
 ```bash
-# Using uv (highly recommended)
-uv pip install archivebox-api[all]
+# MCP server only (recommended for tool hosting — slim deps)
+uv pip install "archivebox-api[mcp]"
 
-# Using standard pip
-python -m pip install archivebox-api[all]
+# Full agent runtime (Pydantic AI + epistemic-graph engine)
+uv pip install "archivebox-api[agent]"
+
+# Everything (development)
+uv pip install "archivebox-api[all]"      # or: python -m pip install "archivebox-api[all]"
 ```
+
+### Container images (`:mcp` vs `:agent`)
+
+One multi-stage `docker/Dockerfile` builds two right-sized images, selected by `--target`:
+
+| Image tag | Build target | Contents | Entrypoint |
+|-----------|--------------|----------|------------|
+| `knucklessg1/archivebox-api:mcp` | `--target mcp` | `archivebox-api[mcp]` — **slim**, no engine/`pydantic-ai`/`dspy`/`llama-index`/`tree-sitter` | `archivebox-mcp` |
+| `knucklessg1/archivebox-api:latest` | `--target agent` (default) | `archivebox-api[agent]` — **full** agent runtime + epistemic-graph engine | `archivebox-agent` |
+
+```bash
+docker build --target mcp   -t knucklessg1/archivebox-api:mcp    docker/   # slim MCP server
+docker build --target agent -t knucklessg1/archivebox-api:latest docker/   # full agent
+```
+
+`docker/mcp.compose.yml` runs the slim `:mcp` server; `docker/agent.compose.yml` runs the
+agent (`:latest`) with a co-located `:mcp` sidecar.
+
+### Knowledge-graph database (`epistemic-graph`)
+
+The **full agent** (`[agent]` / `:latest`) embeds the **epistemic-graph** engine (pulled in
+transitively via `agent-utilities[agent]`). For production — or to share one knowledge graph
+across multiple agents — run **epistemic-graph as its own database container** and point the
+agent at it instead of embedding it. Deployment recipes (single-node + Raft HA), connection
+config, and the full database architecture (with diagrams) are documented in the
+[epistemic-graph deployment guide](https://knuckles-team.github.io/epistemic-graph/deployment/).
+The slim `[mcp]` server does **not** require the database.
 
 ---
 
