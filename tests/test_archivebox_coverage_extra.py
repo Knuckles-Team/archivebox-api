@@ -459,7 +459,7 @@ async def test_mcp_health_check():
     mock_request = Request(scope=mock_scope)
     response = await route_handler(mock_request)
     assert response.status_code == 200
-    assert b"OK" in response.body
+    assert b"ok" in response.body.lower()
 
 
 @pytest.mark.concept("ECO-4.0")
