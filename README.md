@@ -135,7 +135,7 @@ Every variable the server reads, grouped by concern.
 | `ARCHIVEBOX_PASSWORD` | Password for authentication | — |
 | `ARCHIVEBOX_API_KEY` | API key for token-less header authentication | — |
 | `ARCHIVEBOX_TOKEN` | Pre-configured authentication token | — |
-| `ARCHIVEBOX_SSL_VERIFY` (alias `ARCHIVEBOX_VERIFY`) | Enable/disable SSL certificate validation | `False` |
+| `ARCHIVEBOX_SSL_VERIFY` | Enable/disable SSL certificate validation | `False` |
 
 ### MCP server / transport
 | Variable | Description | Default |
@@ -383,13 +383,39 @@ The table below is auto-generated from the live server — do not edit by hand.
 
 <!-- MCP-TOOLS-TABLE:START -->
 
+#### Condensed action-routed tools (default — `MCP_TOOL_MODE=condensed`)
+
 | MCP Tool | Toggle Env Var | Description |
 |----------|----------------|-------------|
 | `archivebox_authentication` | `AUTHENTICATIONTOOL` | Manage archivebox authentication operations. |
 | `archivebox_cli` | `CLITOOL` | Manage archivebox cli operations. |
 | `archivebox_core` | `CORETOOL` | Manage archivebox core operations. |
 
-_3 action-routed tools (default `MCP_TOOL_MODE=condensed`). Each is enabled unless its toggle is set false; set `MCP_TOOL_MODE=verbose` (or `both`) for the 1:1 per-operation surface. Auto-generated — do not edit._
+#### Verbose 1:1 API-mapped tools (`MCP_TOOL_MODE=verbose` or `both`)
+
+<details>
+<summary>14 per-operation tools — one per public API method (click to expand)</summary>
+
+| MCP Tool | Toggle Env Var | Description |
+|----------|----------------|-------------|
+| `archivebox_check_api_token` | `APITOOL` | Validate an API token to make sure it's valid and non-expired |
+| `archivebox_cli_add` | `APITOOL` | Execute archivebox add command |
+| `archivebox_cli_list` | `APITOOL` | Execute archivebox list command |
+| `archivebox_cli_remove` | `APITOOL` | Execute archivebox remove command |
+| `archivebox_cli_schedule` | `APITOOL` | Execute archivebox schedule command |
+| `archivebox_cli_update` | `APITOOL` | Execute archivebox update command |
+| `archivebox_get_any` | `APITOOL` | Get a specific Snapshot, ArchiveResult, or Tag by abid |
+| `archivebox_get_api_token` | `APITOOL` | Generate an API token for a given username & password |
+| `archivebox_get_archiveresult` | `APITOOL` | Get a specific ArchiveResult by id or abid |
+| `archivebox_get_archiveresults` | `APITOOL` | List all ArchiveResult entries matching these filters |
+| `archivebox_get_snapshot` | `APITOOL` | Get a specific Snapshot by abid or id |
+| `archivebox_get_snapshots` | `APITOOL` | Retrieve list of snapshots |
+| `archivebox_get_tag` | `APITOOL` | Get a specific Tag by id or abid |
+| `archivebox_get_tags` | `APITOOL` | Retrieve list of tags |
+
+</details>
+
+_3 action-routed tool(s) (default) · 14 verbose 1:1 tool(s). Each is enabled unless its `<DOMAIN>TOOL` toggle is set false; `MCP_TOOL_MODE` selects the surface (`condensed` default · `verbose` 1:1 · `both`). Auto-generated — do not edit._
 <!-- MCP-TOOLS-TABLE:END -->
 
 <!-- BEGIN GENERATED: additional-deployment-options -->
