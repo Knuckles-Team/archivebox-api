@@ -8,12 +8,12 @@
       ],
       "env": {
         "MCP_TOOL_MODE": "condensed",
-        "ARCHIVEBOX_API_KEY": "<YOUR_ARCHIVEBOX_API_KEY>",
-        "ARCHIVEBOX_PASSWORD": "<YOUR_ARCHIVEBOX_PASSWORD>",
-        "ARCHIVEBOX_TOKEN": "<YOUR_ARCHIVEBOX_TOKEN>",
-        "ARCHIVEBOX_URL": "<YOUR_ARCHIVEBOX_URL>",
-        "ARCHIVEBOX_USERNAME": "<YOUR_ARCHIVEBOX_USERNAME>",
-        "ARCHIVEBOX_SSL_VERIFY": "<YOUR_ARCHIVEBOX_SSL_VERIFY>",
+        "ARCHIVEBOX_API_KEY": "your_archivebox_api_key_here",
+        "ARCHIVEBOX_BASE_URL": "http://localhost:8000",
+        "ARCHIVEBOX_PASSWORD": "your_archivebox_password_here",
+        "ARCHIVEBOX_TOKEN": "your_archivebox_token_here",
+        "ARCHIVEBOX_URL": "http://localhost:8000",
+        "ARCHIVEBOX_USERNAME": "",
         "AUTHENTICATIONTOOL": "True",
         "CLITOOL": "True",
         "CORETOOL": "True"
