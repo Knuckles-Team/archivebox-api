@@ -138,7 +138,9 @@ def register_core_tools(mcp: FastMCP):
         action = resolved
 
         if action == "get_snapshots":
-            return await run_blocking(client.get_snapshots, **kwargs)
+            resp = await run_blocking(client.get_snapshots, **kwargs)
+            _auto_ingest_snapshots(resp)
+            return resp
         if action == "get_snapshot":
             return await run_blocking(client.get_snapshot, **kwargs)
         if action == "get_archiveresults":
@@ -192,6 +194,117 @@ def register_cli_tools(mcp: FastMCP):
         if action == "cli_remove":
             return await run_blocking(client.cli_remove, **kwargs)
         raise ValueError(f"Unknown action: {action}")
+
+
+def _records_from_response(resp: Any) -> list[dict[str, Any]]:
+    """Best-effort: pull a list of record dicts out of an ArchiveBox API response.
+
+    Accepts a ``requests.Response``, a Ninja pagination envelope
+    (``{"items"|"results"|"data": [...]}``), a bare list, or a single dict.
+    """
+    data: Any = resp
+    if hasattr(resp, "json"):
+        try:
+            data = resp.json()
+        except Exception:  # noqa: BLE001 — non-JSON body
+            return []
+    if isinstance(data, dict):
+        for key in ("items", "results", "data", "snapshots"):
+            if isinstance(data.get(key), list):
+                return [r for r in data[key] if isinstance(r, dict)]
+        return [data] if data.get("id") or data.get("abid") else []
+    if isinstance(data, list):
+        return [r for r in data if isinstance(r, dict)]
+    return []
+
+
+def _auto_ingest_snapshots(resp: Any) -> None:
+    """Default-on, best-effort native KG ingestion after a snapshot fetch.
+
+    No-ops unless a live epistemic-graph engine is reachable. Disable by setting
+    ``ARCHIVEBOX_KG_AUTO_INGEST=0``. Never raises into the tool path.
+    """
+    import os
+
+    if os.environ.get("ARCHIVEBOX_KG_AUTO_INGEST", "1") == "0":
+        return
+    try:
+        records = _records_from_response(resp)
+        if not records:
+            return
+        from archivebox_api.kg_ingest import ingest_snapshots
+
+        ingest_snapshots(records)
+    except Exception as e:  # noqa: BLE001 — ingestion is best-effort
+        logger.debug("archivebox auto-ingest skipped: %s", e)
+
+
+def register_kg_tools(mcp: FastMCP):
+    """Wire-First native-ingestion tools (CONCEPT:AU-KG.ingest.enterprise-source-extractor)."""
+
+    @mcp.tool(tags={"kg"})
+    async def archivebox_ingest_snapshots(
+        params_json: str = Field(
+            default="{}",
+            description="JSON string of get_snapshots filters (e.g. tag, search, limit).",
+        ),
+        client=Depends(get_client),
+        ctx: Context | None = Field(
+            default=None, description="MCP context for progress reporting"
+        ),
+    ) -> dict:
+        """List ArchiveBox snapshots and natively ingest them into epistemic-graph.
+
+        Pushes :Snapshot (+ :Tag + :hasTag) nodes and per-snapshot :Document page-text,
+        plus any nested :ArchiveResult links, via the fast engine client. Best-effort:
+        returns ``{"ingested": None}`` when no engine is reachable.
+        """
+        import json
+
+        from archivebox_api.kg_ingest import ingest_snapshots
+
+        if ctx:
+            await ctx.info("Ingesting snapshots into the knowledge graph...")
+        try:
+            kwargs = json.loads(params_json) if params_json else {}
+        except Exception as e:  # noqa: BLE001
+            return {"error": f"Invalid params_json: {e}"}
+        kwargs = {k: v for k, v in kwargs.items() if v is not None}
+        resp = await run_blocking(client.get_snapshots, **kwargs)
+        records = _records_from_response(resp)
+        result = ingest_snapshots(records)
+        return {"listed": len(records), "ingested": result}
+
+    @mcp.tool(tags={"kg"})
+    async def archivebox_ingest_archiveresults(
+        params_json: str = Field(
+            default="{}",
+            description="JSON string of get_archiveresults filters (e.g. snapshot_id, extractor, status).",
+        ),
+        client=Depends(get_client),
+        ctx: Context | None = Field(
+            default=None, description="MCP context for progress reporting"
+        ),
+    ) -> dict:
+        """List ArchiveBox archive results and ingest them as :ArchiveResult nodes.
+
+        Best-effort: returns ``{"ingested": None}`` when no engine is reachable.
+        """
+        import json
+
+        from archivebox_api.kg_ingest import ingest_archiveresults
+
+        if ctx:
+            await ctx.info("Ingesting archive results into the knowledge graph...")
+        try:
+            kwargs = json.loads(params_json) if params_json else {}
+        except Exception as e:  # noqa: BLE001
+            return {"error": f"Invalid params_json: {e}"}
+        kwargs = {k: v for k, v in kwargs.items() if v is not None}
+        resp = await run_blocking(client.get_archiveresults, **kwargs)
+        records = _records_from_response(resp)
+        result = ingest_archiveresults(records)
+        return {"listed": len(records), "ingested": result}
 
 
 def get_mcp_instance() -> tuple[Any, ...]:

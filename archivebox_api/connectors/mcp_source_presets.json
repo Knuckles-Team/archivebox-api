@@ -1,0 +1,18 @@
+{
+  "_comment": "Tier-1 mcp_tool source preset(s) for archivebox-api (AU-KG.ingest.mcp-tool-connector). Syncs ArchiveBox snapshots into the KG as web-snapshot documents via the archivebox-api MCP server (condensed archivebox_core tool, get_snapshots action). Contributed presets win over the central MCP_TOOL_PRESETS.",
+  "archivebox-snapshots": {
+    "server": "archivebox-api",
+    "tool": "archivebox_core",
+    "action": "get_snapshots",
+    "records_path": "items",
+    "id_field": "abid",
+    "title_field": "url",
+    "text_field": "title",
+    "updated_field": "modified_at",
+    "pagination": "page",
+    "page_kind": "page",
+    "page_param": "page",
+    "page_size_param": "limit",
+    "doc_type": "web_snapshot"
+  }
+}

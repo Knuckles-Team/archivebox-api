@@ -31,6 +31,12 @@ archivebox-agent = "archivebox_api.agent_server:agent_server"
 [project.entry-points."agent_utilities.skill_providers"]
 archivebox-api = "archivebox_api.skills"
 
+[project.entry-points."agent_utilities.ontology_providers"]
+archivebox-api = "archivebox_api.ontology"
+
+[project.entry-points."agent_utilities.source_connector_providers"]
+archivebox-api = "archivebox_api.connectors"
+
 [project.entry-points."agent_utilities.prompt_providers"]
 archivebox-api = "archivebox_api.prompts"
 
@@ -52,7 +58,7 @@ dev = [
 ]
 
 [tool.setuptools.package-data]
-archivebox_api = [ "mcp_config.json", "agent_data/**", "prompts/**", "skills/**",]
+archivebox_api = [ "mcp_config.json", "agent_data/**", "prompts/**", "skills/**", "ontology/**", "connectors/**",]
 
 [tool.ruff.lint]
 select = [ "E", "F", "I", "UP", "B",]
