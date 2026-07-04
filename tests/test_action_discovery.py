@@ -1,6 +1,6 @@
 """Tests for standardized action discovery via the shared agent-utilities helper.
 
-CONCEPT:ECO-4.0 — Tool Interface & MCP Factory
+CONCEPT:AU-ECO.messaging.native-backend-abstraction — Tool Interface & MCP Factory
 """
 
 from collections.abc import Callable

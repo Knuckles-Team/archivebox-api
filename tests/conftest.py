@@ -3,8 +3,8 @@ from unittest.mock import MagicMock
 import pytest
 from fastmcp import Context
 
-# CONCEPT:OS-5.4 — Telemetry & Observability
-# CONCEPT:ECO-4.0 — Tool Interface & MCP Factory
+# CONCEPT:AU-OS.governance.wasm-micro-agent-sandbox — Telemetry & Observability
+# CONCEPT:AU-ECO.messaging.native-backend-abstraction — Tool Interface & MCP Factory
 
 
 @pytest.fixture

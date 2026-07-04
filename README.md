@@ -66,7 +66,7 @@ This codebase is aligned with the **5 Core Pillars Architecture** of the `agent-
 | **`ECO-4.0`** | Ecosystem & Peripherals | Tool Interface & MCP Factory | Provides FastMCP server wrapper, action routing tools, and dynamic schema exposures. |
 | **`ECO-4.1`** | Ecosystem & Peripherals | A2A Network & Consensus | Manages agent peer discovery, routing tables, and consensus. |
 | **`OS-5.1`** | Agent OS Infrastructure | Security & Auth | Implements token-based OIDC access control, JWT filters, and Eunomia validation. |
-| **`OS-5.4`** | Agent OS Infrastructure | Telemetry & Observability | Delivers warning suppressions, JSON progress logging, and error tracing. |
+| **`AU-OS.governance.wasm-micro-agent-sandbox`** | Agent OS Infrastructure | Telemetry & Observability | Delivers warning suppressions, JSON progress logging, and error tracing. |
 
 ---
 

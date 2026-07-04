@@ -16,7 +16,7 @@ AUTHENTICATION_ACTIONS = ("get_api_token", "check_api_token")
 def register_authentication_tools(mcp: FastMCP):
     """Register authentication management tools.
 
-    CONCEPT:OS-5.1 — Security & Auth
+    CONCEPT:AU-OS.config.secrets-authentication — Security & Auth
     """
 
     @mcp.tool(tags={"authentication"})

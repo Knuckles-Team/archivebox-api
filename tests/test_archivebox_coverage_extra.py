@@ -23,7 +23,7 @@ from archivebox_api.api_client import Api
 # =====================================================================
 
 
-@pytest.mark.concept("ECO-4.0")
+@pytest.mark.concept("AU-ECO.messaging.native-backend-abstraction")
 def test_init_import_module_safely():
     from archivebox_api import _import_module_safely
 
@@ -32,7 +32,7 @@ def test_init_import_module_safely():
     assert res is None
 
 
-@pytest.mark.concept("ECO-4.0")
+@pytest.mark.concept("AU-ECO.messaging.native-backend-abstraction")
 def test_init_getattr():
     # 1. Test _MCP_AVAILABLE and _AGENT_AVAILABLE
     assert hasattr(archivebox_api, "_MCP_AVAILABLE")
@@ -57,7 +57,7 @@ def test_init_getattr():
         _ = archivebox_api.nonexistent_attribute_abc
 
 
-@pytest.mark.concept("ECO-4.0")
+@pytest.mark.concept("AU-ECO.messaging.native-backend-abstraction")
 def test_init_lazy_expose_members():
     # Remove attributes from module globals if already exposed to force __getattr__ invocation
     for name in [
@@ -75,7 +75,7 @@ def test_init_lazy_expose_members():
     assert archivebox_api.get_mcp_instance is not None
 
 
-@pytest.mark.concept("ECO-4.0")
+@pytest.mark.concept("AU-ECO.messaging.native-backend-abstraction")
 def test_init_dir():
     dir_list = dir(archivebox_api)
     assert "Api" in dir_list
@@ -87,7 +87,7 @@ def test_init_dir():
 # =====================================================================
 
 
-@pytest.mark.concept("OS-5.1")
+@pytest.mark.concept("AU-OS.config.secrets-authentication")
 def test_auth_get_client_errors(temp_env):
     from archivebox_api.auth import get_client
 
@@ -98,7 +98,7 @@ def test_auth_get_client_errors(temp_env):
     assert "ARCHIVEBOX_BASE_URL not set" in str(exc.value)
 
 
-@pytest.mark.concept("OS-5.1")
+@pytest.mark.concept("AU-OS.config.secrets-authentication")
 @patch("archivebox_api.auth.Api")
 def test_auth_get_client_combinations(mock_api_class, temp_env):
     from archivebox_api.auth import get_client
@@ -131,13 +131,13 @@ def test_auth_get_client_combinations(mock_api_class, temp_env):
 # =====================================================================
 
 
-@pytest.mark.concept("OS-5.1")
+@pytest.mark.concept("AU-OS.config.secrets-authentication")
 def test_base_api_missing_url():
     with pytest.raises(MissingParameterError):
         Api(url=None)
 
 
-@pytest.mark.concept("OS-5.4")
+@pytest.mark.concept("AU-OS.governance.wasm-micro-agent-sandbox")
 @patch("requests.Session.get")
 def test_base_api_ssl_verify_false(mock_get):
     mock_response = MagicMock()
@@ -150,7 +150,7 @@ def test_base_api_ssl_verify_false(mock_get):
         assert mock_disable.called
 
 
-@pytest.mark.concept("OS-5.1")
+@pytest.mark.concept("AU-OS.config.secrets-authentication")
 @patch("requests.Session.get")
 @patch("requests.Session.post")
 def test_base_api_username_password_auth_failures(mock_post, mock_get):
@@ -177,9 +177,9 @@ def test_base_api_username_password_auth_failures(mock_post, mock_get):
         Api(url="http://test.com", username="u", password="p")
 
 
-# CONCEPT:OS-5.1 — Security & Auth
-# CONCEPT:OS-5.4 — Telemetry & Observability
-@pytest.mark.concept("OS-5.1")
+# CONCEPT:AU-OS.config.secrets-authentication — Security & Auth
+# CONCEPT:AU-OS.governance.wasm-micro-agent-sandbox — Telemetry & Observability
+@pytest.mark.concept("AU-OS.config.secrets-authentication")
 @patch("requests.Session.get")
 def test_base_api_no_eager_probe(mock_get):
     # The constructor must NOT issue any network request: it only configures auth
@@ -189,7 +189,7 @@ def test_base_api_no_eager_probe(mock_get):
     assert not mock_get.called
 
 
-@pytest.mark.concept("OS-5.1")
+@pytest.mark.concept("AU-OS.config.secrets-authentication")
 @patch("requests.Session.get")
 def test_base_api_api_key_header(mock_get):
     # An api_key (with no token) sets the X-ArchiveBox-API-Key header and still
@@ -199,7 +199,7 @@ def test_base_api_api_key_header(mock_get):
     assert not mock_get.called
 
 
-@pytest.mark.concept("OS-5.1")
+@pytest.mark.concept("AU-OS.config.secrets-authentication")
 def test_base_api_client_not_implemented_stub():
     from archivebox_api.api.api_client_base import BaseApiClient
 
@@ -238,7 +238,7 @@ def _create_pydantic_validation_error():
     )
 
 
-@pytest.mark.concept("OS-5.4")
+@pytest.mark.concept("AU-OS.governance.wasm-micro-agent-sandbox")
 @patch("requests.Session.get")
 @patch("requests.Session.post")
 def test_client_validation_errors(mock_post, mock_get):
@@ -293,7 +293,7 @@ def test_client_validation_errors(mock_post, mock_get):
 # =====================================================================
 
 
-@pytest.mark.concept("ECO-4.0")
+@pytest.mark.concept("AU-ECO.messaging.native-backend-abstraction")
 @pytest.mark.asyncio
 async def test_mcp_authentication_tool(mock_client, mock_context):
     from archivebox_api.mcp_server import register_authentication_tools
@@ -341,7 +341,7 @@ async def test_mcp_authentication_tool(mock_client, mock_context):
     assert "Unknown action" in str(exc.value)
 
 
-@pytest.mark.concept("ECO-4.0")
+@pytest.mark.concept("AU-ECO.messaging.native-backend-abstraction")
 @pytest.mark.asyncio
 async def test_mcp_core_tool(mock_client, mock_context):
     from archivebox_api.mcp_server import register_core_tools
@@ -386,7 +386,7 @@ async def test_mcp_core_tool(mock_client, mock_context):
         await tool(action="unknown", params_json="{}", client=mock_client, ctx=None)
 
 
-@pytest.mark.concept("ECO-4.0")
+@pytest.mark.concept("AU-ECO.messaging.native-backend-abstraction")
 @pytest.mark.asyncio
 async def test_mcp_cli_tool(mock_client, mock_context):
     from archivebox_api.mcp_server import register_cli_tools
@@ -431,7 +431,7 @@ async def test_mcp_cli_tool(mock_client, mock_context):
         await tool(action="unknown", params_json="{}", client=mock_client, ctx=None)
 
 
-@pytest.mark.concept("ECO-4.0")
+@pytest.mark.concept("AU-ECO.messaging.native-backend-abstraction")
 @pytest.mark.asyncio
 async def test_mcp_health_check():
     from archivebox_api.mcp_server import get_mcp_instance
@@ -462,7 +462,7 @@ async def test_mcp_health_check():
     assert b"ok" in response.body.lower()
 
 
-@pytest.mark.concept("ECO-4.0")
+@pytest.mark.concept("AU-ECO.messaging.native-backend-abstraction")
 @patch("archivebox_api.mcp_server.get_mcp_instance")
 def test_mcp_server_run_options(mock_get_mcp):
     from archivebox_api.mcp_server import mcp_server
@@ -497,7 +497,7 @@ def test_mcp_server_run_options(mock_get_mcp):
     assert sys_exit.value.code == 1
 
 
-@pytest.mark.concept("OS-5.4")
+@pytest.mark.concept("AU-OS.governance.wasm-micro-agent-sandbox")
 def test_mcp_server_import_error_handling():
     import builtins
 
@@ -514,7 +514,7 @@ def test_mcp_server_import_error_handling():
             importlib.reload(mod)
 
 
-@pytest.mark.concept("ECO-4.0")
+@pytest.mark.concept("AU-ECO.messaging.native-backend-abstraction")
 @patch("archivebox_api.mcp_server.get_mcp_instance")
 def test_mcp_server_main_execution(mock_get_mcp):
     mock_args = MagicMock()
@@ -545,7 +545,7 @@ def test_mcp_server_main_execution(mock_get_mcp):
 # =====================================================================
 
 
-@pytest.mark.concept("ECO-4.1")
+@pytest.mark.concept("AU-ECO.mcp.fastmcp-middleware")
 @patch("agent_utilities.create_agent_server")
 def test_agent_server_run(mock_create):
     from archivebox_api.agent_server import agent_server
@@ -562,7 +562,7 @@ def test_agent_server_run(mock_create):
             assert mock_create.called
 
 
-@pytest.mark.concept("ECO-4.1")
+@pytest.mark.concept("AU-ECO.mcp.fastmcp-middleware")
 def test_agent_server_main_execution():
     import runpy
 
@@ -600,7 +600,7 @@ def test_agent_server_main_execution():
         assert mock_server.called
 
 
-@pytest.mark.concept("ECO-4.1")
+@pytest.mark.concept("AU-ECO.mcp.fastmcp-middleware")
 def test_main_block_import():
     # Programmatic check of __main__.py import
     import runpy
