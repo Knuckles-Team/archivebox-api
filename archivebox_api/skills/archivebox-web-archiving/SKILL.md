@@ -1,5 +1,6 @@
 ---
 name: archivebox-web-archiving
+skill_type: skill
 description: >-
   Capture and re-archive web pages with ArchiveBox via the archivebox-api MCP
   server — add URLs (with tags, crawl depth, and chosen extractors), update /

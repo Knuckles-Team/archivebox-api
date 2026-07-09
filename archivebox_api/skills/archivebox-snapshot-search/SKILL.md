@@ -1,5 +1,6 @@
 ---
 name: archivebox-snapshot-search
+skill_type: skill
 description: >-
   Browse and search an ArchiveBox archive via the archivebox-api MCP server —
   list/filter snapshots, read one snapshot (with its per-extractor archive

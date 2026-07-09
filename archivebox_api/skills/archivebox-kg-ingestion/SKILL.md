@@ -1,5 +1,6 @@
 ---
 name: archivebox-kg-ingestion
+skill_type: skill
 description: >-
   Natively ingest an ArchiveBox archive into the epistemic-graph knowledge graph
   via the archivebox-api MCP server — push snapshots as typed :Snapshot nodes
