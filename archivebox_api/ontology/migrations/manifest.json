@@ -1,0 +1,6 @@
+{
+  "connector": "archivebox-api",
+  "current_ontology_source": "archivebox",
+  "migrations": [],
+  "schema_version": "1"
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Archivebox API Operations"
+  short_description: "Help with Archivebox API Operations tasks"
+  default_prompt: "Use $archivebox-api-operations to complete a governed provider workflow."

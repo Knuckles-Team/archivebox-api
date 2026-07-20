@@ -67,7 +67,6 @@ class Api(BaseApiClient):
                 url=f"{self.url}/api/v1/cli/add",
                 json=data,
                 headers=self.headers,
-                verify=self.verify,
             )
         except ValidationError as e:
             raise ParameterError(f"Invalid parameters: {e.errors()}") from e
@@ -132,7 +131,6 @@ class Api(BaseApiClient):
                 url=f"{self.url}/api/v1/cli/update",
                 json=data,
                 headers=self.headers,
-                verify=self.verify,
             )
         except ValidationError as e:
             raise ParameterError(f"Invalid parameters: {e.errors()}") from e
@@ -189,7 +187,6 @@ class Api(BaseApiClient):
                 url=f"{self.url}/api/v1/cli/schedule",
                 json=data,
                 headers=self.headers,
-                verify=self.verify,
             )
         except ValidationError as e:
             raise ParameterError(f"Invalid parameters: {e.errors()}") from e
@@ -254,7 +251,6 @@ class Api(BaseApiClient):
                 url=f"{self.url}/api/v1/cli/list",
                 json=data,
                 headers=self.headers,
-                verify=self.verify,
             )
         except ValidationError as e:
             raise ParameterError(f"Invalid parameters: {e.errors()}") from e
@@ -304,7 +300,6 @@ class Api(BaseApiClient):
                 url=f"{self.url}/api/v1/cli/remove",
                 json=data,
                 headers=self.headers,
-                verify=self.verify,
             )
         except ValidationError as e:
             raise ParameterError(f"Invalid parameters: {e.errors()}") from e

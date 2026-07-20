@@ -1,0 +1,8 @@
+{
+  "algorithm": "agent-utilities:mcp-tool-schema-compat:v1",
+  "connector": "archivebox-api",
+  "schema_version": "1",
+  "tools": {
+    "archivebox_core": "de56ae93ee1ed8a0669f0eec9a4dde5483ad6adc2601c1abdf961fc7968212f1"
+  }
+}

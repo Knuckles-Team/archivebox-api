@@ -1,7 +1,7 @@
 #!/usr/bin/python
 """Agent Server for ArchiveBox API.
 
-CONCEPT:ECO-4.1 — A2A Network & Consensus
+CONCEPT:AU-ECO.mcp.fastmcp-middleware — A2A Network & Consensus
 Implements a cooperative agent server for discovery, delegation, and structured consensus.
 """
 
@@ -10,7 +10,7 @@ import os
 import sys
 import warnings
 
-__version__ = "0.29.0"
+__version__ = "1.0.1"
 
 logging.basicConfig(
     level=logging.INFO,
@@ -28,7 +28,7 @@ DEFAULT_AGENT_SYSTEM_PROMPT = None
 def agent_server():
     """Start the agent server.
 
-    CONCEPT:ECO-4.1 — A2A Network & Consensus
+    CONCEPT:AU-ECO.mcp.fastmcp-middleware — A2A Network & Consensus
     """
     from agent_utilities import (
         build_system_prompt_from_workspace,

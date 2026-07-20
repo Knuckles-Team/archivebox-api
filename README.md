@@ -20,7 +20,7 @@
 ![PyPI - Wheel](https://img.shields.io/pypi/wheel/archivebox-api)
 ![PyPI - Implementation](https://img.shields.io/pypi/implementation/archivebox-api)
 
-*Version: 0.29.0*
+*Version: 1.0.1*
 
 > **Documentation** — Installation, deployment, usage across the API, CLI, MCP, and
 > A2A agent interfaces, and guidance for provisioning the ArchiveBox platform are
@@ -66,30 +66,113 @@ This codebase is aligned with the **5 Core Pillars Architecture** of the `agent-
 | **`ECO-4.0`** | Ecosystem & Peripherals | Tool Interface & MCP Factory | Provides FastMCP server wrapper, action routing tools, and dynamic schema exposures. |
 | **`ECO-4.1`** | Ecosystem & Peripherals | A2A Network & Consensus | Manages agent peer discovery, routing tables, and consensus. |
 | **`OS-5.1`** | Agent OS Infrastructure | Security & Auth | Implements token-based OIDC access control, JWT filters, and Eunomia validation. |
-| **`OS-5.4`** | Agent OS Infrastructure | Telemetry & Observability | Delivers warning suppressions, JSON progress logging, and error tracing. |
+| **`AU-OS.governance.wasm-micro-agent-sandbox`** | Agent OS Infrastructure | Telemetry & Observability | Delivers warning suppressions, JSON progress logging, and error tracing. |
 
 ---
 
 ## Environment Variables
 
-Configure the runtime environment by creating a `.env` file based on `.env.example`:
+<!-- ENV-VARS-TABLE:START -->
 
-| Env Variable | Type | Default | Description |
-|--------------|------|---------|-------------|
-| `ARCHIVEBOX_BASE_URL` | String | `http://localhost:8000` | Canonical endpoint URL for the backend ArchiveBox API. |
-| `ARCHIVEBOX_URL` | String | `http://localhost:8000` | Fallback alias/alternative for `ARCHIVEBOX_BASE_URL`. |
-| `ARCHIVEBOX_USERNAME` | String | *None* | Username for authentication. |
-| `ARCHIVEBOX_PASSWORD` | String | *None* | Password for authentication. |
-| `ARCHIVEBOX_API_KEY` | String | *None* | API Key for token-less header authentication. |
-| `ARCHIVEBOX_TOKEN` | String | *None* | Pre-configured authentication token. |
-| `ARCHIVEBOX_SSL_VERIFY`| Boolean| `False` | Enable/disable SSL certificate validation. |
-| `AUTHENTICATIONTOOL` | Boolean| `True` | Toggle to enable/disable the Authentication MCP toolset. |
-| `CORETOOL` | Boolean| `True` | Toggle to enable/disable the Core ArchiveBox MCP toolset. |
-| `CLITOOL` | Boolean| `True` | Toggle to enable/disable the CLI command MCP toolset. |
-| `EUNOMIA_TYPE` | String | `none` | Policy mode: `none`, `embedded`, or `remote`. |
-| `EUNOMIA_POLICY_FILE` | String | `mcp_policies.json` | Path to the local policy file when using `embedded` mode. |
-| `ENABLE_OTEL` | Boolean| `True` | Enable/disable OpenTelemetry metrics/traces exporter. |
-| `OTEL_EXPORTER_OTLP_ENDPOINT` | String | *None* | Endpoint for the OpenTelemetry collector. |
+#### Package environment variables
+
+| Variable | Example | Description |
+|----------|---------|-------------|
+| `HOST` | `0.0.0.0` |  |
+| `PORT` | `8000` |  |
+| `TRANSPORT` | `stdio` | options: stdio, streamable-http, sse |
+| `ENABLE_OTEL` | `True` |  |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | `http://localhost:8080/api/public/otel` |  |
+| `OTEL_EXPORTER_OTLP_PUBLIC_KEY` | `pk-...` |  |
+| `OTEL_EXPORTER_OTLP_SECRET_KEY` | `sk-...` |  |
+| `OTEL_EXPORTER_OTLP_PROTOCOL` | `http/protobuf` |  |
+| `EUNOMIA_TYPE` | `none` | options: none, embedded, remote |
+| `EUNOMIA_POLICY_FILE` | `mcp_policies.json` |  |
+| `EUNOMIA_REMOTE_URL` | `http://eunomia-server:8000` |  |
+| `ARCHIVEBOX_BASE_URL` | `http://localhost:8000` |  |
+| `ARCHIVEBOX_URL` | `http://localhost:8000` | ARCHIVEBOX_URL is a fallback/alternative alias for ARCHIVEBOX_BASE_URL |
+| `ARCHIVEBOX_USERNAME` | — |  |
+| `ARCHIVEBOX_TLS_PROFILE` | — | Named runtime TLS profile |
+| `ARCHIVEBOX_TLS_PROFILE_REF` | — | Secret reference containing a TLS profile |
+| `DEBUG` | `False` |  |
+| `PYTHONUNBUFFERED` | `1` |  |
+| `ARCHIVEBOX_API_KEY` | `your_archivebox_api_key_here` |  |
+| `ARCHIVEBOX_TOKEN` | `your_archivebox_token_here` |  |
+| `ARCHIVEBOX_PASSWORD` | `your_archivebox_password_here` |  |
+| `AUTHENTICATIONTOOL` | `True` |  |
+| `CORETOOL` | `True` |  |
+| `CLITOOL` | `True` |  |
+
+#### Inherited agent-utilities variables (apply to every connector)
+
+| Variable | Example | Description |
+|----------|---------|-------------|
+| `MCP_TOOL_MODE` | `condensed` | Tool surface: `condensed` | `verbose` | `both` |
+| `MCP_ENABLED_TOOLS` | — | Comma-separated tool allow-list |
+| `MCP_DISABLED_TOOLS` | — | Comma-separated tool deny-list |
+| `MCP_ENABLED_TAGS` | — | Comma-separated tag allow-list |
+| `MCP_DISABLED_TAGS` | — | Comma-separated tag deny-list |
+| `MCP_CLIENT_AUTH` | — | Outbound MCP auth (`oidc-client-credentials` for fleet calls) |
+| `OIDC_CLIENT_ID` | — | OIDC client id (service-account auth) |
+| `OIDC_CLIENT_SECRET` | — | OIDC client secret (service-account auth) |
+| `MCP_URL` | `http://localhost:8000/mcp` | URL of the MCP server the agent connects to |
+| `PROVIDER` | `openai` | LLM provider for the agent |
+| `MODEL_ID` | `gpt-4o` | Model id for the agent |
+| `ENABLE_WEB_UI` | `True` | Serve the AG-UI web interface |
+
+_23 package + 12 inherited variable(s). Auto-generated from `.env.example` + the shared agent-utilities set — do not edit._
+<!-- ENV-VARS-TABLE:END -->
+
+
+Configure the runtime environment by creating a `.env` file based on `.env.example`.
+Every variable the server reads, grouped by concern.
+
+### Connection & Credentials
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `ARCHIVEBOX_BASE_URL` | Canonical endpoint URL for the backend ArchiveBox API | `http://localhost:8000` |
+| `ARCHIVEBOX_URL` | Fallback alias/alternative for `ARCHIVEBOX_BASE_URL` | `http://localhost:8000` |
+| `ARCHIVEBOX_USERNAME` | Username for authentication | — |
+| `ARCHIVEBOX_PASSWORD` | Password for authentication | — |
+| `ARCHIVEBOX_API_KEY` | API key for token-less header authentication | — |
+| `ARCHIVEBOX_TOKEN` | Pre-configured authentication token | — |
+| `ARCHIVEBOX_TLS_PROFILE` | Named TLS profile for private PKI, mTLS, or proxy policy | — |
+| `ARCHIVEBOX_TLS_PROFILE_REF` | Secret reference containing the TLS profile | — |
+
+### MCP server / transport
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `TRANSPORT` | `stdio`, `streamable-http`, or `sse` | `stdio` |
+| `HOST` | Bind host (HTTP transports) | `0.0.0.0` |
+| `PORT` | Bind port (HTTP transports) | `8000` |
+| `MCP_TOOL_MODE` | Tool surface: `condensed`, `verbose`, or `both` | `condensed` |
+| `MCP_ENABLED_TOOLS` / `MCP_DISABLED_TOOLS` | Comma-separated tool allow/deny list | — |
+| `MCP_ENABLED_TAGS` / `MCP_DISABLED_TAGS` | Comma-separated tag allow/deny list | — |
+| `DEBUG` | Verbose logging | `False` |
+| `PYTHONUNBUFFERED` | Unbuffered stdout (recommended in containers) | `1` |
+
+### Tool toggles
+Each action-routed tool can be disabled individually via its toggle env var (set to `false`):
+`AUTHENTICATIONTOOL`, `CORETOOL`, `CLITOOL` (see the [Available MCP Tools](#available-mcp-tools) table below).
+
+### Telemetry & governance
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `ENABLE_OTEL` | Enable OpenTelemetry export | `True` |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | OTLP collector endpoint | — |
+| `OTEL_EXPORTER_OTLP_PUBLIC_KEY` / `OTEL_EXPORTER_OTLP_SECRET_KEY` | OTLP auth keys | — |
+| `OTEL_EXPORTER_OTLP_PROTOCOL` | OTLP protocol (e.g. `http/protobuf`) | — |
+| `EUNOMIA_TYPE` | Authorization mode: `none`, `embedded`, `remote` | `none` |
+| `EUNOMIA_POLICY_FILE` | Embedded policy file | `mcp_policies.json` |
+| `EUNOMIA_REMOTE_URL` | Remote Eunomia server URL | — |
+
+### Agent CLI (full `[agent]` runtime only)
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `MCP_URL` | URL of the MCP server the agent connects to | `http://localhost:8000/mcp` |
+| `PROVIDER` | LLM provider (e.g. `openai`) | `openai` |
+| `MODEL_ID` | Model id (e.g. `gpt-4o`) | `gpt-4o` |
+| `ENABLE_WEB_UI` | Serve the AG-UI web interface | `True` |
 
 ---
 
@@ -104,7 +187,6 @@ from archivebox_api import Api
 client = Api(
     url="http://localhost:8000",
     token="your-auth-token",
-    verify=True
 )
 
 # Fetch snapshots
@@ -119,12 +201,16 @@ Refer to [docs/index.md](docs/index.md) for full developer SDK and class referen
 
 ## MCP Server Setup
 
+> **Install the connector-focused `[mcp]` extra.** Examples use `archivebox-api[mcp]` to add
+> FastMCP / FastAPI through `agent-utilities[mcp]`; the required Agent Utilities core
+> still carries `epistemic-graph[full]`. The `[agent]` extra additionally
+> enables model orchestration.
+
 This server utilizes dynamic Action-Routed tools to optimize token overhead and maximize IDE compatibility.
 
-### Available MCP Tools
-- **`archivebox_authentication`** (`AUTHENTICATIONTOOL=True`): Manage token exchanges and validation (`get_api_token`, `check_api_token`).
-- **`archivebox_core`** (`CORETOOL=True`): Manage core collections (`get_snapshots`, `get_snapshot`, `get_archiveresults`, `get_tag`).
-- **`archivebox_cli`** (`CLITOOL=True`): Directly execute ArchiveBox command line functions (`cli_add`, `cli_list`, `cli_update`).
+### Tool Catalog
+
+See the auto-generated [Available MCP Tools](#available-mcp-tools) table below for the full, live list of tools.
 
 ### Dynamic Tool Selection & Visibility
 
@@ -214,15 +300,52 @@ Built directly upon the enterprise-ready [`agent-utilities`](https://github.com/
 
 ## Installation
 
-Install the Python package locally:
+Pick the extra that matches what you want to run:
+
+| Extra | Installs | Use when |
+|-------|----------|----------|
+| `archivebox-api[mcp]` | Connector-focused MCP server (`agent-utilities[mcp]` — FastMCP/FastAPI + `epistemic-graph[full]`) | You only run the **MCP server** (smallest install / image) |
+| `archivebox-api[agent]` | Agent runtime (`agent-utilities[agent-runtime,logfire]` — model orchestration + `epistemic-graph[full]`) | You run the **integrated agent** |
+| `archivebox-api[all]` | Everything (`mcp` + `agent` + `logfire`) | Development / both surfaces |
 
 ```bash
-# Using uv (highly recommended)
-uv pip install archivebox-api[all]
+# Connector-focused MCP server (includes the shared graph engine)
+uv pip install "archivebox-api[mcp]"
 
-# Using standard pip
-python -m pip install archivebox-api[all]
+# Agent runtime (adds model orchestration to the shared graph engine)
+uv pip install "archivebox-api[agent]"
+
+# Everything (development)
+uv pip install "archivebox-api[all]"      # or: python -m pip install "archivebox-api[all]"
 ```
+
+### Container images (`:mcp` vs `:agent`)
+
+One multi-stage `docker/Dockerfile` builds two right-sized images, selected by `--target`:
+
+| Image tag | Build target | Contents | Entrypoint |
+|-----------|--------------|----------|------------|
+| `example/archivebox-api:mcp` | `--target mcp` | `archivebox-api[mcp]` — **connector-focused**, includes `epistemic-graph[full]`; no model-orchestration stack | `archivebox-mcp` |
+| `example/archivebox-api@sha256:<digest>` | `--target agent` (default) | `archivebox-api[agent]` — **agent runtime**, model orchestration + `epistemic-graph[full]` | `archivebox-agent` |
+
+```bash
+docker build --target mcp   -t example/archivebox-api:mcp    docker/   # connector-focused MCP server
+docker build --target agent -t example/archivebox-api:agent-local docker/   # agent runtime
+```
+
+`docker/mcp.compose.yml` runs the connector-focused `:mcp` server; `docker/agent.compose.yml` runs the
+agent (`immutable agent digest`) with a co-located `:mcp` sidecar.
+
+### Knowledge-graph database (`epistemic-graph`)
+
+Both `[mcp]` and `[agent]` carry the **epistemic-graph** engine through the required
+Agent Utilities core dependency (`epistemic-graph[full]`). The `[mcp]` extra keeps
+the server connector-focused; `[agent]` additionally enables model orchestration. Local
+deployments can use the bundled engine. For production or shared state, run
+**epistemic-graph as a dedicated database service** and configure the runtime to use it.
+Deployment recipes (single-node + Raft HA), connection configuration, and architecture
+diagrams are documented in the
+[epistemic-graph deployment guide](https://knuckles-team.github.io/epistemic-graph/deployment/).
 
 ---
 
@@ -255,10 +378,96 @@ Contributions are welcome! Please ensure code quality by executing local checks 
 
 
 ### Available MCP Tools
-| Tool Module | Toggle Env Var | Enabled by Default | Description & Nested Methods |
-|-------------|----------------|--------------------|------------------------------|
-| **Authentication** | `AUTHENTICATION_TOOL` | `True` | Register authentication management tools.
 
-    CONCEPT:OS-5.1 — Security & Auth Action-routed methods: `check_api_token`, `get_api_token`. |
-| **Core** | `CORE_TOOL` | `True` | Manage archivebox core operations. Action-routed methods: `get_any`, `get_archiveresults`, `get_snapshot`, `get_snapshots`, `get_tag`. |
-| **Cli** | `CLI_TOOL` | `True` | Manage archivebox cli operations. Action-routed methods: `cli_add`, `cli_list`, `cli_remove`, `cli_schedule`, `cli_update`. |
+The table below is auto-generated from the live server — do not edit by hand.
+
+<!-- MCP-TOOLS-TABLE:START -->
+
+#### Condensed action-routed tools (default — `MCP_TOOL_MODE=condensed`)
+
+| MCP Tool | Toggle Env Var | Description |
+|----------|----------------|-------------|
+| `archivebox_authentication` | `AUTHENTICATIONTOOL` | Manage archivebox authentication operations. |
+| `archivebox_cli` | `CLITOOL` | Manage archivebox cli operations. |
+| `archivebox_core` | `CORETOOL` | Manage archivebox core operations. |
+
+#### Verbose 1:1 API-mapped tools (`MCP_TOOL_MODE=verbose` or `both`)
+
+<details>
+<summary>14 per-operation tools — one per public API method (click to expand)</summary>
+
+| MCP Tool | Toggle Env Var | Description |
+|----------|----------------|-------------|
+| `archivebox_check_api_token` | `APITOOL` | Validate an API token to make sure it's valid and non-expired |
+| `archivebox_cli_add` | `APITOOL` | Execute archivebox add command |
+| `archivebox_cli_list` | `APITOOL` | Execute archivebox list command |
+| `archivebox_cli_remove` | `APITOOL` | Execute archivebox remove command |
+| `archivebox_cli_schedule` | `APITOOL` | Execute archivebox schedule command |
+| `archivebox_cli_update` | `APITOOL` | Execute archivebox update command |
+| `archivebox_get_any` | `APITOOL` | Get a specific Snapshot, ArchiveResult, or Tag by abid |
+| `archivebox_get_api_token` | `APITOOL` | Generate an API token for a given username & password |
+| `archivebox_get_archiveresult` | `APITOOL` | Get a specific ArchiveResult by id or abid |
+| `archivebox_get_archiveresults` | `APITOOL` | List all ArchiveResult entries matching these filters |
+| `archivebox_get_snapshot` | `APITOOL` | Get a specific Snapshot by abid or id |
+| `archivebox_get_snapshots` | `APITOOL` | Retrieve list of snapshots |
+| `archivebox_get_tag` | `APITOOL` | Get a specific Tag by id or abid |
+| `archivebox_get_tags` | `APITOOL` | Retrieve list of tags |
+
+</details>
+
+_3 action-routed tool(s) (default) · 14 verbose 1:1 tool(s). Each is enabled unless its `<DOMAIN>TOOL` toggle is set false; `MCP_TOOL_MODE` selects the surface (`condensed` default · `verbose` 1:1 · `both`). Auto-generated — do not edit._
+<!-- MCP-TOOLS-TABLE:END -->
+
+<!-- BEGIN GENERATED: additional-deployment-options -->
+### Additional Deployment Options
+
+`archivebox-api` can run as a local stdio process or container, or behind a remote
+network boundary. The
+[Deployment guide](https://knuckles-team.github.io/archivebox-api/deployment/) carries
+the detailed transport contract.
+
+- **Local container** — launch a reviewed immutable image as a least-privilege
+  stdio child with no listener or published port.
+- **Remote URL** — connect through an operator-supplied authenticated HTTPS
+  ingress. Keep its URL, outbound identity references, trust profile, and exact
+  `MCP_ALLOWED_HOSTS` in `AgentConfig`.
+<!-- END GENERATED: additional-deployment-options -->
+
+
+<!-- BEGIN agent-utilities-deployment (generated; do not edit between markers) -->
+
+## Deploy with `agent-utilities-deployment`
+
+Provision this package with the consolidated **`agent-utilities-deployment`**
+workflow. It selects an installed-package, editable-source, or immutable-container
+path; records only runtime secret and TLS-profile references in `AgentConfig`; and
+runs doctor, registration, policy, observability, and rollback gates. Ask your agent
+to **"deploy `archivebox-api` with agent-utilities-deployment"**.
+
+| Install mode | Command |
+|------|---------|
+| Installed package | `uv tool install "archivebox-api[mcp]"`, then run `archivebox-mcp` |
+| Editable source | `uv pip install -e ".[agent]"`, then run `archivebox-mcp` |
+| Immutable container | deploy `registry.example.invalid/archivebox-api@sha256:<digest>` through the operator-selected orchestrator |
+
+The repository embeds no deployment profile, credential value, certificate path, or
+environment-specific endpoint. Supply those at runtime through `AgentConfig` and the
+configured secret provider.
+
+<!-- END agent-utilities-deployment -->
+
+<!-- GOVERNED-CAPABILITY:START -->
+## Governed capability contract
+
+This package ships a compact canonical skill surface with specialist procedures
+kept as referenced workflows. The current MCP tools, skill metadata,
+`connector_manifest.yml`, ontology, mappings, shapes, fixtures, migrations,
+tool-schema fingerprints, and certification metadata form one versioned
+capability contract. Validate them together; do not rely on stale tool names or
+historical per-task skill wrappers.
+
+Runtime endpoints, credentials, certificate trust, tenant identity, retention,
+and observability policy are deployment inputs and are never packaged values.
+See [Configuration, trust, and privacy](docs/configuration.md) before enabling a
+network transport, connector ingestion, GraphOS delegation, or trace export.
+<!-- GOVERNED-CAPABILITY:END -->

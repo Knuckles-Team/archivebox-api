@@ -20,7 +20,7 @@ instance on `:8000` with a persistent data volume:
 # docker/archivebox.compose.yml
 services:
   archivebox:
-    image: docker.io/archivebox/archivebox:latest
+    image: docker.io/archivebox/archivebox@sha256:<digest>
     container_name: archivebox
     hostname: archivebox
     restart: unless-stopped
@@ -54,7 +54,7 @@ curl -s http://localhost:8000/api/v1/core/snapshots
 export ARCHIVEBOX_BASE_URL=http://localhost:8000
 export ARCHIVEBOX_USERNAME=admin
 export ARCHIVEBOX_PASSWORD=your-password
-export ARCHIVEBOX_SSL_VERIFY=False          # self-signed / local cert
+# Optional: ARCHIVEBOX_TLS_PROFILE_REF=secret://runtime/archivebox-tls
 
 archivebox-mcp --transport streamable-http --host 0.0.0.0 --port 8000
 ```
@@ -68,7 +68,7 @@ server reaches ArchiveBox by container name:
 # docker/stack.compose.yml
 services:
   archivebox:
-    image: docker.io/archivebox/archivebox:latest
+    image: docker.io/archivebox/archivebox@sha256:<digest>
     hostname: archivebox
     environment:
       - ADMIN_USERNAME=admin
@@ -79,13 +79,12 @@ services:
       - archivebox_data:/data
 
   archivebox-api-mcp:
-    image: knucklessg1/archivebox-api:latest
+    image: example/archivebox-api@sha256:<digest>
     depends_on: [archivebox]
     environment:
       - ARCHIVEBOX_BASE_URL=http://archivebox:8000
       - ARCHIVEBOX_USERNAME=admin
       - ARCHIVEBOX_PASSWORD=your-password
-      - ARCHIVEBOX_SSL_VERIFY=False
       - TRANSPORT=streamable-http
       - HOST=0.0.0.0
       - PORT=8001

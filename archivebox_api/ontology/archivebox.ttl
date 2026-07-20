@@ -1,0 +1,99 @@
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix dc: <http://purl.org/dc/terms/> .
+@prefix : <http://knuckles.team/kg#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# ArchiveBox web-archiving ontology — snapshots, per-extractor archive results, and the
+# raw web-capture blobs they produce. All classes and properties live in the shared `:`
+# (kg#) namespace; only the owl:Ontology node gets the per-package IRI. Backs the
+# archivebox-api MCP tool surface (archivebox_core / archivebox_cli). Shared classes
+# (:Document, :Tag, :AssetOccurrence, :Blob, :Person) are REUSED, never redefined.
+
+:Snapshot a owl:Class ;
+    rdfs:label "Snapshot" ;
+    rdfs:comment "An ArchiveBox snapshot: one archived capture of a source URL, identified by its abid/timestamp (archivebox_core get_snapshots)." .
+
+:ArchiveResult a owl:Class ;
+    rdfs:label "Archive Result" ;
+    rdfs:comment "The output of one extractor run against a Snapshot (e.g. wget, screenshot, pdf, singlefile, dom) with its status and output path (archivebox_core get_archiveresults)." .
+
+# --- links (owl:ObjectProperty) ---
+
+:hasArchiveResult a owl:ObjectProperty ;
+    rdfs:label "has archive result" ;
+    rdfs:comment "Links a Snapshot to an ArchiveResult produced for it by an extractor." ;
+    rdfs:domain :Snapshot ;
+    rdfs:range :ArchiveResult .
+
+:hasTag a owl:ObjectProperty ;
+    rdfs:label "has tag" ;
+    rdfs:comment "Links a Snapshot to a :Tag applied to it in ArchiveBox." ;
+    rdfs:domain :Snapshot ;
+    rdfs:range :Tag .
+
+:archivedAs a owl:ObjectProperty ;
+    rdfs:label "archived as" ;
+    rdfs:comment "Links a Snapshot (or ArchiveResult) to the raw web-capture :AssetOccurrence/:Blob (HTML, screenshot, PDF, WARC) it was stored as." ;
+    rdfs:domain :Snapshot ;
+    rdfs:range :AssetOccurrence .
+
+:hasPageText a owl:ObjectProperty ;
+    rdfs:label "has page text" ;
+    rdfs:comment "Links a Snapshot to the :Document carrying its extracted page text/title for semantic search." ;
+    rdfs:domain :Snapshot ;
+    rdfs:range :Document .
+
+# --- fields (owl:DatatypeProperty) ---
+
+:abid a owl:DatatypeProperty ;
+    rdfs:label "abid" ;
+    rdfs:comment "ArchiveBox's stable alphanumeric id (abid) for a Snapshot, ArchiveResult, or Tag." ;
+    rdfs:range xsd:string .
+
+:sourceUrl a owl:DatatypeProperty ;
+    rdfs:label "source url" ;
+    rdfs:comment "The original URL a Snapshot archived." ;
+    rdfs:domain :Snapshot ;
+    rdfs:range xsd:string .
+
+:timestamp a owl:DatatypeProperty ;
+    rdfs:label "timestamp" ;
+    rdfs:comment "ArchiveBox capture timestamp (the on-disk snapshot directory key)." ;
+    rdfs:domain :Snapshot ;
+    rdfs:range xsd:string .
+
+:bookmarkedAt a owl:DatatypeProperty ;
+    rdfs:label "bookmarked at" ;
+    rdfs:comment "When the source URL was bookmarked/added for archiving." ;
+    rdfs:domain :Snapshot ;
+    rdfs:range xsd:dateTime .
+
+:extractor a owl:DatatypeProperty ;
+    rdfs:label "extractor" ;
+    rdfs:comment "The ArchiveBox extractor that produced an ArchiveResult (wget, screenshot, pdf, singlefile, dom, media, git, readability, mercury, …)." ;
+    rdfs:domain :ArchiveResult ;
+    rdfs:range xsd:string .
+
+:archiveStatus a owl:DatatypeProperty ;
+    rdfs:label "archive status" ;
+    rdfs:comment "Result status of an ArchiveResult (succeeded, failed, skipped)." ;
+    rdfs:domain :ArchiveResult ;
+    rdfs:range xsd:string .
+
+:output a owl:DatatypeProperty ;
+    rdfs:label "output" ;
+    rdfs:comment "The relative output path (or error string) an ArchiveResult wrote inside the snapshot directory." ;
+    rdfs:domain :ArchiveResult ;
+    rdfs:range xsd:string .
+
+<http://knuckles.team/kg/archivebox> a owl:Ontology ;
+    rdfs:label "ArchiveBox Web-Archiving Ontology" ;
+    rdfs:comment """ArchiveBox self-hosted web-archiving model — snapshots of source URLs,
+    the per-extractor archive results they yield, their tags, extracted page-text documents,
+    and the raw web-capture blobs (HTML, screenshot, PDF, WARC) — federated into the
+    agent-utilities knowledge-graph hub. Reuses the shared :Document, :Tag, :AssetOccurrence,
+    :Blob and :Person classes.""" ;
+    owl:imports <http://knuckles.team/kg> .

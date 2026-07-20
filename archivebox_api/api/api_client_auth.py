@@ -36,7 +36,6 @@ class Api(BaseApiClient):
                 url=f"{self.url}/api/v1/auth/get_api_token",
                 json=data,
                 headers={"Content-Type": "application/json"},
-                verify=self.verify,
             )
         except ValidationError as e:
             raise ParameterError(f"Invalid parameters: {e.errors()}") from e
@@ -60,7 +59,6 @@ class Api(BaseApiClient):
                 url=f"{self.url}/api/v1/auth/check_api_token",
                 json={"token": token},
                 headers={"Content-Type": "application/json"},
-                verify=self.verify,
             )
         except ValidationError as e:
             raise ParameterError(f"Invalid parameters: {e.errors()}") from e

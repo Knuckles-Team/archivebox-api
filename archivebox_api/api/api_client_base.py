@@ -1,14 +1,14 @@
 import sys
 from abc import ABC, abstractmethod
-from typing import Any
 
 import requests
-import urllib3
 from agent_utilities.core.exceptions import (
     AuthError,
     MissingParameterError,
-    ParameterError,
-    UnauthorizedError,
+)
+from agent_utilities.core.transport_security import (
+    ResolvedTLSProfile,
+    resolve_configured_tls_profile,
 )
 
 
@@ -20,18 +20,15 @@ class BaseApiClient(ABC):
         username: str | None = None,
         password: str | None = None,
         api_key: str | None = None,
-        verify: bool = True,
+        tls_profile: ResolvedTLSProfile | None = None,
     ):
         if url is None:
             raise MissingParameterError("URL is required")
 
-        self._session = requests.Session()
+        self.tls_profile = tls_profile or resolve_configured_tls_profile("archivebox")
+        self._session = self.tls_profile.configure_requests_session(requests.Session())
         self.url = url.rstrip("/")
         self.headers = {"Content-Type": "application/json"}
-        self.verify = verify
-
-        if self.verify is False:
-            urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
         if token:
             self.headers["Authorization"] = f"Bearer {token}"
@@ -46,32 +43,23 @@ class BaseApiClient(ABC):
                     raise AuthError("Failed to retrieve API token")
                 self.headers["Authorization"] = f"Bearer {fetched_token}"
             else:
-                print(f"Authentication Error: {response.content!r}", file=sys.stderr)
+                print("Authentication was rejected", file=sys.stderr)
                 raise AuthError
         elif not api_key and not token:
             # Check if we have enough info for auth later or if we are just probing
             pass
 
-        test_params: dict[str, Any] = {"limit": 1}
-        if api_key and "X-ArchiveBox-API-Key" not in self.headers:
-            test_params["api_key"] = api_key
+        # NOTE: no eager connectivity probe at construction time. A client is
+        # built per-call via ``Depends(get_client)``; doing network I/O here made
+        # construction raise (e.g. a 404 -> ParameterError) before any tool ran,
+        # which FastMCP surfaces as "Failed to resolve dependency 'client'". Each
+        # tool method issues its own request and surfaces transport/auth errors
+        # per-call, so the constructor only configures auth headers.
 
-        response = self._session.get(
-            f"{self.url}/api/v1/core/snapshots",
-            params=test_params,
-            headers=self.headers,
-            verify=self.verify,
-        )
-
-        if response.status_code == 403:
-            print(f"Unauthorized Error: {response.content!r}", file=sys.stderr)
-            raise UnauthorizedError
-        elif response.status_code == 401:
-            print(f"Authentication Error: {response.content!r}", file=sys.stderr)
-            raise AuthError
-        elif response.status_code == 404:
-            print(f"Parameter Error: {response.content!r}", file=sys.stderr)
-            raise ParameterError
+    def close(self) -> None:
+        """Release transport resources and runtime-only TLS material."""
+        self._session.close()
+        self.tls_profile.cleanup()
 
     @abstractmethod
     def get_api_token(
