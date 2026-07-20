@@ -1,6 +1,6 @@
 {
   "project": "archivebox-api",
-  "path": "/home/apps/workspace/agent-packages/agents/archivebox-api",
+  "path": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api",
   "domain_results": [
     {
       "domain": "Project Analysis",
@@ -26,7 +26,7 @@
         {
           "criterion": "externalized_prompts",
           "points": 0,
-          "evidence": "/home/apps/workspace/agent-packages/agents/archivebox-api",
+          "evidence": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api",
           "reasoning": "No prompts/ directory found. Prompts may be hardcoded in source."
         },
         {
@@ -44,25 +44,25 @@
         {
           "criterion": "agents_md",
           "points": 10,
-          "evidence": "/home/apps/workspace/agent-packages/agents/archivebox-api/AGENTS.md (5309 bytes)",
+          "evidence": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/AGENTS.md (5309 bytes)",
           "reasoning": "AGENTS.md exists with comprehensive content"
         },
         {
           "criterion": "pre_commit_hooks",
           "points": 10,
-          "evidence": "/home/apps/workspace/agent-packages/agents/archivebox-api/.pre-commit-config.yaml",
+          "evidence": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/.pre-commit-config.yaml",
           "reasoning": "Pre-commit configuration found for automated code quality checks"
         },
         {
           "criterion": "gitignore",
           "points": 10,
-          "evidence": "/home/apps/workspace/agent-packages/agents/archivebox-api/.gitignore",
+          "evidence": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/.gitignore",
           "reasoning": ".gitignore exists to prevent committing build artifacts and secrets"
         },
         {
           "criterion": "env_template",
           "points": 10,
-          "evidence": "/home/apps/workspace/agent-packages/agents/archivebox-api/.env.example",
+          "evidence": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/.env.example",
           "reasoning": "Environment template exists for onboarding and secret management"
         },
         {
@@ -91,7 +91,7 @@
         {
           "criterion": "dependency_freshness",
           "points": 100,
-          "evidence": "source=/home/apps/workspace/agent-packages/agents/archivebox-api/pyproject.toml total=5 major=0 minor=0 patch=0 not_installed=0",
+          "evidence": "source=${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/pyproject.toml total=5 major=0 minor=0 patch=0 not_installed=0",
           "reasoning": "Audited 5 deps (5 installed, 0 constraint-only). 0 major, 0 minor, 0 patch updates."
         }
       ],
@@ -182,7 +182,7 @@
           "length": 78,
           "complexity": 30,
           "nesting_depth": 9,
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage.py"
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage.py"
         },
         {
           "name": "main",
@@ -190,7 +190,7 @@
           "length": 99,
           "complexity": 19,
           "nesting_depth": 4,
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/scripts/verify_api_integration.py"
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/scripts/verify_api_integration.py"
         },
         {
           "name": "__init__",
@@ -198,7 +198,7 @@
           "length": 59,
           "complexity": 16,
           "nesting_depth": 5,
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/api/api_client_base.py"
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/archivebox_api/api/api_client_base.py"
         },
         {
           "name": "parse_mcp_server",
@@ -206,7 +206,7 @@
           "length": 41,
           "complexity": 14,
           "nesting_depth": 5,
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/scripts/verify_api_integration.py"
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/scripts/verify_api_integration.py"
         },
         {
           "name": "__getattr__",
@@ -214,7 +214,7 @@
           "length": 26,
           "complexity": 12,
           "nesting_depth": 3,
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/__init__.py"
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/archivebox_api/__init__.py"
         }
       ],
       "top_long": [
@@ -224,7 +224,7 @@
           "length": 99,
           "complexity": 19,
           "nesting_depth": 4,
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/scripts/verify_api_integration.py"
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/scripts/verify_api_integration.py"
         },
         {
           "name": "get_snapshots",
@@ -232,7 +232,7 @@
           "length": 94,
           "complexity": 4,
           "nesting_depth": 2,
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/api/api_client_core.py"
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/archivebox_api/api/api_client_core.py"
         },
         {
           "name": "get_archiveresults",
@@ -240,7 +240,7 @@
           "length": 82,
           "complexity": 4,
           "nesting_depth": 2,
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/api/api_client_core.py"
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/archivebox_api/api/api_client_core.py"
         },
         {
           "name": "test_api_brute_force",
@@ -248,7 +248,7 @@
           "length": 78,
           "complexity": 30,
           "nesting_depth": 9,
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage.py"
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage.py"
         },
         {
           "name": "test_mcp_server_coverage",
@@ -256,7 +256,7 @@
           "length": 70,
           "complexity": 7,
           "nesting_depth": 7,
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage.py"
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage.py"
         }
       ],
       "structural_issues": [],
@@ -316,7 +316,7 @@
       "tests": [
         {
           "name": "test_server_startup",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_startup.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_startup.py",
           "line": 1,
           "length": 12,
           "intent": "unit",
@@ -326,7 +326,7 @@
         },
         {
           "name": "test_api_init",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_basic.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_basic.py",
           "line": 7,
           "length": 10,
           "intent": "unit",
@@ -336,7 +336,7 @@
         },
         {
           "name": "test_concept_parity",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_concept_parity.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_concept_parity.py",
           "line": 58,
           "length": 30,
           "intent": "unit",
@@ -346,7 +346,7 @@
         },
         {
           "name": "test_init_import_module_safely",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 26,
           "length": 6,
           "intent": "unit",
@@ -356,7 +356,7 @@
         },
         {
           "name": "test_init_getattr",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 34,
           "length": 23,
           "intent": "unit",
@@ -366,7 +366,7 @@
         },
         {
           "name": "test_init_lazy_expose_members",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 59,
           "length": 10,
           "intent": "unit",
@@ -376,7 +376,7 @@
         },
         {
           "name": "test_init_dir",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 71,
           "length": 4,
           "intent": "unit",
@@ -386,7 +386,7 @@
         },
         {
           "name": "test_auth_get_client_errors",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 82,
           "length": 8,
           "intent": "unit",
@@ -396,7 +396,7 @@
         },
         {
           "name": "test_auth_get_client_combinations",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 93,
           "length": 22,
           "intent": "unit",
@@ -406,7 +406,7 @@
         },
         {
           "name": "test_base_api_missing_url",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 121,
           "length": 3,
           "intent": "unit",
@@ -416,7 +416,7 @@
         },
         {
           "name": "test_base_api_ssl_verify_false",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 127,
           "length": 9,
           "intent": "unit",
@@ -426,7 +426,7 @@
         },
         {
           "name": "test_base_api_username_password_auth_failures",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 140,
           "length": 22,
           "intent": "unit",
@@ -436,7 +436,7 @@
         },
         {
           "name": "test_base_api_probe_http_errors",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 165,
           "length": 24,
           "intent": "unit",
@@ -446,7 +446,7 @@
         },
         {
           "name": "test_base_api_api_key_param",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 192,
           "length": 10,
           "intent": "unit",
@@ -456,7 +456,7 @@
         },
         {
           "name": "test_client_validation_errors",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 217,
           "length": 45,
           "intent": "unit",
@@ -466,7 +466,7 @@
         },
         {
           "name": "test_mcp_authentication_tool",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 269,
           "length": 48,
           "intent": "unit",
@@ -478,7 +478,7 @@
         },
         {
           "name": "test_mcp_core_tool",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 320,
           "length": 40,
           "intent": "unit",
@@ -490,7 +490,7 @@
         },
         {
           "name": "test_mcp_cli_tool",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 363,
           "length": 40,
           "intent": "unit",
@@ -502,7 +502,7 @@
         },
         {
           "name": "test_mcp_health_check",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 406,
           "length": 28,
           "intent": "unit",
@@ -514,7 +514,7 @@
         },
         {
           "name": "test_mcp_server_run_options",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 437,
           "length": 29,
           "intent": "unit",
@@ -524,7 +524,7 @@
         },
         {
           "name": "test_mcp_server_import_error_handling",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 468,
           "length": 14,
           "intent": "unit",
@@ -534,7 +534,7 @@
         },
         {
           "name": "test_mcp_server_main_execution",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 484,
           "length": 17,
           "intent": "unit",
@@ -544,7 +544,7 @@
         },
         {
           "name": "test_agent_server_run",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 508,
           "length": 13,
           "intent": "unit",
@@ -554,7 +554,7 @@
         },
         {
           "name": "test_agent_server_main_execution",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 523,
           "length": 32,
           "intent": "unit",
@@ -564,7 +564,7 @@
         },
         {
           "name": "test_main_block_import",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 557,
           "length": 6,
           "intent": "unit",
@@ -574,7 +574,7 @@
         },
         {
           "name": "test_api_brute_force",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage.py",
           "line": 34,
           "length": 78,
           "intent": "unit",
@@ -584,7 +584,7 @@
         },
         {
           "name": "test_mcp_server_coverage",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage.py",
           "line": 114,
           "length": 70,
           "intent": "unit",
@@ -594,7 +594,7 @@
         },
         {
           "name": "test_archivebox_api_brute_force",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_api_brute_force_coverage.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_api_brute_force_coverage.py",
           "line": 38,
           "length": 39,
           "intent": "unit",
@@ -604,7 +604,7 @@
         },
         {
           "name": "test_mcp_server_coverage",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_api_brute_force_coverage.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_api_brute_force_coverage.py",
           "line": 79,
           "length": 63,
           "intent": "unit",
@@ -614,7 +614,7 @@
         },
         {
           "name": "test_agent_server_coverage",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_api_brute_force_coverage.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_api_brute_force_coverage.py",
           "line": 144,
           "length": 11,
           "intent": "unit",
@@ -888,7 +888,7 @@
             "detail": "1 modules exceed 500 lines (god modules)",
             "items": [
               {
-                "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+                "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
                 "lines": 562
               }
             ]
@@ -1039,223 +1039,223 @@
       "tests_missing_markers": [
         {
           "test_name": "test_server_startup",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_startup.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_startup.py",
           "line": 1
         },
         {
           "test_name": "test_api_init",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_basic.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_basic.py",
           "line": 7
         },
         {
           "test_name": "test_concept_parity",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_concept_parity.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_concept_parity.py",
           "line": 58
         },
         {
           "test_name": "test_init_import_module_safely",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 26
         },
         {
           "test_name": "test_init_getattr",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 34
         },
         {
           "test_name": "test_init_lazy_expose_members",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 59
         },
         {
           "test_name": "test_init_dir",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 71
         },
         {
           "test_name": "test_auth_get_client_errors",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 82
         },
         {
           "test_name": "test_auth_get_client_combinations",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 93
         },
         {
           "test_name": "test_base_api_missing_url",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 121
         },
         {
           "test_name": "test_base_api_ssl_verify_false",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 127
         },
         {
           "test_name": "test_base_api_username_password_auth_failures",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 140
         },
         {
           "test_name": "test_base_api_probe_http_errors",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 165
         },
         {
           "test_name": "test_base_api_api_key_param",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 192
         },
         {
           "test_name": "test_client_validation_errors",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 217
         },
         {
           "test_name": "test_mcp_authentication_tool",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 269
         },
         {
           "test_name": "test_mcp_core_tool",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 320
         },
         {
           "test_name": "test_mcp_cli_tool",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 363
         },
         {
           "test_name": "test_mcp_health_check",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 406
         },
         {
           "test_name": "test_mcp_server_run_options",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/tests/test_archivebox_coverage_extra.py",
           "line": 437
         }
       ],
       "functions_missing_docstrings": [
         {
           "function": "parse_api_client",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/scripts/verify_api_integration.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/scripts/verify_api_integration.py",
           "line": 33,
           "length": 26
         },
         {
           "function": "parse_mcp_server",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/scripts/verify_api_integration.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/scripts/verify_api_integration.py",
           "line": 94,
           "length": 41
         },
         {
           "function": "verify_agent",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/scripts/verify_api_integration.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/scripts/verify_api_integration.py",
           "line": 137,
           "length": 38
         },
         {
           "function": "main",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/scripts/verify_api_integration.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/scripts/verify_api_integration.py",
           "line": 177,
           "length": 99
         },
         {
           "function": "register_authentication_tools",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/mcp_server.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/archivebox_api/mcp_server.py",
           "line": 41,
           "length": 31
         },
         {
           "function": "register_core_tools",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/mcp_server.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/archivebox_api/mcp_server.py",
           "line": 74,
           "length": 37
         },
         {
           "function": "register_cli_tools",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/mcp_server.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/archivebox_api/mcp_server.py",
           "line": 113,
           "length": 37
         },
         {
           "function": "get_mcp_instance",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/mcp_server.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/archivebox_api/mcp_server.py",
           "line": 152,
           "length": 26
         },
         {
           "function": "mcp_server",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/mcp_server.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/archivebox_api/mcp_server.py",
           "line": 180,
           "length": 16
         },
         {
           "function": "archivebox_authentication",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/mcp_server.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/archivebox_api/mcp_server.py",
           "line": 43,
           "length": 29
         },
         {
           "function": "archivebox_core",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/mcp_server.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/archivebox_api/mcp_server.py",
           "line": 76,
           "length": 35
         },
         {
           "function": "archivebox_cli",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/mcp_server.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/archivebox_api/mcp_server.py",
           "line": 115,
           "length": 35
         },
         {
           "function": "get_client",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/auth.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/archivebox_api/auth.py",
           "line": 12,
           "length": 18
         },
         {
           "function": "agent_server",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/agent_server.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/archivebox_api/agent_server.py",
           "line": 22,
           "length": 60
         },
         {
           "function": "__getattr__",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/__init__.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/archivebox_api/__init__.py",
           "line": 46,
           "length": 26
         },
         {
           "function": "__init__",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/api/api_client_base.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/archivebox_api/api/api_client_base.py",
           "line": 15,
           "length": 59
         },
         {
           "function": "get_snapshots",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/api/api_client_core.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/archivebox_api/api/api_client_core.py",
           "line": 15,
           "length": 94
         },
         {
           "function": "get_snapshot",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/api/api_client_core.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/archivebox_api/api/api_client_core.py",
           "line": 111,
           "length": 26
         },
         {
           "function": "get_archiveresults",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/api/api_client_core.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/archivebox_api/api/api_client_core.py",
           "line": 139,
           "length": 82
         },
         {
           "function": "get_archiveresult",
-          "file": "/home/apps/workspace/agent-packages/agents/archivebox-api/archivebox_api/api/api_client_core.py",
+          "file": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/archivebox_api/api/api_client_core.py",
           "line": 223,
           "length": 22
         }
@@ -1539,7 +1539,7 @@
         {
           "criterion": "bumpversion_exists",
           "points": 20,
-          "evidence": "/home/apps/workspace/agent-packages/agents/archivebox-api/.bumpversion.cfg",
+          "evidence": "${WORKSPACE_ROOT}/agent-packages/agents/archivebox-api/.bumpversion.cfg",
           "reasoning": ".bumpversion.cfg found"
         },
         {
