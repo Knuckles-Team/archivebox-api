@@ -1,5 +1,6 @@
 ---
 name: archivebox-api-operations
+skill_type: skill
 description: >-
   Operate archivebox-api through its governed MCP and GraphOS capabilities, including archivebox kg ingestion, archivebox snapshot search, archivebox web archiving. Use when a request requires this provider's read, change, automation, ingestion, troubleshooting, or evidence workflows.
 ---
