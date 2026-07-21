@@ -22,7 +22,7 @@ The base install is intentionally minimal. Install the extra for what you need:
 | Extra | Install | Pulls in |
 |---|---|---|
 | `mcp` | `pip install "archivebox-api[mcp]"` | FastMCP MCP-server runtime (`agent-utilities[mcp]`) |
-| `agent` | `pip install "archivebox-api[agent]"` | Pydantic-AI agent + Logfire tracing (`agent-utilities[agent,logfire]`) |
+| `agent` | `pip install "archivebox-api[agent]"` | Pydantic-AI agent + Logfire tracing (`agent-utilities[agent-runtime,logfire]`) |
 | `all` | `pip install "archivebox-api[all]"` | Everything above |
 
 ```bash
@@ -47,17 +47,17 @@ uv run archivebox-mcp
 
 ## Prebuilt Docker image
 
-A multi-stage, slim image is published on every release (installs
+A multi-stage runtime image is published on every release (installs
 `archivebox-api[all]`, entrypoint `archivebox-mcp`):
 
 ```bash
-docker pull knucklessg1/archivebox-api:latest
+docker pull example/archivebox-api@sha256:<digest>
 
 docker run --rm -i \
   -e ARCHIVEBOX_BASE_URL=http://your-archivebox:8000 \
   -e ARCHIVEBOX_USERNAME=admin \
   -e ARCHIVEBOX_PASSWORD=your-password \
-  knucklessg1/archivebox-api:latest        # stdio transport (default)
+  example/archivebox-api@sha256:<digest>        # stdio transport (default)
 ```
 
 For an HTTP server with a published port and the agent server, see

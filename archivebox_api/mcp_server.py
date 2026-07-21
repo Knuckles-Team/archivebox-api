@@ -30,13 +30,11 @@ import logging
 import sys
 from typing import Any
 
-from agent_utilities.mcp_utilities import (
-    create_mcp_server,
-    load_config,
-    register_tool_surface,
-    resolve_action,
-    run_blocking,
-)
+from agent_utilities.core.config import load_config
+from agent_utilities.mcp.action_dispatch import resolve_action
+from agent_utilities.mcp.concurrency import run_blocking
+from agent_utilities.mcp.server_factory import create_mcp_server
+from agent_utilities.mcp.verbose_tools import register_tool_surface
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
@@ -87,8 +85,8 @@ def register_authentication_tools(mcp: FastMCP):
 
         try:
             kwargs = json.loads(params_json)
-        except Exception as e:
-            return {"error": f"Invalid params_json: {e}"}
+        except Exception:
+            return {"error": "Operation failed"}
 
         kwargs = {k: v for k, v in kwargs.items() if v is not None}
 
@@ -127,8 +125,8 @@ def register_core_tools(mcp: FastMCP):
 
         try:
             kwargs = json.loads(params_json)
-        except Exception as e:
-            return {"error": f"Invalid params_json: {e}"}
+        except Exception:
+            return {"error": "Operation failed"}
 
         kwargs = {k: v for k, v in kwargs.items() if v is not None}
 
@@ -173,8 +171,8 @@ def register_cli_tools(mcp: FastMCP):
 
         try:
             kwargs = json.loads(params_json)
-        except Exception as e:
-            return {"error": f"Invalid params_json: {e}"}
+        except Exception:
+            return {"error": "Operation failed"}
 
         kwargs = {k: v for k, v in kwargs.items() if v is not None}
 
@@ -236,7 +234,7 @@ def _auto_ingest_snapshots(resp: Any) -> None:
 
         ingest_snapshots(records)
     except Exception as e:  # noqa: BLE001 — ingestion is best-effort
-        logger.debug("archivebox auto-ingest skipped: %s", e)
+        logger.debug("Operation failed: error_type=%s", type(e).__name__)
 
 
 def register_kg_tools(mcp: FastMCP):
@@ -267,8 +265,8 @@ def register_kg_tools(mcp: FastMCP):
             await ctx.info("Ingesting snapshots into the knowledge graph...")
         try:
             kwargs = json.loads(params_json) if params_json else {}
-        except Exception as e:  # noqa: BLE001
-            return {"error": f"Invalid params_json: {e}"}
+        except Exception:  # noqa: BLE001
+            return {"error": "Operation failed"}
         kwargs = {k: v for k, v in kwargs.items() if v is not None}
         resp = await run_blocking(client.get_snapshots, **kwargs)
         records = _records_from_response(resp)
@@ -298,8 +296,8 @@ def register_kg_tools(mcp: FastMCP):
             await ctx.info("Ingesting archive results into the knowledge graph...")
         try:
             kwargs = json.loads(params_json) if params_json else {}
-        except Exception as e:  # noqa: BLE001
-            return {"error": f"Invalid params_json: {e}"}
+        except Exception:  # noqa: BLE001
+            return {"error": "Operation failed"}
         kwargs = {k: v for k, v in kwargs.items() if v is not None}
         resp = await run_blocking(client.get_archiveresults, **kwargs)
         records = _records_from_response(resp)

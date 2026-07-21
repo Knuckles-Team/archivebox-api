@@ -22,7 +22,7 @@
     "capabilities": {
       "capture": ["add one or many URLs with tags/depth/extractors", "re-archive stale or unarchived snapshots", "schedule recurring archive jobs"],
       "search": ["find snapshots by search/url/tag/title/date", "read a snapshot with its archive results", "inspect extractor success/failure"],
-      "kg": ["map snapshots->:Snapshot (+:Tag, page-text :Document), results->:ArchiveResult", "resolve :hasArchiveResult / :hasTag / :hasPageText / :archivedAs links", "store raw capture bytes as :Blob/:MediaAsset"]
+      "kg": ["map snapshots->:Snapshot (+:Tag, page-text :Document), results->:ArchiveResult", "resolve :hasArchiveResult / :hasTag / :hasPageText / :archivedAs links", "store raw capture bytes as :Blob/:AssetOccurrence"]
     },
     "workflow": [
       "for a capture: cli_add the URLs with tags + a deliberate depth, then confirm the snapshot exists and extractors succeeded",

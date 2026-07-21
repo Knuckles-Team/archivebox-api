@@ -1,0 +1,20 @@
+schema_version: '1'
+connector: archivebox-api
+ontology_source: archivebox
+sync:
+- preset: archivebox-snapshots
+  server: archivebox-api
+  tool: archivebox_core
+  action: get_snapshots
+  records_path: items
+  id_field: abid
+  title_field: url
+  text_field: title
+  updated_field: modified_at
+  doc_type: web_snapshot
+  tool_schema_sha256: de56ae93ee1ed8a0669f0eec9a4dde5483ad6adc2601c1abdf961fc7968212f1
+governance:
+  default_acl: quarantine
+  identity: opaque-reference
+  tenant: required-at-materialization
+  provenance: required-at-materialization

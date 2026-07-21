@@ -34,7 +34,6 @@ api = Api(
     url="http://your-archivebox:8000",
     username="admin",
     password="your-password",
-    verify=False,                 # self-signed homelab cert
 )
 
 # Reads
@@ -46,6 +45,11 @@ one = api.get_snapshot(snapshot_id="<abid>")
 for snapshot in snapshots.json().get("results", []):
     print(f"[{snapshot['timestamp']}] {snapshot['url']}")
 ```
+
+TLS verification is always enabled. Configure private trust chains, mTLS, and
+proxy policy through `ARCHIVEBOX_TLS_PROFILE` or
+`ARCHIVEBOX_TLS_PROFILE_REF`; the client resolves the active AgentConfig
+profile automatically.
 
 Authentication and token verification:
 

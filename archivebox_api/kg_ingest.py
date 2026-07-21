@@ -9,105 +9,34 @@ every applicable modality (the "maximum ingestion" bar):
 * **documents** — a snapshot's title/URL text → a ``:Document`` (``:hasPageText``) so the
   archived page becomes semantic-search fodder; hub-side enrichment chunks/embeds it.
 * **blobs** — raw web-capture bytes (HTML, screenshot, PDF, WARC) → ``:Blob`` +
-  ``:MediaAsset`` via :class:`MediaStore` (:func:`ingest_snapshot_blob`).
+  ``:AssetOccurrence`` via :class:`MediaStore` (:func:`ingest_snapshot_blob`).
 
-Everything rides the lightweight engine client (``GraphComputeEngine()._client`` + ``txn``)
-via the shared ``agent_utilities.knowledge_graph.memory.native_ingest`` primitive when it is
-present. That primitive is not yet in the installed agent-utilities, so this module imports
-it **guarded** (try/except) and otherwise falls back to a self-contained txn write over the
-same fast client. With no KG stack or no reachable engine every entry point **no-ops**
-(returns ``None``), so the connector runs with zero KG infrastructure. Node ids follow
-``archivebox:<class>:<externalId>`` and ``type`` matches a class the package's
+Everything rides the required shared
+``agent_utilities.knowledge_graph.memory.native_ingest`` transaction primitive. Engine
+failures are explicit; the connector never acknowledges a partial or absent write. Node ids
+follow ``archivebox:<class>:<externalId>`` and ``node_type`` matches a class the package's
 ``ontology_providers`` ``archivebox.ttl`` federates.
 """
 
 from __future__ import annotations
 
 import logging
-import time
 from typing import Any
+
+from agent_utilities.knowledge_graph.memory.native_ingest import (
+    ingest_documents as _native_ingest_documents,
+)
+from agent_utilities.knowledge_graph.memory.native_ingest import (
+    ingest_entities as _native_ingest_entities,
+)
+from agent_utilities.knowledge_graph.memory.native_ingest import (
+    media_store as _native_media_store,
+)
 
 logger = logging.getLogger("archivebox_api.kg")
 
 _SOURCE = "archivebox-api"
 _DOMAIN = "archivebox"
-_DEFAULT_GRAPH = "__commons__"
-
-
-# --------------------------------------------------------------------------- #
-# engine client / write path — prefer the shared primitive, else self-contained
-# --------------------------------------------------------------------------- #
-def _shared():  # -> module | None
-    """Return the shared ``native_ingest`` module, or ``None`` when absent."""
-    try:
-        from agent_utilities.knowledge_graph.memory import native_ingest
-    except Exception as e:  # noqa: BLE001 — primitive not in installed agent-utilities
-        logger.debug("native_ingest primitive unavailable: %s", e)
-        return None
-    return native_ingest
-
-
-def _client() -> tuple[Any | None, str]:
-    """Return ``(engine_client, graph_name)`` or ``(None, "")`` when unavailable."""
-    try:
-        from agent_utilities.knowledge_graph.core.graph_compute import (
-            GraphComputeEngine,
-        )
-    except Exception as e:  # noqa: BLE001 — KG stack absent
-        logger.debug("KG ingest unavailable (import): %s", e)
-        return None, ""
-    try:
-        engine = GraphComputeEngine()
-        client = getattr(engine, "_client", None)
-        if client is None:
-            return None, ""
-        return client, (getattr(engine, "graph_name", None) or _DEFAULT_GRAPH)
-    except Exception as e:  # noqa: BLE001 — engine unreachable
-        logger.debug("KG ingest: engine unreachable: %s", e)
-        return None, ""
-
-
-def _fallback_write(
-    entities: list[dict[str, Any]],
-    relationships: list[dict[str, Any]] | None,
-    *,
-    client: Any | None,
-    graph: str | None,
-) -> dict[str, int] | None:
-    """Self-contained txn write (used only when the shared primitive is absent)."""
-    entities = [e for e in (entities or []) if e.get("id")]
-    if not entities:
-        return None
-    if client is None:
-        client, graph = _client()
-    if client is None:
-        return None
-    graph = graph or _DEFAULT_GRAPH
-    try:
-        txn = client.txn.begin(graph=graph)
-        for ent in entities:
-            props = {k: v for k, v in ent.items() if k != "id" and v is not None}
-            props.setdefault("source", _SOURCE)
-            props.setdefault("domain", _DOMAIN)
-            client.txn.add_node(txn, ent["id"], props)
-        committed = client.txn.commit(txn)
-    except Exception as e:  # noqa: BLE001 — engine/txn failure is non-fatal
-        logger.warning("KG ingest: txn failed: %s", e)
-        return None
-    if not committed:
-        logger.warning("KG ingest: txn not committed (conflict)")
-        return None
-    edges = 0
-    for rel in relationships or []:
-        try:
-            client.edges.add(
-                rel["source"], rel["target"], {"type": rel.get("type", "RELATED")}
-            )
-            edges += 1
-        except Exception as e:  # noqa: BLE001 — pure edge link, best-effort
-            logger.debug("KG ingest: edge skipped: %s", e)
-    logger.info("KG ingest: wrote %d nodes, %d edges", len(entities), edges)
-    return {"nodes": len(entities), "edges": edges}
 
 
 def ingest_entities(
@@ -118,16 +47,16 @@ def ingest_entities(
     domain: str = _DOMAIN,
     client: Any | None = None,
     graph: str | None = None,
-) -> dict[str, int] | None:
-    """Write typed OWL nodes (+ edges) into epistemic-graph. Never raises."""
-    if not entities:
-        return None
-    shared = _shared()
-    if shared is not None and client is None:
-        return shared.ingest_entities(
-            entities, relationships, source=source, domain=domain
-        )
-    return _fallback_write(entities, relationships, client=client, graph=graph)
+) -> dict[str, int]:
+    """Write canonical typed nodes and relationships in one native transaction."""
+    return _native_ingest_entities(
+        entities,
+        relationships,
+        source=source,
+        domain=domain,
+        client=client,
+        graph=graph,
+    )
 
 
 def ingest_documents(
@@ -137,47 +66,16 @@ def ingest_documents(
     domain: str = _DOMAIN,
     client: Any | None = None,
     graph: str | None = None,
-) -> dict[str, int] | None:
-    """Write text records as ``:Document`` nodes (semantic-search fodder). Never raises."""
-    if not docs:
-        return None
-    shared = _shared()
-    if shared is not None and client is None:
-        return shared.ingest_documents(docs, source=source, domain=domain)
-    now = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-    nodes: list[dict[str, Any]] = []
-    for doc in docs:
-        did = doc.get("id")
-        text = doc.get("text") or doc.get("content")
-        if not did or not text:
-            continue
-        node = {k: v for k, v in doc.items() if k != "content" and v is not None}
-        node["id"] = did
-        node["type"] = "Document"
-        node["text"] = text
-        node.setdefault("created_at", now)
-        nodes.append(node)
-    return _fallback_write(nodes, None, client=client, graph=graph)
+) -> dict[str, int]:
+    """Write text records as canonical ``:Document`` nodes."""
+    return _native_ingest_documents(
+        docs, source=source, domain=domain, client=client, graph=graph
+    )
 
 
-def media_store() -> Any | None:
-    """Return a :class:`MediaStore` over a live engine (raw-blob ingestion), or ``None``."""
-    shared = _shared()
-    if shared is not None:
-        return shared.media_store()
-    client, _ = _client()
-    if client is None:
-        return None
-    try:
-        from agent_utilities.knowledge_graph.core.graph_compute import (
-            GraphComputeEngine,
-        )
-        from agent_utilities.knowledge_graph.memory.media_store import MediaStore
-
-        return MediaStore(GraphComputeEngine())
-    except Exception as e:  # noqa: BLE001
-        logger.debug("KG ingest: media_store unavailable: %s", e)
-        return None
+def media_store() -> Any:
+    """Return the authoritative native media store."""
+    return _native_media_store()
 
 
 # --------------------------------------------------------------------------- #
@@ -226,7 +124,7 @@ def map_snapshots(
         entities.append(
             {
                 "id": snap_id,
-                "type": "Snapshot",
+                "node_type": "Snapshot",
                 "abid": snap.get("abid"),
                 "sourceUrl": snap.get("url"),
                 "title": snap.get("title"),
@@ -241,9 +139,9 @@ def map_snapshots(
         )
         for tag in _tags_of(snap):
             tag_id = f"archivebox:tag:{tag}"
-            entities.append({"id": tag_id, "type": "Tag", "name": tag})
+            entities.append({"id": tag_id, "node_type": "Tag", "name": tag})
             relationships.append(
-                {"source": snap_id, "target": tag_id, "type": "hasTag"}
+                {"source": snap_id, "target": tag_id, "relationship": "hasTag"}
             )
         title = snap.get("title")
         url = snap.get("url")
@@ -259,7 +157,7 @@ def map_snapshots(
                 }
             )
             relationships.append(
-                {"source": snap_id, "target": doc_id, "type": "hasPageText"}
+                {"source": snap_id, "target": doc_id, "relationship": "hasPageText"}
             )
         for res in snap.get("archiveresults") or []:
             ents, rels = _map_one_archiveresult(res, snapshot_node=snap_id)
@@ -277,7 +175,7 @@ def _map_one_archiveresult(
     res_id = f"archivebox:archiveresult:{rid}"
     ent = {
         "id": res_id,
-        "type": "ArchiveResult",
+        "node_type": "ArchiveResult",
         "abid": res.get("abid"),
         "extractor": res.get("extractor"),
         "archiveStatus": res.get("status"),
@@ -293,7 +191,9 @@ def _map_one_archiveresult(
         if sref is not None:
             snap_ref = f"archivebox:snapshot:{sref}"
     if snap_ref is not None:
-        rels.append({"source": snap_ref, "target": res_id, "type": "hasArchiveResult"})
+        rels.append(
+            {"source": snap_ref, "target": res_id, "relationship": "hasArchiveResult"}
+        )
     return [ent], rels
 
 
@@ -354,14 +254,21 @@ def ingest_snapshot_blob(
     extractor: str = "",
     media_store: Any | None = None,  # noqa: A002 — injectable for tests
 ) -> dict[str, Any] | None:
-    """Store raw web-capture bytes as a ``:Blob`` + ``:MediaAsset`` in the graph.
+    """Store raw web-capture bytes as a ``:Blob`` + ``:AssetOccurrence`` in the graph.
 
     ``snapshot`` supplies provenance (source URL, abid, extractor). Returns
     ``{asset_id, digest, size_bytes}`` on success, or ``None`` (no engine / no bytes).
     """
     if not data:
         return None
-    store = media_store if media_store is not None else globals()["media_store"]()
+    if media_store is not None:
+        store = media_store
+    else:
+        try:
+            store = globals()["media_store"]()
+        except Exception as e:  # noqa: BLE001 — no reachable engine is non-fatal
+            logger.warning("Operation failed: error_type=%s", type(e).__name__)
+            return None
     if store is None:
         return None
     snapshot = snapshot or {}
@@ -392,7 +299,7 @@ def ingest_snapshot_blob(
             extra=extra,
         )
     except Exception as e:  # noqa: BLE001 — engine/store failure is non-fatal
-        logger.warning("KG blob ingest: store_media failed: %s", e)
+        logger.warning("Operation failed: error_type=%s", type(e).__name__)
         return None
     if stored is None:
         return None

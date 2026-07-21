@@ -1,18 +1,18 @@
+import importlib
 import os
 import sys
-import importlib
 import warnings
-from typing import cast, Callable
+from typing import Callable, cast
 from unittest.mock import MagicMock, patch
 
 import pytest
 import requests
-from pydantic import ValidationError
 from agent_utilities.core.exceptions import (
     AuthError,
     MissingParameterError,
     ParameterError,
 )
+from pydantic import ValidationError
 
 # Core imports to test
 import archivebox_api
@@ -112,18 +112,20 @@ def test_auth_get_client_combinations(mock_api_class, temp_env):
             "ARCHIVEBOX_USERNAME": "some-username",
             "ARCHIVEBOX_PASSWORD": "some-password",
             "ARCHIVEBOX_API_KEY": "some-api-key",
-            "ARCHIVEBOX_SSL_VERIFY": "True",
         }
     )
-    client = get_client()
-    mock_api_class.assert_called_with(
-        url="http://localhost:8000",
-        token="some-token",
-        username="some-username",
-        password="some-password",
-        api_key="some-token",
-        verify=True,
-    )
+    with patch(
+        "archivebox_api.auth.resolve_configured_tls_profile"
+    ) as resolve_profile:
+        get_client()
+        mock_api_class.assert_called_with(
+            url="http://localhost:8000",
+            token="some-token",
+            username="some-username",
+            password="some-password",
+            api_key="some-token",
+            tls_profile=resolve_profile.return_value,
+        )
 
 
 # =====================================================================
@@ -138,16 +140,15 @@ def test_base_api_missing_url():
 
 
 @pytest.mark.concept("AU-OS.governance.wasm-micro-agent-sandbox")
-@patch("requests.Session.get")
-def test_base_api_ssl_verify_false(mock_get):
-    mock_response = MagicMock()
-    mock_response.status_code = 200
-    mock_get.return_value = mock_response
+def test_base_api_applies_tls_profile():
+    profile = MagicMock()
+    session = MagicMock()
+    profile.configure_requests_session.return_value = session
 
-    # Verify False triggers warnings disable
-    with patch("urllib3.disable_warnings") as mock_disable:
-        Api(url="http://test.com", verify=False)
-        assert mock_disable.called
+    client = Api(url="http://test.com", tls_profile=profile)
+
+    profile.configure_requests_session.assert_called_once()
+    assert client._session is session
 
 
 @pytest.mark.concept("AU-OS.config.secrets-authentication")
@@ -296,8 +297,9 @@ def test_client_validation_errors(mock_post, mock_get):
 @pytest.mark.concept("AU-ECO.messaging.native-backend-abstraction")
 @pytest.mark.asyncio
 async def test_mcp_authentication_tool(mock_client, mock_context):
-    from archivebox_api.mcp_server import register_authentication_tools
     from fastmcp import FastMCP
+
+    from archivebox_api.mcp_server import register_authentication_tools
 
     mcp = FastMCP("test")
     register_authentication_tools(mcp)
@@ -324,7 +326,7 @@ async def test_mcp_authentication_tool(mock_client, mock_context):
         ctx=None,
     )
     assert "error" in res
-    assert "Invalid params_json" in res["error"]
+    assert "Operation failed" in res["error"]
 
     # 3. Test check_api_token action
     res = await tool(
@@ -344,8 +346,9 @@ async def test_mcp_authentication_tool(mock_client, mock_context):
 @pytest.mark.concept("AU-ECO.messaging.native-backend-abstraction")
 @pytest.mark.asyncio
 async def test_mcp_core_tool(mock_client, mock_context):
-    from archivebox_api.mcp_server import register_core_tools
     from fastmcp import FastMCP
+
+    from archivebox_api.mcp_server import register_core_tools
 
     mcp = FastMCP("test")
     register_core_tools(mcp)
@@ -366,7 +369,7 @@ async def test_mcp_core_tool(mock_client, mock_context):
         action="get_snapshots", params_json="{invalid", client=mock_client, ctx=None
     )
     assert "error" in res
-    assert "Invalid params_json" in res["error"]
+    assert "Operation failed" in res["error"]
 
     # 3. Test core actions mapping
     actions_mapping = {
@@ -389,8 +392,9 @@ async def test_mcp_core_tool(mock_client, mock_context):
 @pytest.mark.concept("AU-ECO.messaging.native-backend-abstraction")
 @pytest.mark.asyncio
 async def test_mcp_cli_tool(mock_client, mock_context):
-    from archivebox_api.mcp_server import register_cli_tools
     from fastmcp import FastMCP
+
+    from archivebox_api.mcp_server import register_cli_tools
 
     mcp = FastMCP("test")
     register_cli_tools(mcp)
@@ -411,7 +415,7 @@ async def test_mcp_cli_tool(mock_client, mock_context):
         action="cli_list", params_json="{invalid", client=mock_client, ctx=None
     )
     assert "error" in res
-    assert "Invalid params_json" in res["error"]
+    assert "Operation failed" in res["error"]
 
     # 3. Test cli actions mapping
     actions_mapping = {
@@ -434,9 +438,10 @@ async def test_mcp_cli_tool(mock_client, mock_context):
 @pytest.mark.concept("AU-ECO.messaging.native-backend-abstraction")
 @pytest.mark.asyncio
 async def test_mcp_health_check():
-    from archivebox_api.mcp_server import get_mcp_instance
-    from starlette.requests import Request
     from starlette.datastructures import Headers
+    from starlette.requests import Request
+
+    from archivebox_api.mcp_server import get_mcp_instance
 
     mcp_data = get_mcp_instance()
     mcp = mcp_data[0] if isinstance(mcp_data, tuple) else mcp_data
@@ -529,7 +534,7 @@ def test_mcp_server_main_execution(mock_get_mcp):
 
     with (
         patch(
-            "agent_utilities.mcp_utilities.create_mcp_server",
+            "agent_utilities.mcp.server_factory.create_mcp_server",
             return_value=(mock_args, mock_mcp, []),
         ),
         patch("sys.exit"),

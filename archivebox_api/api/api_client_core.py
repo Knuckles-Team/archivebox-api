@@ -101,7 +101,6 @@ class Api(BaseApiClient):
                 url=f"{self.url}/api/v1/core/snapshots",
                 params=params,
                 headers=self.headers,
-                verify=self.verify,
             )
         except ValidationError as e:
             raise ParameterError(f"Invalid parameters: {e.errors()}") from e
@@ -129,7 +128,6 @@ class Api(BaseApiClient):
                 url=f"{self.url}/api/v1/core/snapshot/{snapshot_id}",
                 params={"with_archiveresults": with_archiveresults},
                 headers=self.headers,
-                verify=self.verify,
             )
         except ValidationError as e:
             raise ParameterError(f"Invalid parameters: {e.errors()}") from e
@@ -213,7 +211,6 @@ class Api(BaseApiClient):
                 url=f"{self.url}/api/v1/core/archiveresults",
                 params=params,
                 headers=self.headers,
-                verify=self.verify,
             )
         except ValidationError as e:
             raise ParameterError(f"Invalid parameters: {e.errors()}") from e
@@ -237,7 +234,6 @@ class Api(BaseApiClient):
             response = self._session.get(
                 url=f"{self.url}/api/v1/core/archiveresult/{archiveresult_id}",
                 headers=self.headers,
-                verify=self.verify,
             )
         except ValidationError as e:
             raise ParameterError(f"Invalid parameters: {e.errors()}") from e
@@ -275,7 +271,6 @@ class Api(BaseApiClient):
                 url=f"{self.url}/api/v1/core/tags",
                 params=params,
                 headers=self.headers,
-                verify=self.verify,
             )
         except ValidationError as e:
             raise ParameterError(f"Invalid parameters: {e.errors()}") from e
@@ -301,7 +296,6 @@ class Api(BaseApiClient):
                 url=f"{self.url}/api/v1/core/tag/{tag_id}",
                 params={"with_snapshots": with_snapshots},
                 headers=self.headers,
-                verify=self.verify,
             )
         except ValidationError as e:
             raise ParameterError(f"Invalid parameters: {e.errors()}") from e
@@ -325,7 +319,6 @@ class Api(BaseApiClient):
             response = self._session.get(
                 url=f"{self.url}/api/v1/core/any/{abid}",
                 headers=self.headers,
-                verify=self.verify,
             )
         except ValidationError as e:
             raise ParameterError(f"Invalid parameters: {e.errors()}") from e

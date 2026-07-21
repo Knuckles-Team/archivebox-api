@@ -10,7 +10,7 @@
 # raw web-capture blobs they produce. All classes and properties live in the shared `:`
 # (kg#) namespace; only the owl:Ontology node gets the per-package IRI. Backs the
 # archivebox-api MCP tool surface (archivebox_core / archivebox_cli). Shared classes
-# (:Document, :Tag, :MediaAsset, :Blob, :Person) are REUSED, never redefined.
+# (:Document, :Tag, :AssetOccurrence, :Blob, :Person) are REUSED, never redefined.
 
 :Snapshot a owl:Class ;
     rdfs:label "Snapshot" ;
@@ -36,9 +36,9 @@
 
 :archivedAs a owl:ObjectProperty ;
     rdfs:label "archived as" ;
-    rdfs:comment "Links a Snapshot (or ArchiveResult) to the raw web-capture :MediaAsset/:Blob (HTML, screenshot, PDF, WARC) it was stored as." ;
+    rdfs:comment "Links a Snapshot (or ArchiveResult) to the raw web-capture :AssetOccurrence/:Blob (HTML, screenshot, PDF, WARC) it was stored as." ;
     rdfs:domain :Snapshot ;
-    rdfs:range :MediaAsset .
+    rdfs:range :AssetOccurrence .
 
 :hasPageText a owl:ObjectProperty ;
     rdfs:label "has page text" ;
@@ -94,6 +94,6 @@
     rdfs:comment """ArchiveBox self-hosted web-archiving model — snapshots of source URLs,
     the per-extractor archive results they yield, their tags, extracted page-text documents,
     and the raw web-capture blobs (HTML, screenshot, PDF, WARC) — federated into the
-    agent-utilities knowledge-graph hub. Reuses the shared :Document, :Tag, :MediaAsset,
+    agent-utilities knowledge-graph hub. Reuses the shared :Document, :Tag, :AssetOccurrence,
     :Blob and :Person classes.""" ;
     owl:imports <http://knuckles.team/kg> .
