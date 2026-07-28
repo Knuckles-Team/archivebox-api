@@ -20,7 +20,7 @@
 ![PyPI - Wheel](https://img.shields.io/pypi/wheel/archivebox-api)
 ![PyPI - Implementation](https://img.shields.io/pypi/implementation/archivebox-api)
 
-*Version: 1.0.1*
+*Version: 2.0.0*
 
 > **Documentation** — Installation, deployment, usage across the API, CLI, MCP, and
 > A2A agent interfaces, and guidance for provisioning the ArchiveBox platform are
@@ -83,8 +83,8 @@ This codebase is aligned with the **5 Core Pillars Architecture** of the `agent-
 | `TRANSPORT` | `stdio` | options: stdio, streamable-http, sse |
 | `ENABLE_OTEL` | `True` |  |
 | `OTEL_EXPORTER_OTLP_ENDPOINT` | `http://localhost:8080/api/public/otel` |  |
-| `OTEL_EXPORTER_OTLP_PUBLIC_KEY` | `pk-...` |  |
-| `OTEL_EXPORTER_OTLP_SECRET_KEY` | `sk-...` |  |
+| `OTEL_EXPORTER_OTLP_PUBLIC_KEY_REF` | `secret://telemetry/otlp-public-key` |  |
+| `OTEL_EXPORTER_OTLP_SECRET_KEY_REF` | `secret://telemetry/otlp-secret-key` |  |
 | `OTEL_EXPORTER_OTLP_PROTOCOL` | `http/protobuf` |  |
 | `EUNOMIA_TYPE` | `none` | options: none, embedded, remote |
 | `EUNOMIA_POLICY_FILE` | `mcp_policies.json` |  |
@@ -92,35 +92,39 @@ This codebase is aligned with the **5 Core Pillars Architecture** of the `agent-
 | `ARCHIVEBOX_BASE_URL` | `http://localhost:8000` |  |
 | `ARCHIVEBOX_URL` | `http://localhost:8000` | ARCHIVEBOX_URL is a fallback/alternative alias for ARCHIVEBOX_BASE_URL |
 | `ARCHIVEBOX_USERNAME` | — |  |
-| `ARCHIVEBOX_TLS_PROFILE` | — | Named runtime TLS profile |
-| `ARCHIVEBOX_TLS_PROFILE_REF` | — | Secret reference containing a TLS profile |
+| `ARCHIVEBOX_TLS_PROFILE` | — | Optional named runtime TLS profile or secret reference. Peer and hostname verification are mandatory; private trust chains belong in runtime config. |
+| `ARCHIVEBOX_TLS_PROFILE_REF` | — |  |
 | `DEBUG` | `False` |  |
 | `PYTHONUNBUFFERED` | `1` |  |
-| `ARCHIVEBOX_API_KEY` | `your_archivebox_api_key_here` |  |
-| `ARCHIVEBOX_TOKEN` | `your_archivebox_token_here` |  |
-| `ARCHIVEBOX_PASSWORD` | `your_archivebox_password_here` |  |
+| `ARCHIVEBOX_API_KEY` | secret-injected |  |
+| `ARCHIVEBOX_TOKEN` | secret-injected |  |
+| `ARCHIVEBOX_PASSWORD` | secret-injected |  |
 | `AUTHENTICATIONTOOL` | `True` |  |
 | `CORETOOL` | `True` |  |
 | `CLITOOL` | `True` |  |
+| `KGTOOL` | `True` |  |
+| `ARCHIVEBOX_KG_AUTO_INGEST` | `1` |  |
 
 #### Inherited agent-utilities variables (apply to every connector)
 
 | Variable | Example | Description |
 |----------|---------|-------------|
-| `MCP_TOOL_MODE` | `condensed` | Tool surface: `condensed` | `verbose` | `both` |
+| `MCP_TOOL_MODE` | `intent` | Tool surface: `intent` \| `condensed` \| `verbose` \| `both` |
 | `MCP_ENABLED_TOOLS` | — | Comma-separated tool allow-list |
 | `MCP_DISABLED_TOOLS` | — | Comma-separated tool deny-list |
 | `MCP_ENABLED_TAGS` | — | Comma-separated tag allow-list |
 | `MCP_DISABLED_TAGS` | — | Comma-separated tag deny-list |
-| `MCP_CLIENT_AUTH` | — | Outbound MCP auth (`oidc-client-credentials` for fleet calls) |
+| `MCP_CLIENT_AUTH` | — | Outbound MCP child auth: `oidc-client-credentials` \| `basic` \| `none` |
 | `OIDC_CLIENT_ID` | — | OIDC client id (service-account auth) |
-| `OIDC_CLIENT_SECRET` | — | OIDC client secret (service-account auth) |
+| `OIDC_CLIENT_SECRET_REF` | `secret://identity/oidc-client-secret` | Runtime secret reference for the OIDC service account |
+| `MCP_BASIC_AUTH_USERNAME` | — | HTTP Basic username (`MCP_CLIENT_AUTH=basic`) |
+| `MCP_BASIC_AUTH_PASSWORD_REF` | `secret://identity/mcp-basic-password` | Runtime secret reference for HTTP Basic auth (`MCP_CLIENT_AUTH=basic`) |
 | `MCP_URL` | `http://localhost:8000/mcp` | URL of the MCP server the agent connects to |
 | `PROVIDER` | `openai` | LLM provider for the agent |
 | `MODEL_ID` | `gpt-4o` | Model id for the agent |
 | `ENABLE_WEB_UI` | `True` | Serve the AG-UI web interface |
 
-_23 package + 12 inherited variable(s). Auto-generated from `.env.example` + the shared agent-utilities set — do not edit._
+_26 package + 14 inherited variable(s). Auto-generated from `.env.example` + the shared agent-utilities set — do not edit._
 <!-- ENV-VARS-TABLE:END -->
 
 
@@ -383,13 +387,15 @@ The table below is auto-generated from the live server — do not edit by hand.
 
 <!-- MCP-TOOLS-TABLE:START -->
 
-#### Condensed action-routed tools (default — `MCP_TOOL_MODE=condensed`)
+#### Condensed action-routed tools (`MCP_TOOL_MODE=condensed`)
 
 | MCP Tool | Toggle Env Var | Description |
 |----------|----------------|-------------|
 | `archivebox_authentication` | `AUTHENTICATIONTOOL` | Manage archivebox authentication operations. |
 | `archivebox_cli` | `CLITOOL` | Manage archivebox cli operations. |
 | `archivebox_core` | `CORETOOL` | Manage archivebox core operations. |
+| `archivebox_ingest_archiveresults` | `KGTOOL` | List ArchiveBox archive results and ingest them as :ArchiveResult nodes. |
+| `archivebox_ingest_snapshots` | `KGTOOL` | List ArchiveBox snapshots and natively ingest them into epistemic-graph. |
 
 #### Verbose 1:1 API-mapped tools (`MCP_TOOL_MODE=verbose` or `both`)
 
@@ -415,7 +421,7 @@ The table below is auto-generated from the live server — do not edit by hand.
 
 </details>
 
-_3 action-routed tool(s) (default) · 14 verbose 1:1 tool(s). Each is enabled unless its `<DOMAIN>TOOL` toggle is set false; `MCP_TOOL_MODE` selects the surface (`condensed` default · `verbose` 1:1 · `both`). Auto-generated — do not edit._
+_5 action-routed tool(s) · 14 verbose 1:1 tool(s). Each is enabled unless its `<DOMAIN>TOOL` toggle is set false; `MCP_TOOL_MODE` selects the surface (**`intent` default** — the six verb-tools, granular set loaded on demand · `condensed` action-routed · `verbose` 1:1 · `both`). Auto-generated — do not edit._
 <!-- MCP-TOOLS-TABLE:END -->
 
 <!-- BEGIN GENERATED: additional-deployment-options -->
