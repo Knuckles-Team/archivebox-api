@@ -9,8 +9,9 @@ import logging
 import os
 import sys
 import warnings
+from pathlib import Path
 
-__version__ = "1.0.1"
+__version__ = "2.0.0"
 
 logging.basicConfig(
     level=logging.INFO,
@@ -34,12 +35,13 @@ def agent_server():
         build_system_prompt_from_workspace,
         create_agent_parser,
         create_agent_server,
-        initialize_workspace,
         load_identity,
     )
 
+    parser = create_agent_parser()
+    args = parser.parse_args()
+
     global DEFAULT_AGENT_NAME, DEFAULT_AGENT_DESCRIPTION, DEFAULT_AGENT_SYSTEM_PROMPT
-    initialize_workspace()
     meta = load_identity()
     DEFAULT_AGENT_NAME = os.getenv(
         "DEFAULT_AGENT_NAME", meta.get("name", "Archivebox Api")
@@ -60,8 +62,6 @@ def agent_server():
     warnings.filterwarnings("ignore", category=DeprecationWarning, module="fastmcp")
 
     print(f"{DEFAULT_AGENT_NAME} v{__version__}", file=sys.stderr)
-    parser = create_agent_parser()
-    args = parser.parse_args()
 
     if args.debug:
         logging.getLogger().setLevel(logging.DEBUG)
@@ -70,7 +70,7 @@ def agent_server():
     # Start server using the auto-discovery pattern (from mcp_config.json)
     create_agent_server(
         mcp_url=args.mcp_url,
-        mcp_config=args.mcp_config or "mcp_config.json",
+        mcp_config=args.mcp_config or str(Path(__file__).with_name("mcp_config.json")),
         host=args.host,
         port=args.port,
         provider=args.provider,

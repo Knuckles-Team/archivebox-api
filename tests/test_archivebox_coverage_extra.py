@@ -114,9 +114,7 @@ def test_auth_get_client_combinations(mock_api_class, temp_env):
             "ARCHIVEBOX_API_KEY": "some-api-key",
         }
     )
-    with patch(
-        "archivebox_api.auth.resolve_configured_tls_profile"
-    ) as resolve_profile:
+    with patch("archivebox_api.auth.resolve_configured_tls_profile") as resolve_profile:
         get_client()
         mock_api_class.assert_called_with(
             url="http://localhost:8000",
@@ -541,7 +539,9 @@ def test_mcp_server_main_execution(mock_get_mcp):
     ):
         import runpy
 
-        runpy.run_module("archivebox_api.mcp_server", run_name="__main__")
+        module_path = importlib.import_module("archivebox_api.mcp_server").__file__
+        assert module_path is not None
+        runpy.run_path(module_path, run_name="__main__")
         mock_mcp.run.assert_called_with(transport="stdio")
 
 
@@ -601,7 +601,9 @@ def test_agent_server_main_execution():
         mock_args.otel_protocol = "http/protobuf"
         mock_parser.return_value.parse_args.return_value = mock_args
 
-        runpy.run_module("archivebox_api.agent_server", run_name="__main__")
+        module_path = importlib.import_module("archivebox_api.agent_server").__file__
+        assert module_path is not None
+        runpy.run_path(module_path, run_name="__main__")
         assert mock_server.called
 
 

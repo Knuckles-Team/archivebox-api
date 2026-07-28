@@ -7,16 +7,17 @@
         "archivebox-mcp"
       ],
       "env": {
-        "MCP_TOOL_MODE": "condensed",
+        "MCP_TOOL_MODE": "intent",
         "ARCHIVEBOX_API_KEY": "your_archivebox_api_key_here",
         "ARCHIVEBOX_BASE_URL": "http://localhost:8000",
+        "ARCHIVEBOX_KG_AUTO_INGEST": "1",
         "ARCHIVEBOX_PASSWORD": "your_archivebox_password_here",
         "ARCHIVEBOX_TOKEN": "your_archivebox_token_here",
         "ARCHIVEBOX_URL": "http://localhost:8000",
-        "ARCHIVEBOX_USERNAME": "",
         "AUTHENTICATIONTOOL": "True",
         "CLITOOL": "True",
-        "CORETOOL": "True"
+        "CORETOOL": "True",
+        "KGTOOL": "True"
       }
     }
   }
