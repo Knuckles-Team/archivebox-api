@@ -3,7 +3,7 @@ connector: archivebox-api
 ontology_source: archivebox
 sync:
 - preset: archivebox-snapshots
-  server: archivebox-api
+  server: archivebox-mcp
   tool: archivebox_core
   action: get_snapshots
   records_path: items
