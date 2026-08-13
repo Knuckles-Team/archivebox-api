@@ -40,6 +40,9 @@ archivebox-api = "archivebox_api.connectors"
 [project.entry-points."agent_utilities.prompt_providers"]
 archivebox-api = "archivebox_api.prompts"
 
+[tool.uv.workspace]
+members = ["."]
+
 [tool.setuptools]
 include-package-data = true
 
