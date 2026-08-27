@@ -8,7 +8,7 @@
     "archivebox_api/ontology/mappings/source.yaml": "3275cc71ab2339b1051e8a80a10c9098764c8e9447cd86942bb9dccbcb91eecf",
     "archivebox_api/ontology/migrations/manifest.json": "45125750a384f7077b2714d1392c91a630d12f8f0fa2aa1f86a345cd34582540",
     "archivebox_api/ontology/shapes/connector.shacl.ttl": "528406ea4d138e8f6bcc1e24f24675827ad52f772df96ad1e6cf0b14833a050e",
-    "connector_manifest.yml": "da6dab5be3a4c091b9dfadbead774bf53074e61bab87a0f96debb334bfa2b1bb"
+    "connector_manifest.yml": "446888b4e6da157274e3870d9041ac7ee34ec1a39843e30b9f13f962a5c68a6e"
   },
   "checks": {
     "declared_tool_schema": "passed",
@@ -18,9 +18,9 @@
     "synthetic_fixture_contract": "passed"
   },
   "compatibility": {
-    "agent_utilities": ">=2.4.0,<3",
+    "agent_utilities": ">=2.5.0,<3",
     "bundle_schema": "2",
-    "epistemic_graph": ">=2.26.0,<3"
+    "epistemic_graph": ">=2.27.0,<3"
   },
   "connector": "archivebox-api",
   "kind": "ConnectorSourceAttestation",
@@ -32,5 +32,5 @@
   "signer": "UNSIGNED-PREVIEW",
   "signing_public_key": "",
   "status": "source-validated",
-  "validated_at": "2026-08-21T04:30:39Z"
+  "validated_at": "2026-08-26T13:42:55Z"
 }
