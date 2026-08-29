@@ -59,6 +59,40 @@ CORE_ACTIONS = (
 CLI_ACTIONS = ("cli_add", "cli_update", "cli_schedule", "cli_list", "cli_remove")
 
 
+def _parse_action_kwargs(params_json: str) -> dict[str, Any] | None:
+    """Parse a tool's ``params_json`` blob into filtered kwargs, or None if invalid."""
+    import json
+
+    try:
+        kwargs = json.loads(params_json)
+    except Exception:  # noqa: BLE001 — any parse failure is reported the same way
+        return None
+    return {k: v for k, v in kwargs.items() if v is not None}
+
+
+async def _dispatch_core_action(
+    client: Any, action: str, kwargs: dict[str, Any]
+) -> dict:
+    """Call the client method matching a resolved core action; ``action`` is
+    already validated by ``resolve_action`` against ``CORE_ACTIONS``, and every
+    core action name equals its client method name."""
+    if action not in CORE_ACTIONS:
+        raise ValueError(f"Unknown action: {action}")
+    resp = await run_blocking(getattr(client, action), **kwargs)
+    if action == "get_snapshots":
+        _auto_ingest_snapshots(resp)
+    return resp
+
+
+async def _dispatch_cli_action(client: Any, action: str, kwargs: dict[str, Any]) -> dict:
+    """Call the client method matching a resolved cli action; ``action`` is
+    already validated by ``resolve_action`` against ``CLI_ACTIONS``, and every
+    cli action name equals its client method name."""
+    if action not in CLI_ACTIONS:
+        raise ValueError(f"Unknown action: {action}")
+    return await run_blocking(getattr(client, action), **kwargs)
+
+
 def register_authentication_tools(mcp: FastMCP):
     """Register authentication management tools.
 
@@ -121,33 +155,15 @@ def register_core_tools(mcp: FastMCP):
         """Manage archivebox core operations."""
         if ctx:
             await ctx.info("Executing tool...")
-        import json
-
-        try:
-            kwargs = json.loads(params_json)
-        except Exception:
+        kwargs = _parse_action_kwargs(params_json)
+        if kwargs is None:
             return {"error": "Operation failed"}
-
-        kwargs = {k: v for k, v in kwargs.items() if v is not None}
 
         resolved = resolve_action(action, CORE_ACTIONS, service="archivebox-api")
         if isinstance(resolved, dict):
             return resolved
-        action = resolved
 
-        if action == "get_snapshots":
-            resp = await run_blocking(client.get_snapshots, **kwargs)
-            _auto_ingest_snapshots(resp)
-            return resp
-        if action == "get_snapshot":
-            return await run_blocking(client.get_snapshot, **kwargs)
-        if action == "get_archiveresults":
-            return await run_blocking(client.get_archiveresults, **kwargs)
-        if action == "get_tag":
-            return await run_blocking(client.get_tag, **kwargs)
-        if action == "get_any":
-            return await run_blocking(client.get_any, **kwargs)
-        raise ValueError(f"Unknown action: {action}")
+        return await _dispatch_core_action(client, resolved, kwargs)
 
 
 def register_cli_tools(mcp: FastMCP):
@@ -167,31 +183,29 @@ def register_cli_tools(mcp: FastMCP):
         """Manage archivebox cli operations."""
         if ctx:
             await ctx.info("Executing tool...")
-        import json
-
-        try:
-            kwargs = json.loads(params_json)
-        except Exception:
+        kwargs = _parse_action_kwargs(params_json)
+        if kwargs is None:
             return {"error": "Operation failed"}
-
-        kwargs = {k: v for k, v in kwargs.items() if v is not None}
 
         resolved = resolve_action(action, CLI_ACTIONS, service="archivebox-api")
         if isinstance(resolved, dict):
             return resolved
-        action = resolved
 
-        if action == "cli_add":
-            return await run_blocking(client.cli_add, **kwargs)
-        if action == "cli_update":
-            return await run_blocking(client.cli_update, **kwargs)
-        if action == "cli_schedule":
-            return await run_blocking(client.cli_schedule, **kwargs)
-        if action == "cli_list":
-            return await run_blocking(client.cli_list, **kwargs)
-        if action == "cli_remove":
-            return await run_blocking(client.cli_remove, **kwargs)
-        raise ValueError(f"Unknown action: {action}")
+        return await _dispatch_cli_action(client, resolved, kwargs)
+
+
+def _records_from_dict(data: dict[str, Any]) -> list[dict[str, Any]]:
+    """Pull a record list out of a Ninja pagination envelope, or wrap a lone record."""
+    for key in ("items", "results", "data", "snapshots"):
+        value = data.get(key)
+        if isinstance(value, list):
+            return [r for r in value if isinstance(r, dict)]
+    return [data] if data.get("id") or data.get("abid") else []
+
+
+def _records_from_list(data: list[Any]) -> list[dict[str, Any]]:
+    """Keep only the dict entries of a bare list response."""
+    return [r for r in data if isinstance(r, dict)]
 
 
 def _records_from_response(resp: Any) -> list[dict[str, Any]]:
@@ -207,12 +221,9 @@ def _records_from_response(resp: Any) -> list[dict[str, Any]]:
         except Exception:  # noqa: BLE001 — non-JSON body
             return []
     if isinstance(data, dict):
-        for key in ("items", "results", "data", "snapshots"):
-            if isinstance(data.get(key), list):
-                return [r for r in data[key] if isinstance(r, dict)]
-        return [data] if data.get("id") or data.get("abid") else []
+        return _records_from_dict(data)
     if isinstance(data, list):
-        return [r for r in data if isinstance(r, dict)]
+        return _records_from_list(data)
     return []
 
 
