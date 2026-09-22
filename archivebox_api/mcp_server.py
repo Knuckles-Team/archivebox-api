@@ -28,7 +28,7 @@ warnings.filterwarnings("ignore", message=".*urllib3.*or charset_normalizer.*")
 
 import logging
 import sys
-from typing import Any
+from typing import Any, Literal
 
 from agent_utilities.core.config import load_config
 from agent_utilities.mcp.action_dispatch import resolve_action
@@ -84,7 +84,9 @@ async def _dispatch_core_action(
     return resp
 
 
-async def _dispatch_cli_action(client: Any, action: str, kwargs: dict[str, Any]) -> dict:
+async def _dispatch_cli_action(
+    client: Any, action: str, kwargs: dict[str, Any]
+) -> dict:
     """Call the client method matching a resolved cli action; ``action`` is
     already validated by ``resolve_action`` against ``CLI_ACTIONS``, and every
     cli action name equals its client method name."""
@@ -141,7 +143,9 @@ def register_authentication_tools(mcp: FastMCP):
 def register_core_tools(mcp: FastMCP):
     @mcp.tool(tags={"core"})
     async def archivebox_core(
-        action: str = Field(
+        action: Literal[
+            "get_any", "get_archiveresults", "get_snapshot", "get_snapshots", "get_tag"
+        ] = Field(
             description="Action to perform. Must be one of: 'get_snapshots', 'get_snapshot', 'get_archiveresults', 'get_tag', 'get_any'"
         ),
         params_json: str = Field(
