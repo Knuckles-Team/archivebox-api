@@ -10,7 +10,7 @@
     "text_field": "title",
     "updated_field": "modified_at",
     "pagination": "page",
-    "page_kind": "page",
+    "page_kind": "number",
     "page_param": "page",
     "page_size_param": "limit",
     "doc_type": "web_snapshot"
