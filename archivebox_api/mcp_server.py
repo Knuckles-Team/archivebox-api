@@ -141,7 +141,18 @@ def register_authentication_tools(mcp: FastMCP):
 
 
 def register_core_tools(mcp: FastMCP):
-    @mcp.tool(tags={"core"})
+    @mcp.tool(
+        tags={"core"},
+        annotations={
+            "readOnlyHint": True,
+            "destructiveHint": False,
+            "idempotentHint": True,
+            "openWorldHint": True,
+        },
+        meta={
+            "eg.annotations": {"modalities_in": ["text"], "modalities_out": ["text"]}
+        },
+    )
     async def archivebox_core(
         action: Literal[
             "get_any", "get_archiveresults", "get_snapshot", "get_snapshots", "get_tag"
