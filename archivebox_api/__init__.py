@@ -9,7 +9,6 @@ __all__: list[str] = []
 CORE_MODULES: list[str] = ["archivebox_api.api_client"]
 
 OPTIONAL_MODULES = {
-    "archivebox_api.agent_server": "agent",
     "archivebox_api.mcp_server": "mcp",
 }
 

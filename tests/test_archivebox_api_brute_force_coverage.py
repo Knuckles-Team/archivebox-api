@@ -162,16 +162,3 @@ def test_mcp_server_coverage(mock_session):
             loop = asyncio.new_event_loop()
             loop.run_until_complete(_run_all_tools(mcp))
             loop.close()
-
-
-def test_agent_server_coverage():
-    import archivebox_api.agent_server as mod
-    from archivebox_api.agent_server import agent_server
-
-    with patch("agent_utilities.create_agent_server") as mock_s:
-        with patch("sys.argv", ["agent_server.py"]):
-            if inspect.isfunction(agent_server):
-                agent_server()
-            else:
-                mod.agent_server()
-            assert mock_s.called
