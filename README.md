@@ -170,13 +170,6 @@ Each action-routed tool can be disabled individually via its toggle env var (set
 | `EUNOMIA_POLICY_FILE` | Embedded policy file | `mcp_policies.json` |
 | `EUNOMIA_REMOTE_URL` | Remote Eunomia server URL | — |
 
-### Agent CLI (full `[agent]` runtime only)
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `MCP_URL` | URL of the MCP server the agent connects to | `http://localhost:8000/mcp` |
-| `PROVIDER` | LLM provider (e.g. `openai`) | `openai` |
-| `MODEL_ID` | Model id (e.g. `gpt-4o`) | `gpt-4o` |
-| `ENABLE_WEB_UI` | Serve the AG-UI web interface | `True` |
 
 ---
 
@@ -207,8 +200,7 @@ Refer to [docs/index.md](docs/index.md) for full developer SDK and class referen
 
 > **Install the connector-focused `[mcp]` extra.** Examples use `archivebox-api[mcp]` to add
 > FastMCP / FastAPI through `agent-utilities[mcp]`; the required Agent Utilities core
-> still carries `epistemic-graph[full]`. The `[agent]` extra additionally
-> enables model orchestration.
+> still carries `epistemic-graph[full]`.
 
 This server utilizes dynamic Action-Routed tools to optimize token overhead and maximize IDE compatibility.
 
@@ -267,10 +259,7 @@ Add the following block to your `mcp.json` to configure stdio transport via `uvx
 
 This repository features a fully integrated Pydantic AI Graph Agent. It communicates over the **Agent Control Protocol (ACP)** and interacts seamlessly with the **Agent Web UI (AG-UI)**.
 
-### Running the Agent CLI
-To start the interactive command-line agent:
 
-```bash
 # Export credentials
 export ARCHIVEBOX_BASE_URL="http://localhost:8000"
 export ARCHIVEBOX_USERNAME="admin"
@@ -309,43 +298,31 @@ Pick the extra that matches what you want to run:
 | Extra | Installs | Use when |
 |-------|----------|----------|
 | `archivebox-api[mcp]` | Connector-focused MCP server (`agent-utilities[mcp]` — FastMCP/FastAPI + `epistemic-graph[full]`) | You only run the **MCP server** (smallest install / image) |
-| `archivebox-api[agent]` | Agent runtime (`agent-utilities[agent-runtime,logfire]` — model orchestration + `epistemic-graph[full]`) | You run the **integrated agent** |
-| `archivebox-api[all]` | Everything (`mcp` + `agent` + `logfire`) | Development / both surfaces |
 
 ```bash
 # Connector-focused MCP server (includes the shared graph engine)
 uv pip install "archivebox-api[mcp]"
-
-# Agent runtime (adds model orchestration to the shared graph engine)
-uv pip install "archivebox-api[agent]"
-
-# Everything (development)
-uv pip install "archivebox-api[all]"      # or: python -m pip install "archivebox-api[all]"
 ```
 
-### Container images (`:mcp` vs `:agent`)
+### Container images (`:mcp`)
 
-One multi-stage `docker/Dockerfile` builds two right-sized images, selected by `--target`:
+One `docker/Dockerfile` builds a single slim MCP-server image:
 
-| Image tag | Build target | Contents | Entrypoint |
-|-----------|--------------|----------|------------|
-| `example/archivebox-api:mcp` | `--target mcp` | `archivebox-api[mcp]` — **connector-focused**, includes `epistemic-graph[full]`; no model-orchestration stack | `archivebox-mcp` |
-| `example/archivebox-api@sha256:<digest>` | `--target agent` (default) | `archivebox-api[agent]` — **agent runtime**, model orchestration + `epistemic-graph[full]` | `archivebox-agent` |
+| Image tag | Contents | Entrypoint |
+|-----------|----------|------------|
+| `example/archivebox-api:mcp` | `archivebox-api[mcp]` -- connector-focused, includes `epistemic-graph[full]` | `archivebox-api` |
 
 ```bash
-docker build --target mcp   -t example/archivebox-api:mcp    docker/   # connector-focused MCP server
-docker build --target agent -t example/archivebox-api:agent-local docker/   # agent runtime
+docker build -t example/archivebox-api:mcp docker/   # connector-focused MCP server
 ```
 
-`docker/mcp.compose.yml` runs the connector-focused `:mcp` server; `docker/agent.compose.yml` runs the
-agent (`immutable agent digest`) with a co-located `:mcp` sidecar.
+`docker/mcp.compose.yml` runs the connector-focused `:mcp` server.
 
 ### Knowledge-graph database (`epistemic-graph`)
 
-Both `[mcp]` and `[agent]` carry the **epistemic-graph** engine through the required
-Agent Utilities core dependency (`epistemic-graph[full]`). The `[mcp]` extra keeps
-the server connector-focused; `[agent]` additionally enables model orchestration. Local
-deployments can use the bundled engine. For production or shared state, run
+The `[mcp]` extra carries the **epistemic-graph** engine through the required
+Agent Utilities core dependency (`epistemic-graph[full]`); the server stays
+connector-focused. Local deployments can use the bundled engine. For production or shared state, run
 **epistemic-graph as a dedicated database service** and configure the runtime to use it.
 Deployment recipes (single-node + Raft HA), connection configuration, and architecture
 diagrams are documented in the
@@ -453,7 +430,7 @@ to **"deploy `archivebox-api` with agent-utilities-deployment"**.
 | Install mode | Command |
 |------|---------|
 | Installed package | `uv tool install "archivebox-api[mcp]"`, then run `archivebox-mcp` |
-| Editable source | `uv pip install -e ".[agent]"`, then run `archivebox-mcp` |
+| Editable source | `uv pip install -e ".[mcp]"`, then run `archivebox-mcp` |
 | Immutable container | deploy `registry.example.invalid/archivebox-api@sha256:<digest>` through the operator-selected orchestrator |
 
 The repository embeds no deployment profile, credential value, certificate path, or
