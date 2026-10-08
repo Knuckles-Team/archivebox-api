@@ -1,7 +1,7 @@
 # Usage — API / CLI / MCP
 
 `archivebox-api` exposes the same capability three ways: as **MCP tools** an agent
-calls, as a **Python API** (`Api`) you import, and as a **CLI**. The ecosystem role
+calls, as a **Python API** (`Api`) the operator import, and as a **CLI**. The ecosystem role
 and full configuration matrix are in [Overview](overview.md).
 
 ## As an MCP server
