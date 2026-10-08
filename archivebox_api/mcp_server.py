@@ -84,7 +84,9 @@ async def _dispatch_core_action(
     return resp
 
 
-async def _dispatch_cli_action(client: Any, action: str, kwargs: dict[str, Any]) -> dict:
+async def _dispatch_cli_action(
+    client: Any, action: str, kwargs: dict[str, Any]
+) -> dict:
     """Call the client method matching a resolved cli action; ``action`` is
     already validated by ``resolve_action`` against ``CLI_ACTIONS``, and every
     cli action name equals its client method name."""
