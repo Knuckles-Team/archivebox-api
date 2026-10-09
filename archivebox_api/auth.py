@@ -1,12 +1,13 @@
 """Authentication module for archivebox-api."""
 
-from agent_utilities.base_utilities import get_logger
-from agent_utilities.core.config import setting
-from agent_utilities.core.transport_security import resolve_configured_tls_profile
+import logging
+
+from agent_connector_sdk.config import setting
+from agent_connector_sdk.tls.resolve import resolve_tls_profile
 
 from archivebox_api.api_client import Api
 
-logger = get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 def get_client():
@@ -24,7 +25,7 @@ def get_client():
         username=username,
         password=password,
         api_key=api_key,
-        tls_profile=resolve_configured_tls_profile(
+        tls_profile=resolve_tls_profile(
             "archivebox",
             profile_name=setting("ARCHIVEBOX_TLS_PROFILE", "") or None,
             profile_ref=setting("ARCHIVEBOX_TLS_PROFILE_REF", "") or None,

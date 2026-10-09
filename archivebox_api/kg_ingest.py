@@ -8,14 +8,13 @@ every applicable modality (the "maximum ingestion" bar):
   ``:ArchiveResult`` / ``:Tag`` nodes + ``:hasArchiveResult`` / ``:hasTag`` links.
 * **documents** — a snapshot's title/URL text → a ``:Document`` (``:hasPageText``) so the
   archived page becomes semantic-search fodder; hub-side enrichment chunks/embeds it.
-* **blobs** — raw web-capture bytes (HTML, screenshot, PDF, WARC) → ``:Blob`` +
-  ``:AssetOccurrence`` via :class:`MediaStore` (:func:`ingest_snapshot_blob`).
+* **blobs** — raw web-capture bytes (HTML, screenshot, PDF, WARC) → a content-addressed
+  media record via :func:`ingest_snapshot_blob`.
 
-Everything rides the required shared
-``agent_utilities.knowledge_graph.memory.native_ingest`` transaction primitive. Engine
+Everything rides the shared ``agent_connector_sdk.ingest`` knowledge-ingest facade. Engine
 failures are explicit; the connector never acknowledges a partial or absent write. Node ids
 follow ``archivebox:<class>:<externalId>`` and ``node_type`` matches a class the package's
-``ontology_providers`` ``archivebox.ttl`` federates.
+``connector_manifest.yml`` declares.
 """
 
 from __future__ import annotations
@@ -23,14 +22,17 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from agent_utilities.knowledge_graph.memory.native_ingest import (
-    ingest_documents as _native_ingest_documents,
-)
-from agent_utilities.knowledge_graph.memory.native_ingest import (
-    ingest_entities as _native_ingest_entities,
-)
-from agent_utilities.knowledge_graph.memory.native_ingest import (
-    media_store as _native_media_store,
+from agent_connector_sdk.ingest import (
+    ChangeSet,
+    Document,
+    Entity,
+    IngestBinding,
+    IngestError,
+    IngestUnavailableError,
+    KnowledgeIngest,
+    MediaAsset,
+    Relationship,
+    current_ingest,
 )
 
 logger = logging.getLogger("archivebox_api.kg")
@@ -38,44 +40,88 @@ logger = logging.getLogger("archivebox_api.kg")
 _SOURCE = "archivebox-api"
 _DOMAIN = "archivebox"
 
+_BINDING = IngestBinding(connector="archivebox-api", stream=_DOMAIN)
+# sanitize=False: the archived page's own source URL is the product data for a web
+# archive, not incidental PII — the default PersistencePrivacyGuard redacts URL-shaped
+# property values ("[REDACTED_LOCATION]"), which would destroy blob provenance here.
+_BLOB_BINDING = IngestBinding(
+    connector="archivebox-api",
+    stream=_DOMAIN,
+    media_type="AssetOccurrence",
+    sanitize=False,
+)
 
-def ingest_entities(
+
+def _to_entity(record: dict[str, Any]) -> Entity:
+    # id/node_type are intentionally read with .get(): a missing one must reach
+    # the SDK's own request builder (agent_connector_sdk.ingest.request._record),
+    # which raises IngestError("every entity needs an id and a node_type") —
+    # don't duplicate that validation here.
+    return Entity(
+        id=record.get("id"),
+        node_type=record.get("node_type"),
+        properties={k: v for k, v in record.items() if k not in ("id", "node_type")},
+    )
+
+
+def _to_relationship(record: dict[str, Any]) -> Relationship:
+    props = {
+        k: v
+        for k, v in record.items()
+        if k not in ("source", "target", "relationship")
+    }
+    return Relationship(
+        source=record["source"],
+        target=record["target"],
+        relationship=record["relationship"],
+        properties=props or None,
+    )
+
+
+def _to_document(record: dict[str, Any]) -> Document:
+    return Document(
+        id=record["id"],
+        text=record["text"],
+        title=record.get("title"),
+        source_uri=record.get("source_uri"),
+        properties={
+            k: v
+            for k, v in record.items()
+            if k not in ("id", "text", "title", "source_uri")
+        },
+    )
+
+
+async def ingest_entities(
     entities: list[dict[str, Any]],
     relationships: list[dict[str, Any]] | None = None,
     *,
-    source: str = _SOURCE,
-    domain: str = _DOMAIN,
-    client: Any | None = None,
-    graph: str | None = None,
+    ingest: KnowledgeIngest | None = None,
 ) -> dict[str, int]:
     """Write canonical typed nodes and relationships in one native transaction."""
-    return _native_ingest_entities(
-        entities,
-        relationships,
-        source=source,
-        domain=domain,
-        client=client,
-        graph=graph,
+    if not entities:
+        raise IngestError("ingest_entities needs at least one entity")
+    change_set = ChangeSet(
+        entities=tuple(_to_entity(e) for e in entities),
+        relationships=tuple(_to_relationship(r) for r in relationships or ()),
     )
+    service = ingest or current_ingest()
+    receipt = await service.submit(_BINDING, change_set)
+    return {"nodes": receipt.affected_count, "edges": receipt.relationship_count}
 
 
-def ingest_documents(
+async def ingest_documents(
     docs: list[dict[str, Any]],
     *,
-    source: str = _SOURCE,
-    domain: str = _DOMAIN,
-    client: Any | None = None,
-    graph: str | None = None,
+    ingest: KnowledgeIngest | None = None,
 ) -> dict[str, int]:
     """Write text records as canonical ``:Document`` nodes."""
-    return _native_ingest_documents(
-        docs, source=source, domain=domain, client=client, graph=graph
-    )
-
-
-def media_store() -> Any:
-    """Return the authoritative native media store."""
-    return _native_media_store()
+    if not docs:
+        raise IngestError("ingest_documents needs at least one document")
+    change_set = ChangeSet(documents=tuple(_to_document(d) for d in docs))
+    service = ingest or current_ingest()
+    receipt = await service.submit(_BINDING, change_set)
+    return {"nodes": receipt.affected_count, "edges": receipt.relationship_count}
 
 
 # --------------------------------------------------------------------------- #
@@ -268,19 +314,27 @@ def map_archiveresults(
 # --------------------------------------------------------------------------- #
 # high-level ingest entry points (called by the Wire-First MCP tool / fetch flow)
 # --------------------------------------------------------------------------- #
-def ingest_snapshots(
+async def ingest_snapshots(
     snapshots: list[dict[str, Any]],
     *,
-    client: Any | None = None,
-    graph: str | None = None,
+    ingest: KnowledgeIngest | None = None,
 ) -> dict[str, int] | None:
     """Ingest snapshot records as ``:Snapshot`` (+ ``:Tag`` + ``:Document``) nodes.
 
-    Returns merged ``{"nodes":n, "edges":m, "documents":d}`` or ``None``.
+    Returns merged ``{"nodes":n, "edges":m, "documents":d}``, or ``None`` best-effort
+    when no engine is reachable.
     """
     entities, relationships, documents = map_snapshots(snapshots)
-    node_res = ingest_entities(entities, relationships, client=client, graph=graph)
-    doc_res = ingest_documents(documents, client=client, graph=graph)
+    try:
+        node_res = (
+            await ingest_entities(entities, relationships, ingest=ingest)
+            if entities
+            else None
+        )
+        doc_res = await ingest_documents(documents, ingest=ingest) if documents else None
+    except IngestUnavailableError as e:
+        logger.debug("Operation failed: error_type=%s", type(e).__name__)
+        return None
     if node_res is None and doc_res is None:
         return None
     return {
@@ -290,30 +344,24 @@ def ingest_snapshots(
     }
 
 
-def ingest_archiveresults(
+async def ingest_archiveresults(
     results: list[dict[str, Any]],
     *,
-    client: Any | None = None,
-    graph: str | None = None,
+    ingest: KnowledgeIngest | None = None,
 ) -> dict[str, int] | None:
     """Ingest ArchiveResult records as ``:ArchiveResult`` nodes + snapshot links."""
     entities, relationships = map_archiveresults(results)
-    return ingest_entities(entities, relationships, client=client, graph=graph)
-
-
-def _resolve_media_store(media_store: Any | None) -> Any | None:
-    """Return the injected store, or lazily resolve the authoritative one."""
-    if media_store is not None:
-        return media_store
+    if not entities:
+        return None
     try:
-        return globals()["media_store"]()
-    except Exception as e:  # noqa: BLE001 — no reachable engine is non-fatal
-        logger.warning("Operation failed: error_type=%s", type(e).__name__)
+        return await ingest_entities(entities, relationships, ingest=ingest)
+    except IngestUnavailableError as e:
+        logger.debug("Operation failed: error_type=%s", type(e).__name__)
         return None
 
 
 def _media_type_for(mime_type: str) -> str:
-    """Classify a MIME type into the coarse media-type buckets the store expects."""
+    """Classify a MIME type into the coarse media-type buckets used for provenance."""
     if mime_type.startswith("image"):
         return "image"
     if mime_type == "application/pdf":
@@ -335,65 +383,51 @@ def _blob_provenance(snapshot: dict[str, Any], extractor: str) -> dict[str, Any]
     }
 
 
-def _store_blob(
-    store: Any,
-    data: bytes,
-    media_type: str,
-    mime_type: str,
-    name: str,
-    extra: dict[str, Any],
-) -> Any | None:
-    """Persist bytes via the media store, returning None on any store failure."""
-    try:
-        return store.store_media(
-            data,
-            media_type=media_type,
-            mime_type=mime_type,
-            source=_SOURCE,
-            name=name,
-            extra=extra,
-        )
-    except Exception as e:  # noqa: BLE001 — engine/store failure is non-fatal
-        logger.warning("Operation failed: error_type=%s", type(e).__name__)
-        return None
-
-
 def ingest_snapshot_blob(
     data: bytes | None,
     *,
     snapshot: dict[str, Any] | None = None,
     mime_type: str = "application/octet-stream",
     extractor: str = "",
-    media_store: Any | None = None,  # noqa: A002 — injectable for tests
+    ingest: KnowledgeIngest | None = None,
 ) -> dict[str, Any] | None:
-    """Store raw web-capture bytes as a ``:Blob`` + ``:AssetOccurrence`` in the graph.
+    """Store raw web-capture bytes as a content-addressed media record in the graph.
 
     ``snapshot`` supplies provenance (source URL, abid, extractor). Returns
-    ``{asset_id, digest, size_bytes}`` on success, or ``None`` (no engine / no bytes).
+    ``{asset_id, digest, size_bytes, media_type}`` on success, or ``None`` (no
+    bytes, or no reachable engine). This path has no async caller today, so it
+    stays synchronous via ``KnowledgeIngest.submit_blocking`` rather than forcing
+    every caller to ``await``.
     """
     if not data:
         return None
-    store = _resolve_media_store(media_store)
-    if store is None:
-        return None
     snapshot = snapshot or {}
-    media_type = _media_type_for(mime_type)
+    media_kind = _media_type_for(mime_type)
     extra = _blob_provenance(snapshot, extractor)
+    extra["media_kind"] = media_kind
     name = str(
         snapshot.get("title") or snapshot.get("url") or (snapshot.get("abid") or "")
     )
-    stored = _store_blob(store, data, media_type, mime_type, name, extra)
-    if stored is None:
+    asset = MediaAsset(data=data, mime_type=mime_type, name=name, properties=extra)
+    change_set = ChangeSet(media=(asset,))
+    try:
+        service = ingest or current_ingest()
+        receipt = service.submit_blocking(_BLOB_BINDING, change_set)
+    except (IngestUnavailableError, IngestError) as e:  # noqa: BLE001 — best-effort
+        logger.warning("Operation failed: error_type=%s", type(e).__name__)
         return None
+    admission = receipt.raw_admissions[-1] if receipt.raw_admissions else None
+    asset_id = admission.record_id if admission else None
+    digest = admission.raw_digest if admission else None
     logger.info(
         "KG blob ingest: stored web snapshot %s (%s bytes) as asset %s",
         name,
         len(data),
-        getattr(stored, "asset_id", "?"),
+        asset_id or "?",
     )
     return {
-        "asset_id": stored.asset_id,
-        "digest": stored.digest,
+        "asset_id": asset_id,
+        "digest": digest,
         "size_bytes": len(data),
-        "media_type": media_type,
+        "media_type": media_kind,
     }
