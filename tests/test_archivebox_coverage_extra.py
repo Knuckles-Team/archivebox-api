@@ -7,7 +7,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 import requests
-from agent_utilities.core.exceptions import (
+from agent_connector_sdk.exceptions import (
     AuthError,
     MissingParameterError,
     ParameterError,
@@ -114,7 +114,7 @@ def test_auth_get_client_combinations(mock_api_class, temp_env):
             "ARCHIVEBOX_API_KEY": "some-api-key",
         }
     )
-    with patch("archivebox_api.auth.resolve_configured_tls_profile") as resolve_profile:
+    with patch("archivebox_api.auth.resolve_tls_profile") as resolve_profile:
         get_client()
         mock_api_class.assert_called_with(
             url="http://localhost:8000",
@@ -532,7 +532,7 @@ def test_mcp_server_main_execution(mock_get_mcp):
 
     with (
         patch(
-            "agent_utilities.mcp.server_factory.create_mcp_server",
+            "agent_connector_sdk.mcp.server.create_mcp_server",
             return_value=(mock_args, mock_mcp, []),
         ),
         patch("sys.exit"),

@@ -2,14 +2,12 @@ import sys
 from abc import ABC, abstractmethod
 
 import requests
-from agent_utilities.core.exceptions import (
+from agent_connector_sdk.exceptions import (
     AuthError,
     MissingParameterError,
 )
-from agent_utilities.core.transport_security import (
-    ResolvedTLSProfile,
-    resolve_configured_tls_profile,
-)
+from agent_connector_sdk.tls.profile import ResolvedTLSProfile
+from agent_connector_sdk.tls.resolve import resolve_tls_profile
 
 
 class BaseApiClient(ABC):
@@ -25,7 +23,7 @@ class BaseApiClient(ABC):
         if url is None:
             raise MissingParameterError("URL is required")
 
-        self.tls_profile = tls_profile or resolve_configured_tls_profile("archivebox")
+        self.tls_profile = tls_profile or resolve_tls_profile("archivebox")
         self._session = self.tls_profile.configure_requests_session(requests.Session())
         self.url = url.rstrip("/")
         self.headers = {"Content-Type": "application/json"}

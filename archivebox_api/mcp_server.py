@@ -30,11 +30,11 @@ import logging
 import sys
 from typing import Any
 
-from agent_utilities.core.config import load_config
-from agent_utilities.mcp.action_dispatch import resolve_action
-from agent_utilities.mcp.concurrency import run_blocking
-from agent_utilities.mcp.server_factory import create_mcp_server
-from agent_utilities.mcp.verbose_tools import register_tool_surface
+from agent_connector_sdk.config import load_config
+from agent_connector_sdk.mcp.action_dispatch import resolve_action
+from agent_connector_sdk.mcp.concurrency import run_blocking
+from agent_connector_sdk.mcp.server import create_mcp_server
+from agent_connector_sdk.mcp.tool_surface import register_tool_surface
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
@@ -80,7 +80,7 @@ async def _dispatch_core_action(
         raise ValueError(f"Unknown action: {action}")
     resp = await run_blocking(getattr(client, action), **kwargs)
     if action == "get_snapshots":
-        _auto_ingest_snapshots(resp)
+        await _auto_ingest_snapshots(resp)
     return resp
 
 
@@ -229,7 +229,7 @@ def _records_from_response(resp: Any) -> list[dict[str, Any]]:
     return []
 
 
-def _auto_ingest_snapshots(resp: Any) -> None:
+async def _auto_ingest_snapshots(resp: Any) -> None:
     """Default-on, best-effort native KG ingestion after a snapshot fetch.
 
     No-ops unless a live epistemic-graph engine is reachable. Disable by setting
@@ -245,7 +245,7 @@ def _auto_ingest_snapshots(resp: Any) -> None:
             return
         from archivebox_api.kg_ingest import ingest_snapshots
 
-        ingest_snapshots(records)
+        await ingest_snapshots(records)
     except Exception as e:  # noqa: BLE001 — ingestion is best-effort
         logger.debug("Operation failed: error_type=%s", type(e).__name__)
 
@@ -283,7 +283,7 @@ def register_kg_tools(mcp: FastMCP):
         kwargs = {k: v for k, v in kwargs.items() if v is not None}
         resp = await run_blocking(client.get_snapshots, **kwargs)
         records = _records_from_response(resp)
-        result = ingest_snapshots(records)
+        result = await ingest_snapshots(records)
         return {"listed": len(records), "ingested": result}
 
     @mcp.tool(tags={"kg"})
@@ -314,7 +314,7 @@ def register_kg_tools(mcp: FastMCP):
         kwargs = {k: v for k, v in kwargs.items() if v is not None}
         resp = await run_blocking(client.get_archiveresults, **kwargs)
         records = _records_from_response(resp)
-        result = ingest_archiveresults(records)
+        result = await ingest_archiveresults(records)
         return {"listed": len(records), "ingested": result}
 
 
