@@ -15,7 +15,7 @@
 
 ## Functional Requirements
 
-- **FR-001**: Minor update: agent-utilities 0.2.40 (installed) -> 0.16.0
+- **FR-001**: Minor update: agent-connector-sdk 0.2.40 (installed) -> 0.16.0
 - **FR-002**: Minor update: pytest-xdist 3.6.0 (constraint — not installed) -> 3.8.0
 - **FR-003**: 9 functions with nesting depth >4
 - **FR-004**: 6 tests without assertions
@@ -41,7 +41,7 @@
 - **FR-024**: Test directory lacks subdirectory organization (consider unit/, integration/, e2e/)
 - **FR-025**: 6 tests have no assertions
 - **FR-026**: Undocumented env vars: AUTH_TYPE, DEBUG, HOST, PYTHONUNBUFFERED, TRANSPORT
-- **FR-027**: Analysis error: No module named 'agent_utilities.knowledge_graph'
+- **FR-027**: Analysis error: No module named 'agent_connector_sdk.knowledge_graph'
 
 ## Success Criteria
 

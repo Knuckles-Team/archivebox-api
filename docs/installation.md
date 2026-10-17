@@ -21,8 +21,8 @@ The base install is intentionally minimal. Install the extra for what the operat
 
 | Extra | Install | Pulls in |
 |---|---|---|
-| `mcp` | `pip install "archivebox-api[mcp]"` | FastMCP MCP-server runtime (`agent-utilities[mcp]`) |
-| `agent` | `pip install "archivebox-api[agent]"` | Pydantic-AI agent + Logfire tracing (`agent-utilities[agent-runtime,logfire]`) |
+| `mcp` | `pip install "archivebox-api[mcp]"` | FastMCP MCP-server runtime (`agent-connector-sdk[mcp]`) |
+| `agent` | `pip install "archivebox-api[agent]"` | Pydantic-AI agent + Logfire tracing (`agent-connector-sdk[agent-runtime,logfire]`) |
 | `all` | `pip install "archivebox-api[all]"` | Everything above |
 
 ```bash

@@ -1,5 +1,5 @@
 site_name: "archivebox-api"
-site_description: "Pythonic ArchiveBox API wrapper, MCP Server, and A2A Agent for the agent-utilities ecosystem — programmatic web-archiving for agentic AI."
+site_description: "Pythonic ArchiveBox API wrapper, MCP Server, and A2A Agent for the Graph OS ecosystem — programmatic web-archiving for agentic AI."
 site_url: "https://knuckles-team.github.io/archivebox-api/"
 repo_name: "Knuckles-Team/archivebox-api"
 repo_url: "https://github.com/Knuckles-Team/archivebox-api"
