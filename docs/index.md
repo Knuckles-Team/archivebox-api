@@ -1,7 +1,7 @@
 # archivebox-api
 
 A Pythonic **ArchiveBox API wrapper, MCP Server, and A2A Agent** for the
-Graph OS ecosystem — programmatic access to an ArchiveBox web-archiving
+Arbora ecosystem — programmatic access to an ArchiveBox web-archiving
 instance for agentic AI.
 
 !!! info "Official documentation"
