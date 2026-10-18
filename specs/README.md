@@ -12,4 +12,4 @@ Read the existing specs first. Extend the spec that owns the behavior. Create a 
 
 ## Local specifications
 
-This repository has no local spec yet.
+- [`CONN-ARCHIVEBOX-API-WEB-SOURCE`](web-source/spec.md) — Archive pages as the secondary web-source backend.

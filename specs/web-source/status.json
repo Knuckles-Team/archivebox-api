@@ -1,0 +1,8 @@
+{
+  "schema_version": 2,
+  "spec_id": "CONN-ARCHIVEBOX-API-WEB-SOURCE",
+  "owner_repo": "archivebox-api",
+  "delivery_state": "SPECIFIED",
+  "requirement_ids": [],
+  "requirements": []
+}
