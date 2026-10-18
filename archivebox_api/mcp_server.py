@@ -41,7 +41,7 @@ from starlette.responses import JSONResponse
 from archivebox_api.api_client import Api
 from archivebox_api.auth import get_client
 
-__version__ = "2.4.0"
+__version__ = "2.4.1"
 
 # Telemetry & Observability
 logger = get_logger(name="archivebox-api")
@@ -382,10 +382,21 @@ def register_web_tools(mcp: FastMCP):
 def get_mcp_instance() -> tuple[Any, ...]:
     """Initialize and return the MCP instance."""
     load_config()
+    from pathlib import Path
+
+    from agent_connector_sdk.mcp.content import ConnectorContent
+
+    package_root = Path(__file__).resolve().parent
     args, mcp, middlewares = create_mcp_server(
         name="archivebox-api MCP",
         version=__version__,
-        instructions="archivebox-api MCP Server — Condensed Action-Routed Tools.",
+        instructions="archivebox-api MCP Server — one typed tool per API operation.",
+        content=ConnectorContent(
+            connector="archivebox-api",
+            package_root=package_root,
+            package_version=__version__,
+            manifest_path=package_root / "connector_manifest.yml",
+        ),
     )
 
     @mcp.custom_route("/health", methods=["GET"])
