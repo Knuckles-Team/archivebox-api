@@ -76,8 +76,8 @@ schema_mappings:
 sync:
 - preset: archivebox-snapshots
   server: archivebox-mcp
-  tool: archivebox_core
-  action: get_snapshots
+  tool: archivebox_get_snapshots
+  action: null
   records_path: items
   id_field: abid
   title_field: url
@@ -85,18 +85,17 @@ sync:
   updated_field: modified_at
   pagination: page
   doc_type: web_snapshot
-  tool_schema_sha256: de56ae93ee1ed8a0669f0eec9a4dde5483ad6adc2601c1abdf961fc7968212f1
+  tool_schema_sha256: 99b97a41c2cc29078b2cf27af52c6ab99ebc97182eb6100611a86fe3a3abfea4
   raw:
     server: archivebox-mcp
-    tool: archivebox_core
-    action: get_snapshots
+    tool: archivebox_get_snapshots
     records_path: items
     id_field: abid
     title_field: url
     text_field: title
     updated_field: modified_at
     pagination: page
-    page_kind: page
+    page_kind: number
     page_param: page
     page_size_param: limit
     doc_type: web_snapshot
