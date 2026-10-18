@@ -16,6 +16,8 @@
         "ARCHIVEBOX_URL": "http://localhost:8000",
         "AUTHENTICATIONTOOL": "True",
         "CLITOOL": "True",
+        "WEBTOOL": "True",
+        "ARCHIVEBOX_EXTRACT_TIMEOUT_S": "120",
         "CORETOOL": "True",
         "KGTOOL": "True"
       }

@@ -102,6 +102,8 @@ This codebase is aligned with the **5 Core Pillars Architecture** of the `agent-
 | `AUTHENTICATIONTOOL` | `True` |  |
 | `CORETOOL` | `True` |  |
 | `CLITOOL` | `True` |  |
+| `WEBTOOL` | `True` | Enables the web-source tools `web_fetch` and `web_extract`. |
+| `ARCHIVEBOX_EXTRACT_TIMEOUT_S` | `120` | Seconds `web_extract` waits for a snapshot to complete. |
 | `KGTOOL` | `True` |  |
 | `ARCHIVEBOX_KG_AUTO_INGEST` | `1` |  |
 

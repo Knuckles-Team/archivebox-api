@@ -332,14 +332,12 @@ def get_web_source() -> Any:
         base_url = setting("ARCHIVEBOX_URL") or setting("ARCHIVEBOX_BASE_URL")
         if not base_url:
             raise RuntimeError("ARCHIVEBOX_BASE_URL not set")
-        verify = str(setting("ARCHIVEBOX_VERIFY", "True")).lower() not in {"false", "0"}
         _WEB_SOURCE = ArchiveWebSource(
             api=get_client(),
             session=ArchiveSession(
                 base_url=base_url,
                 username=setting("ARCHIVEBOX_USERNAME", "") or "",
                 password=setting("ARCHIVEBOX_PASSWORD", "") or "",
-                verify=verify,
             ),
             timeout_s=float(setting("ARCHIVEBOX_EXTRACT_TIMEOUT_S", 120.0)),
         )
