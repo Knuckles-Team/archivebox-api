@@ -42,7 +42,7 @@ xychart-beta
 `██████████████░░░░░░` 74/100
 
 > [!NOTE]
-> Detected ecosystem marker: agent-utilities → Agent-Utilities Ecosystem
+> Detected ecosystem marker: agent-connector-sdk → Agent-Utilities Ecosystem
 
 | Criterion | Points | Evidence | Reasoning |
 |-----------|--------|----------|-----------|
@@ -295,7 +295,7 @@ xychart-beta
 | 5 | 🔴 High | Test Coverage | 6 tests without assertions | High | Medium |
 | 6 | 🔴 High | Test Coverage | Test suite lacks intent diversity (only one type) | High | Medium |
 | 7 | 🔴 High | Test Coverage | 15 potential doc-test drift items | High | Medium |
-| 8 | 🟡 Medium | Project Analysis | Detected ecosystem marker: agent-utilities → Agent-Utilities Ecosystem | Medium | Low |
+| 8 | 🟡 Medium | Project Analysis | Detected ecosystem marker: agent-connector-sdk → Agent-Utilities Ecosystem | Medium | Low |
 | 9 | 🟡 Medium | Project Analysis | Protocol support: MCP | Medium | Low |
 | 10 | 🟡 Medium | Codebase Optimization | 9 functions with nesting depth >4 | Medium | Low |
 | 11 | 🟡 Medium | Architecture & Design Patterns | SRP: 1 modules exceed 500 lines (god modules) | Medium | Low |

@@ -9,7 +9,6 @@ __all__: list[str] = []
 CORE_MODULES: list[str] = ["archivebox_api.api_client"]
 
 OPTIONAL_MODULES = {
-    "archivebox_api.agent_server": "agent",
     "archivebox_api.mcp_server": "mcp",
 }
 
@@ -31,7 +30,7 @@ for module_name in CORE_MODULES:
         module = importlib.import_module(module_name)
         _expose_members(module)
 
-# Dynamic/lazy loading of optional modules (agent_server, mcp_server)
+# Dynamic/lazy loading of optional modules (mcp_server)
 _loaded_optional_modules: dict[str, Any] = {}
 
 
@@ -47,7 +46,6 @@ def _import_module_safely(module_name: str):
 # optional module each flag reports on.
 _AVAILABILITY_FLAGS = {
     "_MCP_AVAILABLE": "mcp_server",
-    "_AGENT_AVAILABLE": "agent_server",
 }
 
 

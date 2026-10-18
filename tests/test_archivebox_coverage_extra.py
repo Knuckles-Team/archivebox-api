@@ -1,7 +1,5 @@
 import importlib
-import os
 import sys
-import warnings
 from typing import Callable, cast
 from unittest.mock import MagicMock, patch
 
@@ -32,47 +30,8 @@ def test_init_import_module_safely():
     assert res is None
 
 
-@pytest.mark.concept("AU-ECO.messaging.native-backend-abstraction")
-def test_init_getattr():
-    # 1. Test _MCP_AVAILABLE and _AGENT_AVAILABLE
-    assert hasattr(archivebox_api, "_MCP_AVAILABLE")
-    assert hasattr(archivebox_api, "_AGENT_AVAILABLE")
-
-    # 2. Test missing/fake optional modules
-    with patch.dict(archivebox_api.OPTIONAL_MODULES, {"nonexistent_server": "fake"}):
-        val = getattr(archivebox_api, "_MCP_AVAILABLE")
-        assert isinstance(val, bool)
-
-    # 3. Test empty/missing optional modules to hit line 52/57 of __init__.py
-    with patch.dict(archivebox_api.OPTIONAL_MODULES, {}, clear=True):
-        assert archivebox_api._MCP_AVAILABLE is False
-        assert archivebox_api._AGENT_AVAILABLE is False
-
-    # 4. Test retrieving existent attributes dynamically
-    mcp_instance = getattr(archivebox_api, "get_mcp_instance")
-    assert mcp_instance is not None
-
-    # 5. Test nonexistent attribute raises AttributeError
-    with pytest.raises(AttributeError):
-        _ = archivebox_api.nonexistent_attribute_abc
 
 
-@pytest.mark.concept("AU-ECO.messaging.native-backend-abstraction")
-def test_init_lazy_expose_members():
-    # Remove attributes from module globals if already exposed to force __getattr__ invocation
-    for name in [
-        "get_mcp_instance",
-        "mcp_server",
-        "get_agent_instance",
-        "agent_server",
-    ]:
-        if name in archivebox_api.__dict__:
-            del archivebox_api.__dict__[name]
-    # Clear mcp_server from loaded optional modules to force dynamic lookup
-    if "archivebox_api.mcp_server" in archivebox_api._loaded_optional_modules:
-        del archivebox_api._loaded_optional_modules["archivebox_api.mcp_server"]
-    # Trigger hasattr and getattr via __getattr__ exposing dynamic members (covers line 69)
-    assert archivebox_api.get_mcp_instance is not None
 
 
 @pytest.mark.concept("AU-ECO.messaging.native-backend-abstraction")
@@ -550,68 +509,7 @@ def test_mcp_server_main_execution(mock_get_mcp):
 # =====================================================================
 
 
-@pytest.mark.concept("AU-ECO.mcp.fastmcp-middleware")
-@patch("agent_utilities.create_agent_server")
-def test_agent_server_run(mock_create):
-    from archivebox_api.agent_server import agent_server
-
-    # Test running server with --debug enabled in args
-    with patch("sys.argv", ["agent_server.py", "--debug"]):
-        with patch("logging.getLogger") as mock_get_logger:
-            mock_logger = MagicMock()
-            mock_get_logger.return_value = mock_logger
-
-            agent_server()
-
-            assert mock_logger.setLevel.called
-            assert mock_create.called
 
 
-@pytest.mark.concept("AU-ECO.mcp.fastmcp-middleware")
-def test_agent_server_main_execution():
-    import runpy
-
-    with (
-        patch("agent_utilities.initialize_workspace"),
-        patch("agent_utilities.load_identity", return_value={"name": "test"}),
-        patch(
-            "agent_utilities.build_system_prompt_from_workspace", return_value="prompt"
-        ),
-        patch("agent_utilities.create_agent_server") as mock_server,
-        patch("agent_utilities.create_agent_parser") as mock_parser,
-        patch("sys.argv", ["agent_server.py"]),
-    ):
-        mock_args = MagicMock()
-        mock_args.debug = False
-        mock_args.mcp_url = None
-        mock_args.mcp_config = None
-        mock_args.host = "localhost"
-        mock_args.port = 8000
-        mock_args.provider = "openai"
-        mock_args.model_id = "gpt-4"
-        mock_args.base_url = None
-        mock_args.api_key = "test"
-        mock_args.custom_skills_directory = None
-        mock_args.web = False
-        mock_args.otel = False
-        mock_args.otel_endpoint = None
-        mock_args.otel_headers = None
-        mock_args.otel_public_key = None
-        mock_args.otel_secret_key = None
-        mock_args.otel_protocol = "http/protobuf"
-        mock_parser.return_value.parse_args.return_value = mock_args
-
-        module_path = importlib.import_module("archivebox_api.agent_server").__file__
-        assert module_path is not None
-        runpy.run_path(module_path, run_name="__main__")
-        assert mock_server.called
 
 
-@pytest.mark.concept("AU-ECO.mcp.fastmcp-middleware")
-def test_main_block_import():
-    # Programmatic check of __main__.py import
-    import runpy
-
-    with patch("archivebox_api.agent_server.agent_server") as mock_agent_server:
-        runpy.run_module("archivebox_api.__main__", run_name="__main__")
-        mock_agent_server.assert_called_once()
