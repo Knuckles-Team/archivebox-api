@@ -93,8 +93,10 @@
     {
       "id": "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.7",
       "title": "Ingest mappings",
-      "delivery_state": "SPECIFIED",
-      "landed_in": [],
+      "delivery_state": "VERIFIED",
+      "landed_in": [
+        "eba0cc6a611e"
+      ],
       "verified_by": [
         "tests/test_web_source.py:219"
       ]
