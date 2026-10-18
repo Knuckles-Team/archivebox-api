@@ -41,7 +41,7 @@ from starlette.responses import JSONResponse
 from archivebox_api.api_client import Api
 from archivebox_api.auth import get_client
 
-__version__ = "2.3.0"
+__version__ = "2.4.0"
 
 # Telemetry & Observability
 logger = get_logger(name="archivebox-api")
@@ -316,6 +316,69 @@ def register_kg_tools(mcp: FastMCP):
         records = _records_from_response(resp)
         result = await ingest_archiveresults(records)
         return {"listed": len(records), "ingested": result}
+
+
+_WEB_SOURCE: Any = None
+
+
+def get_web_source() -> Any:
+    """The process-wide ArchiveBox web source (CONN-ARCHIVEBOX-API-WEB-SOURCE-R001)."""
+    global _WEB_SOURCE
+    if _WEB_SOURCE is None:
+        from agent_connector_sdk.config import setting
+
+        from archivebox_api.web_source import ArchiveSession, ArchiveWebSource
+
+        base_url = setting("ARCHIVEBOX_URL") or setting("ARCHIVEBOX_BASE_URL")
+        if not base_url:
+            raise RuntimeError("ARCHIVEBOX_BASE_URL not set")
+        verify = str(setting("ARCHIVEBOX_VERIFY", "True")).lower() not in {"false", "0"}
+        _WEB_SOURCE = ArchiveWebSource(
+            api=get_client(),
+            session=ArchiveSession(
+                base_url=base_url,
+                username=setting("ARCHIVEBOX_USERNAME", "") or "",
+                password=setting("ARCHIVEBOX_PASSWORD", "") or "",
+                verify=verify,
+            ),
+            timeout_s=float(setting("ARCHIVEBOX_EXTRACT_TIMEOUT_S", 120.0)),
+        )
+    return _WEB_SOURCE
+
+
+def register_web_tools(mcp: FastMCP):
+    """The web-source contract: one tool per operation (CONN-ARCHIVEBOX-API-WEB-SOURCE-R001)."""
+    from fastmcp.exceptions import ToolError
+    from mcp.types import ToolAnnotations
+
+    from archivebox_api.web_source import WebSourceRefused
+
+    annotations = ToolAnnotations(
+        readOnlyHint=False,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=True,
+    )
+
+    @mcp.tool(name="web_fetch", tags={"web"}, annotations=annotations)
+    async def web_fetch(
+        url: str = Field(description="The page URL to archive"),
+    ) -> dict:
+        """Archive one URL, reusing its snapshot when it is already archived."""
+        try:
+            return await run_blocking(get_web_source().fetch, url)
+        except WebSourceRefused as refused:
+            raise ToolError(str(refused)) from refused
+
+    @mcp.tool(name="web_extract", tags={"web"}, annotations=annotations)
+    async def web_extract(
+        url: str = Field(description="The page URL to archive and read"),
+    ) -> dict:
+        """Archive one URL and return its extracted main-content text and metadata."""
+        try:
+            return await run_blocking(get_web_source().extract, url)
+        except WebSourceRefused as refused:
+            raise ToolError(str(refused)) from refused
 
 
 def get_mcp_instance() -> tuple[Any, ...]:
