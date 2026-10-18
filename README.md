@@ -20,7 +20,7 @@
 ![PyPI - Wheel](https://img.shields.io/pypi/wheel/archivebox-api)
 ![PyPI - Implementation](https://img.shields.io/pypi/implementation/archivebox-api)
 
-*Version: 2.4.1*
+*Version: 2.5.0*
 
 > **Documentation** — Installation, deployment, usage across the API, CLI, MCP, and
 > A2A agent interfaces, and guidance for provisioning the ArchiveBox platform are
@@ -103,7 +103,9 @@ This codebase is aligned with the **5 Core Pillars Architecture** of the `agent-
 | `CORETOOL` | `True` |  |
 | `CLITOOL` | `True` |  |
 | `WEBTOOL` | `True` | Enables the web-source tools `web_fetch` and `web_extract`. |
+| `WEB_SOURCETOOL` | `True` | Enables the SDK web-source contract tag (`web_fetch`, `web_extract`). |
 | `ARCHIVEBOX_EXTRACT_TIMEOUT_S` | `120` | Seconds `web_extract` waits for a snapshot to complete. |
+| `ARCHIVEBOX_MIN_INTERVAL_S` | `1.0` | Minimum seconds between two web-source requests to one site. |
 | `KGTOOL` | `True` |  |
 | `ARCHIVEBOX_KG_AUTO_INGEST` | `1` |  |
 
