@@ -10,7 +10,8 @@
     "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.3",
     "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.4",
     "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.5",
-    "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.6"
+    "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.6",
+    "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.7"
   ],
   "requirements": [
     {
@@ -25,7 +26,8 @@
         "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.3",
         "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.4",
         "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.5",
-        "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.6"
+        "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.6",
+        "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.7"
       ]
     },
     {
@@ -40,7 +42,7 @@
       "title": "Add URL",
       "delivery_state": "VERIFIED",
       "landed_in": [
-        "f86862f09bdf"
+        "dbbffa293d27"
       ],
       "verified_by": [
         "tests/test_web_source.py:150"
@@ -51,8 +53,8 @@
       "title": "Snapshot status",
       "delivery_state": "VERIFIED",
       "landed_in": [
-        "4ba0fa7275a1",
-        "f86862f09bdf"
+        "c603609b7f9a",
+        "dbbffa293d27"
       ],
       "verified_by": [
         "tests/test_web_source.py:162"
@@ -63,7 +65,7 @@
       "title": "Extracted text",
       "delivery_state": "VERIFIED",
       "landed_in": [
-        "f86862f09bdf"
+        "dbbffa293d27"
       ],
       "verified_by": [
         "tests/test_web_source.py:172",
@@ -75,7 +77,7 @@
       "title": "Refusal and evidence",
       "delivery_state": "VERIFIED",
       "landed_in": [
-        "f86862f09bdf"
+        "dbbffa293d27"
       ],
       "verified_by": [
         "tests/test_web_source.py:187"
@@ -87,6 +89,15 @@
       "delivery_state": "SPECIFIED",
       "landed_in": [],
       "verified_by": []
+    },
+    {
+      "id": "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.7",
+      "title": "Ingest mappings",
+      "delivery_state": "SPECIFIED",
+      "landed_in": [],
+      "verified_by": [
+        "tests/test_web_source.py:219"
+      ]
     }
   ]
 }

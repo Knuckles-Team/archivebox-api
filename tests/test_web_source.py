@@ -214,3 +214,29 @@ def test_session_logs_in_again_after_expiry(archive: Any) -> None:
     session.session.cookies.set("sessionid", "expired")
     assert session.get_text(archive[1] + "htmltotext.txt") == "plain text fallback"
     assert _Archive.logins == 2
+
+
+@pytest.mark.spec("CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.7")
+async def test_served_manifest_maps_document_and_chunk(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """SourceIngest resolves manifest:<connector>#schema_mappings/Document and /Chunk."""
+    import importlib
+
+    from fastmcp import Client
+
+    monkeypatch.setattr("sys.argv", ["archivebox-mcp"])
+    server_module = importlib.import_module("archivebox_api.mcp_server")
+    mcp, *_ = server_module.get_mcp_instance()
+    async with Client(mcp) as client:
+        uris = {str(r.uri) for r in await client.list_resources()}
+        body = await client.read_resource("manifest://connector")
+    assert "manifest://connector" in uris
+    text = body[0].text if hasattr(body[0], "text") else str(body[0])
+    manifest = (
+        json.loads(text)
+        if text.lstrip().startswith("{")
+        else __import__("yaml").safe_load(text)
+    )
+    for record_type in ("Document", "Chunk"):
+        assert manifest["schema_mappings"][record_type]["ontology_class"] == record_type

@@ -26,6 +26,14 @@ resources:
     label: has tag
     target: Tag
     lpg_rel_type: ''
+- name: Document
+  label: Document
+  id_prefix: document
+  relations: []
+- name: Chunk
+  label: Chunk
+  id_prefix: chunk
+  relations: []
 actions:
 - id: epistemic-answer
   name: Epistemic Answer
@@ -42,8 +50,12 @@ events:
 identity:
   id_field:
     web_snapshot: abid
+    Document: id
+    Chunk: id
   title_field:
     web_snapshot: url
+    Document: title
+    Chunk: title
   text_field:
     web_snapshot: title
   updated_field:
@@ -73,6 +85,38 @@ schema_mappings:
       output: xsd:string
       sourceUrl: xsd:string
       timestamp: xsd:string
+  Document:
+    ontology_class: Document
+    fields:
+      text: xsd:string
+      title: xsd:string
+      source_uri: xsd:string
+      content_hash: xsd:string
+      url: xsd:string
+      canonical_url: xsd:string
+      author: xsd:string
+      published: xsd:string
+      site_name: xsd:string
+      content_sha256: xsd:string
+      backend: xsd:string
+      fetch_mode: xsd:string
+      fallback_from: xsd:string
+      search_query: xsd:string
+      search_engine: xsd:string
+      search_rank: xsd:integer
+      chunk_count: xsd:integer
+  Chunk:
+    ontology_class: Chunk
+    fields:
+      text: xsd:string
+      title: xsd:string
+      source_uri: xsd:string
+      content_hash: xsd:string
+      document_id: xsd:string
+      chunk_index: xsd:integer
+      char_start: xsd:integer
+      char_end: xsd:integer
+      backend: xsd:string
 sync:
 - preset: archivebox-snapshots
   server: archivebox-mcp
