@@ -37,7 +37,7 @@
       "title": "Model",
       "delivery_state": "VERIFIED",
       "landed_in": [
-        "b6b66abe1c1e"
+        "bbb45b8946da"
       ],
       "verified_by": [
         "tests/test_conformance.py:135"
@@ -48,10 +48,12 @@
       "title": "Add URL",
       "delivery_state": "VERIFIED",
       "landed_in": [
+        "377b4a850b0e",
         "dbbffa293d27"
       ],
       "verified_by": [
-        "tests/test_web_source.py:150"
+        "tests/test_web_source.py:150",
+        "tests/test_web_source.py:268"
       ]
     },
     {
@@ -112,7 +114,7 @@
       "title": "Conformance",
       "delivery_state": "VERIFIED",
       "landed_in": [
-        "b6b66abe1c1e"
+        "bbb45b8946da"
       ],
       "verified_by": [
         "tests/test_conformance.py:136"
