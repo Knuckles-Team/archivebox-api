@@ -1,0 +1,74 @@
+{
+  "schema_version": 2,
+  "spec_id": "CONN-ARCHIVEBOX-API-WEB-SOURCE",
+  "owner_repo": "archivebox-api",
+  "delivery_state": "SPECIFIED",
+  "requirement_ids": [
+    "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001",
+    "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.1",
+    "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.2",
+    "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.3",
+    "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.4",
+    "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.5",
+    "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.6"
+  ],
+  "requirements": [
+    {
+      "id": "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001",
+      "title": "Archived pages answer through the web-source contract (rollup)",
+      "delivery_state": "SPECIFIED",
+      "landed_in": [],
+      "verified_by": [],
+      "rollup_of": [
+        "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.1",
+        "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.2",
+        "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.3",
+        "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.4",
+        "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.5",
+        "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.6"
+      ]
+    },
+    {
+      "id": "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.1",
+      "title": "Model",
+      "delivery_state": "SPECIFIED",
+      "landed_in": [],
+      "verified_by": []
+    },
+    {
+      "id": "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.2",
+      "title": "Add URL",
+      "delivery_state": "SPECIFIED",
+      "landed_in": [],
+      "verified_by": []
+    },
+    {
+      "id": "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.3",
+      "title": "Snapshot status",
+      "delivery_state": "SPECIFIED",
+      "landed_in": [],
+      "verified_by": []
+    },
+    {
+      "id": "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.4",
+      "title": "Extracted text",
+      "delivery_state": "SPECIFIED",
+      "landed_in": [],
+      "verified_by": []
+    },
+    {
+      "id": "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.5",
+      "title": "Refusal and evidence",
+      "delivery_state": "SPECIFIED",
+      "landed_in": [],
+      "verified_by": []
+    },
+    {
+      "id": "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.6",
+      "title": "Hot-path proof",
+      "delivery_state": "SPECIFIED",
+      "landed_in": [],
+      "verified_by": []
+    }
+  ]
+}
