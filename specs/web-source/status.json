@@ -11,7 +11,8 @@
     "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.4",
     "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.5",
     "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.6",
-    "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.7"
+    "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.7",
+    "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.8"
   ],
   "requirements": [
     {
@@ -27,15 +28,20 @@
         "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.4",
         "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.5",
         "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.6",
-        "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.7"
+        "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.7",
+        "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.8"
       ]
     },
     {
       "id": "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.1",
       "title": "Model",
-      "delivery_state": "SPECIFIED",
-      "landed_in": [],
-      "verified_by": []
+      "delivery_state": "VERIFIED",
+      "landed_in": [
+        "b6b66abe1c1e"
+      ],
+      "verified_by": [
+        "tests/test_conformance.py:135"
+      ]
     },
     {
       "id": "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.2",
@@ -95,10 +101,21 @@
       "title": "Ingest mappings",
       "delivery_state": "VERIFIED",
       "landed_in": [
-        "eba0cc6a611e"
+        "93d21335f669"
       ],
       "verified_by": [
         "tests/test_web_source.py:219"
+      ]
+    },
+    {
+      "id": "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.8",
+      "title": "Conformance",
+      "delivery_state": "VERIFIED",
+      "landed_in": [
+        "b6b66abe1c1e"
+      ],
+      "verified_by": [
+        "tests/test_conformance.py:136"
       ]
     }
   ]
