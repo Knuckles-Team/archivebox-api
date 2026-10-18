@@ -17,7 +17,9 @@
         "AUTHENTICATIONTOOL": "True",
         "CLITOOL": "True",
         "WEBTOOL": "True",
+        "WEB_SOURCETOOL": "True",
         "ARCHIVEBOX_EXTRACT_TIMEOUT_S": "120",
+        "ARCHIVEBOX_MIN_INTERVAL_S": "1.0",
         "CORETOOL": "True",
         "KGTOOL": "True"
       }

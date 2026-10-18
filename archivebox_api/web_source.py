@@ -120,7 +120,19 @@ class ArchiveSession:
         )
 
     def get_text(self, path: str) -> str | None:
-        """The text at ``path``, or ``None`` when the file does not exist."""
+        """The text at ``path``, or ``None`` when it is absent or not text."""
+        found = self.get_file(path)
+        if found is None:
+            return None
+        ctype, body = found
+        if not ctype.startswith(("text/plain", "application/json")):
+            return None
+        return body.decode("utf-8", "replace")
+
+    def get_file(
+        self, path: str, *, max_bytes: int = _MAX_TEXT_BYTES
+    ) -> tuple[str, bytes] | None:
+        """``(content type, bytes)`` of the archive file at ``path``, or ``None``."""
         with self._lock:
             if not self._logged_in:
                 self.login()
@@ -141,12 +153,9 @@ class ArchiveSession:
                 raise WebSourceRefused(
                     "upstream_failed", path, f"HTTP {response.status_code}"
                 )
-            if len(response.content) > _MAX_TEXT_BYTES:
+            if len(response.content) > max_bytes:
                 raise WebSourceRefused("size_exceeded", path)
-            ctype = response.headers.get("content-type", "")
-            if not ctype.startswith(("text/plain", "application/json")):
-                return None
-            return response.content.decode(response.encoding or "utf-8", "replace")
+            return response.headers.get("content-type", ""), response.content
         raise WebSourceRefused("upstream_failed", path, "session expired")
 
 
@@ -216,6 +225,17 @@ class ArchiveWebSource:
                     "upstream_failed", url, "snapshot did not complete"
                 )
             self.sleep(self.poll_interval_s)
+
+    def snapshot(self, url: str) -> dict[str, Any]:
+        """The completed snapshot archiving ``url`` and its archive path."""
+        fetched = self.fetch(url)
+        snapshot_id = fetched["snapshot_id"]
+        snapshot = self._wait(url, snapshot_id)
+        return {
+            **snapshot,
+            "snapshot_id": snapshot_id,
+            "base": f"/snapshot/{snapshot_id.replace('-', '')}/",
+        }
 
     def extract(self, url: str) -> dict[str, Any]:
         """The extracted text and metadata of ``url``'s completed snapshot."""
