@@ -38,30 +38,48 @@
     {
       "id": "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.2",
       "title": "Add URL",
-      "delivery_state": "SPECIFIED",
-      "landed_in": [],
-      "verified_by": []
+      "delivery_state": "VERIFIED",
+      "landed_in": [
+        "f86862f09bdf"
+      ],
+      "verified_by": [
+        "tests/test_web_source.py:150"
+      ]
     },
     {
       "id": "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.3",
       "title": "Snapshot status",
-      "delivery_state": "SPECIFIED",
-      "landed_in": [],
-      "verified_by": []
+      "delivery_state": "VERIFIED",
+      "landed_in": [
+        "4ba0fa7275a1",
+        "f86862f09bdf"
+      ],
+      "verified_by": [
+        "tests/test_web_source.py:162"
+      ]
     },
     {
       "id": "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.4",
       "title": "Extracted text",
-      "delivery_state": "SPECIFIED",
-      "landed_in": [],
-      "verified_by": []
+      "delivery_state": "VERIFIED",
+      "landed_in": [
+        "f86862f09bdf"
+      ],
+      "verified_by": [
+        "tests/test_web_source.py:172",
+        "tests/test_web_source.py:209"
+      ]
     },
     {
       "id": "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.5",
       "title": "Refusal and evidence",
-      "delivery_state": "SPECIFIED",
-      "landed_in": [],
-      "verified_by": []
+      "delivery_state": "VERIFIED",
+      "landed_in": [
+        "f86862f09bdf"
+      ],
+      "verified_by": [
+        "tests/test_web_source.py:187"
+      ]
     },
     {
       "id": "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.6",
