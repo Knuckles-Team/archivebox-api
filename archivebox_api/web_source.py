@@ -201,9 +201,7 @@ class ArchiveWebSource:
                 )
             )
             added = True
-            snapshot = self._existing(url)
-        if snapshot is None:
-            raise WebSourceRefused("upstream_failed", url, "no snapshot after add")
+            snapshot = self._queued(url)
         return {
             "backend": "archivebox",
             "url": url,
@@ -211,6 +209,17 @@ class ArchiveWebSource:
             "status": str(snapshot.get("status") or ""),
             "added": added,
         }
+
+    def _queued(self, url: str) -> dict[str, Any]:
+        """The snapshot ``cli_add`` queued; ArchiveBox creates it asynchronously."""
+        deadline = self.clock() + self.timeout_s
+        while True:
+            snapshot = self._existing(url)
+            if snapshot is not None:
+                return snapshot
+            if self.clock() >= deadline:
+                raise WebSourceRefused("upstream_failed", url, "no snapshot after add")
+            self.sleep(self.poll_interval_s)
 
     def _wait(self, url: str, snapshot_id: str) -> dict[str, Any]:
         deadline = self.clock() + self.timeout_s

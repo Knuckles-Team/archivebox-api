@@ -240,3 +240,38 @@ async def test_served_manifest_maps_document_and_chunk(
     )
     for record_type in ("Document", "Chunk"):
         assert manifest["schema_mappings"][record_type]["ontology_class"] == record_type
+
+
+class QueueingApi(FakeApi):
+    """ArchiveBox's cli_add only queues the crawl; the snapshot appears later."""
+
+    def __init__(self, *, appears_after: int) -> None:
+        super().__init__()
+        self.appears_after = appears_after
+        self.looked = 0
+
+    def cli_add(self, *, urls: list[str], tag: str, extractors: str) -> dict[str, Any]:
+        self.adds.append(urls)
+        self.pending = urls
+        return {"success": True}
+
+    def get_snapshots(self, *, url: str, limit: int) -> dict[str, Any]:
+        if getattr(self, "pending", None):
+            self.looked += 1
+            if self.looked > self.appears_after:
+                for queued in self.pending:
+                    self._store(queued)
+                self.pending = []
+        return super().get_snapshots(url=url, limit=limit)
+
+
+@pytest.mark.spec("CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.2")
+def test_a_queued_add_is_polled_until_its_snapshot_appears(archive: Any) -> None:
+    api = QueueingApi(appears_after=3)
+    fetched = _source(archive[0], api).fetch("https://a.example/pdb")
+    assert fetched["snapshot_id"] == SNAPSHOT and fetched["added"] is True
+    assert api.adds == [["https://a.example/pdb"]]
+    never = QueueingApi(appears_after=10_000)
+    with pytest.raises(WebSourceRefused) as refused:
+        _source(archive[0], never, timeout_s=5.0).fetch("https://a.example/pdb")
+    assert refused.value.reason == "upstream_failed"
