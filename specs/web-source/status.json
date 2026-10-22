@@ -127,7 +127,7 @@
       "title": "Fleet name",
       "delivery_state": "VERIFIED",
       "landed_in": [
-        "c889bf9a3e97"
+        "3743a52a8eba"
       ],
       "verified_by": [
         "tests/test_web_source.py:280"
