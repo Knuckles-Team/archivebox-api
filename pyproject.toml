@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "archivebox-api"
-version = "2.5.1"
+version = "2.5.2"
 description = "Pythonic ArchiveBox API Wrapper and Fast MCP Server for Agentic AI use!"
 readme = "README.md"
 classifiers = [ "Development Status :: 5 - Production/Stable", "License :: Public Domain", "Environment :: Console", "Operating System :: POSIX :: Linux", "Programming Language :: Python :: 3",]
@@ -25,6 +25,10 @@ test = [
 
 [project.scripts]
 archivebox-mcp = "archivebox_api.mcp_server:mcp_server"
+
+# The one declared connector identity: the fleet name (SDK-CONNECTOR-CONTROL-R071).
+[project.entry-points."agent_connector_sdk.connector"]
+archivebox-mcp = "archivebox_api"
 
 [project.entry-points."agent_connector_sdk.skill_providers"]
 archivebox-api = "archivebox_api.skills"

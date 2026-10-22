@@ -12,7 +12,8 @@
     "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.5",
     "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.6",
     "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.7",
-    "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.8"
+    "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.8",
+    "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.9"
   ],
   "requirements": [
     {
@@ -29,7 +30,8 @@
         "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.5",
         "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.6",
         "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.7",
-        "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.8"
+        "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.8",
+        "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.9"
       ]
     },
     {
@@ -48,7 +50,7 @@
       "title": "Add URL",
       "delivery_state": "VERIFIED",
       "landed_in": [
-        "377b4a850b0e",
+        "054ae58c11ac",
         "dbbffa293d27"
       ],
       "verified_by": [
@@ -118,6 +120,17 @@
       ],
       "verified_by": [
         "tests/test_conformance.py:136"
+      ]
+    },
+    {
+      "id": "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.9",
+      "title": "Fleet name",
+      "delivery_state": "VERIFIED",
+      "landed_in": [
+        "3743a52a8eba"
+      ],
+      "verified_by": [
+        "tests/test_web_source.py:280"
       ]
     }
   ]

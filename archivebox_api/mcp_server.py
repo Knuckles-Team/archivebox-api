@@ -41,7 +41,7 @@ from starlette.responses import JSONResponse
 from archivebox_api.api_client import Api
 from archivebox_api.auth import get_client
 
-__version__ = "2.5.1"
+__version__ = "2.5.2"
 
 # Telemetry & Observability
 logger = get_logger(name="archivebox-api")
@@ -386,7 +386,7 @@ def get_mcp_instance() -> tuple[Any, ...]:
         version=__version__,
         instructions="archivebox-api MCP Server — one typed tool per API operation.",
         content=ConnectorContent(
-            connector="archivebox-api",
+            connector="archivebox-mcp",
             package_root=package_root,
             package_version=__version__,
             manifest_path=package_root / "connector_manifest.yml",

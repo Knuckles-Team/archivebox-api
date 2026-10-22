@@ -11,3 +11,4 @@ Governing spec: [spec.md](spec.md). Design: [plan.md](plan.md). Rows: [requireme
 - [ ] **CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.6:** Hot-path proof.
 - [x] `CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.7` — Serve the manifest with Document and Chunk schema_mappings.
 - [x] `CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.8` — Pass the SDK web-source conformance kit.
+- [ ] `CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.9` — File the content pack, manifest and ingest bindings under the fleet name `archivebox-mcp`.
