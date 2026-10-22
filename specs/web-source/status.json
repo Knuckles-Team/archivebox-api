@@ -125,8 +125,10 @@
     {
       "id": "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.9",
       "title": "Fleet name",
-      "delivery_state": "SPECIFIED",
-      "landed_in": [],
+      "delivery_state": "VERIFIED",
+      "landed_in": [
+        "c889bf9a3e97"
+      ],
       "verified_by": [
         "tests/test_web_source.py:280"
       ]
