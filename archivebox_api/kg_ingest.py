@@ -40,12 +40,12 @@ logger = logging.getLogger("archivebox_api.kg")
 _SOURCE = "archivebox-api"
 _DOMAIN = "archivebox"
 
-_BINDING = IngestBinding(connector="archivebox-api", stream=_DOMAIN)
+_BINDING = IngestBinding(connector="archivebox-mcp", stream=_DOMAIN)
 # sanitize=False: the archived page's own source URL is the product data for a web
 # archive, not incidental PII — the default PersistencePrivacyGuard redacts URL-shaped
 # property values ("[REDACTED_LOCATION]"), which would destroy blob provenance here.
 _BLOB_BINDING = IngestBinding(
-    connector="archivebox-api",
+    connector="archivebox-mcp",
     stream=_DOMAIN,
     media_type="AssetOccurrence",
     sanitize=False,
@@ -66,9 +66,7 @@ def _to_entity(record: dict[str, Any]) -> Entity:
 
 def _to_relationship(record: dict[str, Any]) -> Relationship:
     props = {
-        k: v
-        for k, v in record.items()
-        if k not in ("source", "target", "relationship")
+        k: v for k, v in record.items() if k not in ("source", "target", "relationship")
     }
     return Relationship(
         source=record["source"],
@@ -331,7 +329,9 @@ async def ingest_snapshots(
             if entities
             else None
         )
-        doc_res = await ingest_documents(documents, ingest=ingest) if documents else None
+        doc_res = (
+            await ingest_documents(documents, ingest=ingest) if documents else None
+        )
     except IngestUnavailableError as e:
         logger.debug("Operation failed: error_type=%s", type(e).__name__)
         return None

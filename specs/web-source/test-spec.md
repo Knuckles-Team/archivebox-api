@@ -13,3 +13,4 @@ Governing spec: [spec.md](spec.md).
 | T-007 | `CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.6` | Served | `tests/test_web_source_served.py::test_archivebox_run_and_forced_fallback` | Both runs store a Document equal to the primary run, except for `backend=archivebox`. |  |
 | T-008 | `CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.7` | Unit | `tests/test_web_source.py::test_served_manifest_maps_document_and_chunk` | The served manifest maps Document and Chunk to the core classes. |  |
 | T-009 | `CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.8` | Unit | `tests/test_conformance.py::test_archivebox_conforms_to_the_web_source_contract` | The kit reports no broken obligation. |  |
+| T-010 | `CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.9` | Unit | `tests/test_web_source.py::test_connector_name_is_the_fleet_name` | Content, manifest and both ingest bindings name `archivebox-mcp`. |  |

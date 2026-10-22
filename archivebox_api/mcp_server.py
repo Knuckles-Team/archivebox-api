@@ -386,7 +386,7 @@ def get_mcp_instance() -> tuple[Any, ...]:
         version=__version__,
         instructions="archivebox-api MCP Server — one typed tool per API operation.",
         content=ConnectorContent(
-            connector="archivebox-api",
+            connector="archivebox-mcp",
             package_root=package_root,
             package_version=__version__,
             manifest_path=package_root / "connector_manifest.yml",
