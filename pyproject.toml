@@ -26,6 +26,10 @@ test = [
 [project.scripts]
 archivebox-mcp = "archivebox_api.mcp_server:mcp_server"
 
+# The one declared connector identity: the fleet name (SDK-CONNECTOR-CONTROL-R071).
+[project.entry-points."agent_connector_sdk.connector"]
+archivebox-mcp = "archivebox_api"
+
 [project.entry-points."agent_connector_sdk.skill_providers"]
 archivebox-api = "archivebox_api.skills"
 
