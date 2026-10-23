@@ -1,0 +1,58 @@
+{
+  "schema_version": 2,
+  "spec_id": "CONN-ARCHIVEBOX-API-SDK-CENTRALIZATION",
+  "owner_repo": "archivebox-api",
+  "delivery_state": "SPECIFIED",
+  "requirement_ids": [
+    "CONN-ARCHIVEBOX-API-SDK-CENTRALIZATION-R001",
+    "CONN-ARCHIVEBOX-API-SDK-CENTRALIZATION-R001.1",
+    "CONN-ARCHIVEBOX-API-SDK-CENTRALIZATION-R001.2",
+    "CONN-ARCHIVEBOX-API-SDK-CENTRALIZATION-R001.3",
+    "CONN-ARCHIVEBOX-API-SDK-CENTRALIZATION-R001.4"
+  ],
+  "requirements": [
+    {
+      "id": "CONN-ARCHIVEBOX-API-SDK-CENTRALIZATION-R001",
+      "title": "Capabilities come from the SDK (rollup)",
+      "delivery_state": "SPECIFIED",
+      "landed_in": [
+        "a4823e38ee38"
+      ],
+      "verified_by": [],
+      "rollup_of": [
+        "CONN-ARCHIVEBOX-API-SDK-CENTRALIZATION-R001.1",
+        "CONN-ARCHIVEBOX-API-SDK-CENTRALIZATION-R001.2",
+        "CONN-ARCHIVEBOX-API-SDK-CENTRALIZATION-R001.3",
+        "CONN-ARCHIVEBOX-API-SDK-CENTRALIZATION-R001.4"
+      ]
+    },
+    {
+      "id": "CONN-ARCHIVEBOX-API-SDK-CENTRALIZATION-R001.1",
+      "title": "Governed client",
+      "delivery_state": "SPECIFIED",
+      "landed_in": [],
+      "verified_by": []
+    },
+    {
+      "id": "CONN-ARCHIVEBOX-API-SDK-CENTRALIZATION-R001.2",
+      "title": "TLS profile only",
+      "delivery_state": "SPECIFIED",
+      "landed_in": [],
+      "verified_by": []
+    },
+    {
+      "id": "CONN-ARCHIVEBOX-API-SDK-CENTRALIZATION-R001.3",
+      "title": "One session refresh",
+      "delivery_state": "SPECIFIED",
+      "landed_in": [],
+      "verified_by": []
+    },
+    {
+      "id": "CONN-ARCHIVEBOX-API-SDK-CENTRALIZATION-R001.4",
+      "title": "SDK floor",
+      "delivery_state": "SPECIFIED",
+      "landed_in": [],
+      "verified_by": []
+    }
+  ]
+}

@@ -24,9 +24,12 @@ import threading
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, cast
 
-import requests
+import httpx
+from agent_connector_sdk.http.client import create_http_client
+from agent_connector_sdk.http.options import HttpClientOptions
+from agent_connector_sdk.tls.resolve import resolve_tls_profile
 
 __all__ = [
     "REFUSAL_REASONS",
@@ -76,11 +79,21 @@ class ArchiveSession:
     base_url: str
     username: str
     password: str
-    verify: bool | str = True
     timeout_s: float = 30.0
-    session: requests.Session = field(default_factory=requests.Session)
+    session: httpx.Client = field(default=cast("httpx.Client", None))
     _logged_in: bool = field(default=False, init=False)
     _lock: threading.Lock = field(default_factory=threading.Lock, init=False)
+
+    def __post_init__(self) -> None:
+        if self.session is None:
+            self.session = create_http_client(
+                HttpClientOptions(
+                    base_url=self.base_url.rstrip("/"),
+                    timeout=self.timeout_s,
+                    tls=resolve_tls_profile("archivebox"),
+                    allow_plaintext=self.base_url.startswith("http://"),
+                )
+            )
 
     def _url(self, path: str) -> str:
         return self.base_url.rstrip("/") + path
@@ -90,9 +103,7 @@ class ArchiveSession:
             raise WebSourceRefused(
                 "upstream_failed", self.base_url, "archive login is not configured"
             )
-        page = self.session.get(
-            self._url(_LOGIN_PATH), timeout=self.timeout_s, verify=self.verify
-        )
+        page = self.session.get(self._url(_LOGIN_PATH))
         match = _CSRF_RE.search(page.text)
         if match is None:
             raise WebSourceRefused("upstream_failed", self.base_url, "no login form")
@@ -105,16 +116,13 @@ class ArchiveSession:
                 "next": "/",
             },
             headers={"Referer": self._url(_LOGIN_PATH)},
-            allow_redirects=False,
-            timeout=self.timeout_s,
-            verify=self.verify,
         )
         location = response.headers.get("location", "")
         if response.status_code != 302 or _LOGIN_PATH in location:
             raise WebSourceRefused("upstream_failed", self.base_url, "login refused")
         self._logged_in = True
 
-    def _is_login_redirect(self, response: requests.Response) -> bool:
+    def _is_login_redirect(self, response: httpx.Response) -> bool:
         return response.is_redirect and _LOGIN_PATH in response.headers.get(
             "location", ""
         )
@@ -136,27 +144,23 @@ class ArchiveSession:
         with self._lock:
             if not self._logged_in:
                 self.login()
-        for attempt in range(2):
-            response = self.session.get(
-                self._url(path),
-                allow_redirects=False,
-                timeout=self.timeout_s,
-                verify=self.verify,
+        response = self.session.get(self._url(path))
+        if self._is_login_redirect(response):
+            # The archive session expired: log in again and read once more.
+            with self._lock:
+                self.login()
+            response = self.session.get(self._url(path))
+            if self._is_login_redirect(response):
+                raise WebSourceRefused("upstream_failed", path, "session expired")
+        if response.status_code == 404:
+            return None
+        if response.status_code != 200:
+            raise WebSourceRefused(
+                "upstream_failed", path, f"HTTP {response.status_code}"
             )
-            if self._is_login_redirect(response) and attempt == 0:
-                with self._lock:
-                    self.login()
-                continue
-            if response.status_code == 404:
-                return None
-            if response.status_code != 200:
-                raise WebSourceRefused(
-                    "upstream_failed", path, f"HTTP {response.status_code}"
-                )
-            if len(response.content) > max_bytes:
-                raise WebSourceRefused("size_exceeded", path)
-            return response.headers.get("content-type", ""), response.content
-        raise WebSourceRefused("upstream_failed", path, "session expired")
+        if len(response.content) > max_bytes:
+            raise WebSourceRefused("size_exceeded", path)
+        return response.headers.get("content-type", ""), response.content
 
 
 def _json(response: Any) -> Any:

@@ -3,7 +3,7 @@ from unittest.mock import patch
 from archivebox_api.api_client import Api
 
 
-@patch("requests.Session.get")
+@patch("httpx.Client.get")
 def test_api_init(mock_get):
     # The constructor configures auth headers only and performs NO network I/O,
     # so Depends(get_client) can resolve a client without a reachable server.

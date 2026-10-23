@@ -1,6 +1,6 @@
 from typing import Any
 
-import requests
+import httpx
 from agent_connector_sdk.exceptions import (
     ParameterError,
     require_auth,
@@ -25,7 +25,7 @@ class Api(BaseApiClient):
         extractors: str = "",
         parser: str = "auto",
         extra_data: dict | None = None,
-    ) -> requests.Response:
+    ) -> httpx.Response:
         """
         Execute archivebox add command
 
@@ -86,7 +86,7 @@ class Api(BaseApiClient):
         filter_patterns: list[str] | None = None,
         extractors: str | None = "",
         extra_data: dict | None = None,
-    ) -> requests.Response:
+    ) -> httpx.Response:
         """
         Execute archivebox update command
 
@@ -148,7 +148,7 @@ class Api(BaseApiClient):
         update: bool = False,
         clear: bool = False,
         extra_data: dict | None = None,
-    ) -> requests.Response:
+    ) -> httpx.Response:
         """
         Execute archivebox schedule command
 
@@ -206,7 +206,7 @@ class Api(BaseApiClient):
         as_csv: str | bool = "timestamp,url",
         with_headers: bool = False,
         extra_data: dict | None = None,
-    ) -> requests.Response:
+    ) -> httpx.Response:
         """
         Execute archivebox list command
 
@@ -265,7 +265,7 @@ class Api(BaseApiClient):
         filter_type: str = "exact",
         filter_patterns: list[str] | None = None,
         extra_data: dict | None = None,
-    ) -> requests.Response:
+    ) -> httpx.Response:
         """
         Execute archivebox remove command
 

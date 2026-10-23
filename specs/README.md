@@ -13,3 +13,4 @@ Read the existing specs first. Extend the spec that owns the behavior. Create a 
 ## Local specifications
 
 - [`CONN-ARCHIVEBOX-API-WEB-SOURCE`](web-source/spec.md) — Archive pages as the secondary web-source backend.
+- [`CONN-ARCHIVEBOX-API-SDK-CENTRALIZATION`](sdk-centralization/spec.md) — Capabilities through the SDK.

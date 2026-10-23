@@ -5,27 +5,7 @@ Tool Interface & MCP Factory
 Provides dynamic tool registration and stdio/SSE/http interfaces using FastMCP.
 """
 
-import warnings
-
-from fastmcp import Context, FastMCP
-from fastmcp.dependencies import Depends
-from fastmcp.utilities.logging import get_logger
-from pydantic import Field
-
-# Filter RequestsDependencyWarning early to prevent log spam
 # Telemetry & Observability
-with warnings.catch_warnings():
-    warnings.simplefilter("ignore")
-    try:
-        from requests.exceptions import RequestsDependencyWarning
-
-        warnings.filterwarnings("ignore", category=RequestsDependencyWarning)
-    except ImportError:
-        pass
-
-warnings.filterwarnings("ignore", message=".*urllib3.*or chardet.*")
-warnings.filterwarnings("ignore", message=".*urllib3.*or charset_normalizer.*")
-
 import logging
 import sys
 from typing import Any
@@ -35,6 +15,10 @@ from agent_connector_sdk.mcp.action_dispatch import resolve_action
 from agent_connector_sdk.mcp.concurrency import run_blocking
 from agent_connector_sdk.mcp.server import create_mcp_server
 from agent_connector_sdk.mcp.tool_surface import register_tool_surface
+from fastmcp import Context, FastMCP
+from fastmcp.dependencies import Depends
+from fastmcp.utilities.logging import get_logger
+from pydantic import Field
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
