@@ -95,5 +95,7 @@
     the per-extractor archive results they yield, their tags, extracted page-text documents,
     and the raw web-capture blobs (HTML, screenshot, PDF, WARC) — federated into the
     agent-connector-sdk knowledge-graph hub. Reuses the shared :Document, :Tag, :AssetOccurrence,
-    :Blob and :Person classes.""" ;
-    owl:imports <http://knuckles.team/kg> .
+    :Blob and :Person classes.""" .
+
+# ontology-codemod R4
+<http://knuckles.team/kg#Snapshot> rdfs:subClassOf <http://knuckles.team/kg#Artifact> .
