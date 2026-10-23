@@ -1,6 +1,6 @@
 from typing import Any
 
-import requests
+import httpx
 from agent_connector_sdk.exceptions import (
     ParameterError,
 )
@@ -12,7 +12,7 @@ from archivebox_api.api.api_client_base import BaseApiClient
 class Api(BaseApiClient):
     def get_api_token(
         self, username: str | None = None, password: str | None = None
-    ) -> requests.Response:
+    ) -> httpx.Response:
         """
         Generate an API token for a given username & password
 
@@ -41,7 +41,7 @@ class Api(BaseApiClient):
             raise ParameterError(f"Invalid parameters: {e.errors()}") from e
         return response
 
-    def check_api_token(self, token: str) -> requests.Response:
+    def check_api_token(self, token: str) -> httpx.Response:
         """
         Validate an API token to make sure it's valid and non-expired
 

@@ -1,11 +1,13 @@
 import sys
 from abc import ABC, abstractmethod
 
-import requests
+import httpx
 from agent_connector_sdk.exceptions import (
     AuthError,
     MissingParameterError,
 )
+from agent_connector_sdk.http.client import create_http_client
+from agent_connector_sdk.http.options import HttpClientOptions
 from agent_connector_sdk.tls.profile import ResolvedTLSProfile
 from agent_connector_sdk.tls.resolve import resolve_tls_profile
 
@@ -24,8 +26,14 @@ class BaseApiClient(ABC):
             raise MissingParameterError("URL is required")
 
         self.tls_profile = tls_profile or resolve_tls_profile("archivebox")
-        self._session = self.tls_profile.configure_requests_session(requests.Session())
         self.url = url.rstrip("/")
+        self._session = create_http_client(
+            HttpClientOptions(
+                base_url=self.url,
+                tls=self.tls_profile,
+                allow_plaintext=self.url.startswith("http://"),
+            )
+        )
         self.headers = {"Content-Type": "application/json"}
 
         self._configure_auth_headers(
@@ -78,5 +86,5 @@ class BaseApiClient(ABC):
     @abstractmethod
     def get_api_token(
         self, username: str | None = None, password: str | None = None
-    ) -> requests.Response:
+    ) -> httpx.Response:
         raise NotImplementedError()

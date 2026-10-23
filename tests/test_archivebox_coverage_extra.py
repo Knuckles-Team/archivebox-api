@@ -4,7 +4,7 @@ from typing import Callable, cast
 from unittest.mock import MagicMock, patch
 
 import pytest
-import requests
+import httpx
 from agent_connector_sdk.exceptions import (
     AuthError,
     MissingParameterError,
@@ -28,10 +28,6 @@ def test_init_import_module_safely():
     # Verify non-existent module returns None (ImportError handled)
     res = _import_module_safely("nonexistent_module_xyz")
     assert res is None
-
-
-
-
 
 
 @pytest.mark.concept("AU-ECO.messaging.native-backend-abstraction")
@@ -99,18 +95,18 @@ def test_base_api_missing_url():
 @pytest.mark.concept("AU-OS.governance.wasm-micro-agent-sandbox")
 def test_base_api_applies_tls_profile():
     profile = MagicMock()
-    session = MagicMock()
-    profile.configure_requests_session.return_value = session
 
-    client = Api(url="http://test.com", tls_profile=profile)
+    with patch("archivebox_api.api.api_client_base.create_http_client") as create:
+        client = Api(url="http://test.com", tls_profile=profile)
 
-    profile.configure_requests_session.assert_called_once()
-    assert client._session is session
+    create.assert_called_once()
+    assert create.call_args.args[0].tls is profile
+    assert client._session is create.return_value
 
 
 @pytest.mark.concept("AU-OS.config.secrets-authentication")
-@patch("requests.Session.get")
-@patch("requests.Session.post")
+@patch("httpx.Client.get")
+@patch("httpx.Client.post")
 def test_base_api_username_password_auth_failures(mock_post, mock_get):
     # 1. Success return but no token key
     mock_token_resp = MagicMock()
@@ -138,7 +134,7 @@ def test_base_api_username_password_auth_failures(mock_post, mock_get):
 # CONCEPT:AU-OS.config.secrets-authentication — Security & Auth
 # CONCEPT:AU-OS.governance.wasm-micro-agent-sandbox — Telemetry & Observability
 @pytest.mark.concept("AU-OS.config.secrets-authentication")
-@patch("requests.Session.get")
+@patch("httpx.Client.get")
 def test_base_api_no_eager_probe(mock_get):
     # The constructor must NOT issue any network request: it only configures auth
     # headers. An eager probe made construction raise before any tool ran, which
@@ -148,7 +144,7 @@ def test_base_api_no_eager_probe(mock_get):
 
 
 @pytest.mark.concept("AU-OS.config.secrets-authentication")
-@patch("requests.Session.get")
+@patch("httpx.Client.get")
 def test_base_api_api_key_header(mock_get):
     # An api_key (with no token) sets the X-ArchiveBox-API-Key header and still
     # performs no network I/O at construction time.
@@ -164,11 +160,11 @@ def test_base_api_client_not_implemented_stub():
     class DummyClient(BaseApiClient):
         def get_api_token(
             self, username: str | None = None, password: str | None = None
-        ) -> requests.Response:
+        ) -> httpx.Response:
             raise NotImplementedError()
 
-    # Patch requests.Session.get inside constructor so initialization probe succeeds
-    with patch("requests.Session.get") as mock_get:
+    # Patch httpx.Client.get inside constructor so initialization probe succeeds
+    with patch("httpx.Client.get") as mock_get:
         mock_resp = MagicMock()
         mock_resp.status_code = 200
         mock_get.return_value = mock_resp
@@ -197,8 +193,8 @@ def _create_pydantic_validation_error():
 
 
 @pytest.mark.concept("AU-OS.governance.wasm-micro-agent-sandbox")
-@patch("requests.Session.get")
-@patch("requests.Session.post")
+@patch("httpx.Client.get")
+@patch("httpx.Client.post")
 def test_client_validation_errors(mock_post, mock_get):
     mock_resp = MagicMock()
     mock_resp.status_code = 200
@@ -459,23 +455,6 @@ def test_mcp_server_run_options(mock_get_mcp):
     assert sys_exit.value.code == 1
 
 
-@pytest.mark.concept("AU-OS.governance.wasm-micro-agent-sandbox")
-def test_mcp_server_import_error_handling():
-    import builtins
-
-    original_import = builtins.__import__
-
-    def mock_import(name, *args, **kwargs):
-        if name == "requests.exceptions":
-            raise ImportError("Simulated import error")
-        return original_import(name, *args, **kwargs)
-
-    mod = sys.modules.get("archivebox_api.mcp_server")
-    with patch("builtins.__import__", side_effect=mock_import):
-        if mod:
-            importlib.reload(mod)
-
-
 @pytest.mark.concept("AU-ECO.messaging.native-backend-abstraction")
 @patch("archivebox_api.mcp_server.get_mcp_instance")
 def test_mcp_server_main_execution(mock_get_mcp):
@@ -507,9 +486,3 @@ def test_mcp_server_main_execution(mock_get_mcp):
 # =====================================================================
 # 6. Tests for archivebox_api/agent_server.py & __main__.py
 # =====================================================================
-
-
-
-
-
-

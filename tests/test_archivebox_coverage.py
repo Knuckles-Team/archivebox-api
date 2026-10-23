@@ -10,7 +10,7 @@ from archivebox_api.api_client import Api
 
 @pytest.fixture
 def mock_session():
-    with patch("requests.Session") as mock_sess:
+    with patch("archivebox_api.api.api_client_base.create_http_client") as mock_sess:
         session = mock_sess.return_value
 
         res = MagicMock()

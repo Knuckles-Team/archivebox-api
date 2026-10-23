@@ -15,7 +15,7 @@ import pytest
 
 @pytest.fixture
 def mock_session():
-    with patch("requests.Session") as mock_s:
+    with patch("archivebox_api.api.api_client_base.create_http_client") as mock_s:
         session = mock_s.return_value
         response = MagicMock()
         response.status_code = 200
@@ -162,5 +162,3 @@ def test_mcp_server_coverage(mock_session):
             loop = asyncio.new_event_loop()
             loop.run_until_complete(_run_all_tools(mcp))
             loop.close()
-
-

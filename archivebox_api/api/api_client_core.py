@@ -1,6 +1,6 @@
 from typing import Any
 
-import requests
+import httpx
 from agent_connector_sdk.exceptions import (
     ParameterError,
     require_auth,
@@ -36,7 +36,7 @@ class Api(BaseApiClient):
         offset: int = 0,
         page: int = 0,
         api_key: str | None = None,
-    ) -> requests.Response:
+    ) -> httpx.Response:
         """
         Retrieve list of snapshots
 
@@ -109,7 +109,7 @@ class Api(BaseApiClient):
     @require_auth
     def get_snapshot(
         self, snapshot_id: str, with_archiveresults: bool = True
-    ) -> requests.Response:
+    ) -> httpx.Response:
         """
         Get a specific Snapshot by abid or id
 
@@ -154,7 +154,7 @@ class Api(BaseApiClient):
         offset: int = 0,
         page: int = 0,
         api_key: str | None = None,
-    ) -> requests.Response:
+    ) -> httpx.Response:
         """
         List all ArchiveResult entries matching these filters
 
@@ -217,7 +217,7 @@ class Api(BaseApiClient):
         return response
 
     @require_auth
-    def get_archiveresult(self, archiveresult_id: str) -> requests.Response:
+    def get_archiveresult(self, archiveresult_id: str) -> httpx.Response:
         """
         Get a specific ArchiveResult by id or abid
 
@@ -246,7 +246,7 @@ class Api(BaseApiClient):
         offset: int = 0,
         page: int = 0,
         api_key: str | None = None,
-    ) -> requests.Response:
+    ) -> httpx.Response:
         """
         Retrieve list of tags
 
@@ -277,7 +277,7 @@ class Api(BaseApiClient):
         return response
 
     @require_auth
-    def get_tag(self, tag_id: str, with_snapshots: bool = True) -> requests.Response:
+    def get_tag(self, tag_id: str, with_snapshots: bool = True) -> httpx.Response:
         """
         Get a specific Tag by id or abid
 
@@ -302,7 +302,7 @@ class Api(BaseApiClient):
         return response
 
     @require_auth
-    def get_any(self, abid: str) -> requests.Response:
+    def get_any(self, abid: str) -> httpx.Response:
         """
         Get a specific Snapshot, ArchiveResult, or Tag by abid
 

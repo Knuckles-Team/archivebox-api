@@ -16,8 +16,11 @@ import asyncio
 import json
 import re
 from typing import Any
+from urllib.parse import urlsplit
 
-import requests
+import httpx
+from agent_connector_sdk.http.client import create_http_client
+from agent_connector_sdk.http.options import HttpClientOptions
 from agent_connector_sdk.ports.web_source import (
     DEFAULT_MIN_INTERVAL_S,
     DomainRateLimiter,
@@ -47,9 +50,18 @@ _TAG = re.compile(r"<[^>]+>")
 
 
 def _read_robots(url: str) -> tuple[int, str]:
+    parts = urlsplit(url)
     try:
-        response = requests.get(url, timeout=15, headers={"User-Agent": USER_AGENT})
-    except requests.RequestException as exc:
+        with create_http_client(
+            HttpClientOptions(
+                base_url=f"{parts.scheme}://{parts.netloc}",
+                timeout=15,
+                headers={"User-Agent": USER_AGENT},
+                allow_plaintext=True,
+            )
+        ) as client:
+            response = client.get(url)
+    except (httpx.HTTPError, ValueError) as exc:
         raise WebSourceRefused("upstream_failed", type(exc).__name__) from exc
     return response.status_code, response.text
 
