@@ -25,7 +25,7 @@ from starlette.responses import JSONResponse
 from archivebox_api.api_client import Api
 from archivebox_api.auth import get_client
 
-__version__ = "2.5.2"
+__version__ = "2.5.3"
 
 # Telemetry & Observability
 logger = get_logger(name="archivebox-api")
