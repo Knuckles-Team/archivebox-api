@@ -14,7 +14,7 @@ every applicable modality (the "maximum ingestion" bar):
 Everything rides the shared ``agent_connector_sdk.ingest`` knowledge-ingest facade. Engine
 failures are explicit; the connector never acknowledges a partial or absent write. Node ids
 follow ``archivebox:<class>:<externalId>`` and ``node_type`` matches a class the package's
-``connector_manifest.yml`` declares.
+``archivebox_api.connector_sources`` declares.
 """
 
 from __future__ import annotations
