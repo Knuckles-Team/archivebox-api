@@ -5,7 +5,6 @@ os.environ["ARCHIVEBOX_URL"] = "http://test"
 os.environ["ARCHIVEBOX_USERNAME"] = "test"
 os.environ["ARCHIVEBOX_PASSWORD"] = "test"
 
-import asyncio
 import inspect
 from typing import Any
 from unittest.mock import MagicMock, patch
@@ -142,23 +141,3 @@ async def _run_all_tools(mcp: Any) -> None:
     )
     for tool in tool_objs:
         await _call_tool_best_effort(mcp, tool)
-
-
-def test_mcp_server_coverage(mock_session):
-    _ = mock_session
-    from fastmcp.server.middleware.rate_limiting import RateLimitingMiddleware
-
-    from archivebox_api.mcp_server import get_mcp_instance
-
-    # Patch RateLimitingMiddleware to do nothing
-    async def mock_on_request(self, context, call_next):
-        return await call_next(context)
-
-    with patch.object(RateLimitingMiddleware, "on_request", mock_on_request):
-        with patch("archivebox_api.auth.get_client") as mock_api:
-            mcp_data = get_mcp_instance()
-            mcp = mcp_data[0] if isinstance(mcp_data, tuple) else mcp_data
-
-            loop = asyncio.new_event_loop()
-            loop.run_until_complete(_run_all_tools(mcp))
-            loop.close()

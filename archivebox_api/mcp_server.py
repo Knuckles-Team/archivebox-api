@@ -7,25 +7,16 @@ Provides dynamic tool registration and stdio/SSE/http interfaces using FastMCP.
 
 # Telemetry & Observability
 import logging
-import sys
 from typing import Any
 
-from agent_connector_sdk.config import load_config
 from agent_connector_sdk.mcp.action_dispatch import resolve_action
 from agent_connector_sdk.mcp.concurrency import run_blocking
-from agent_connector_sdk.mcp.server import create_mcp_server
-from agent_connector_sdk.mcp.tool_surface import register_tool_surface
 from fastmcp import Context, FastMCP
 from fastmcp.dependencies import Depends
 from fastmcp.utilities.logging import get_logger
 from pydantic import Field
-from starlette.requests import Request
-from starlette.responses import JSONResponse
 
-from archivebox_api.api_client import Api
 from archivebox_api.auth import get_client
-
-__version__ = "2.5.5"
 
 # Telemetry & Observability
 logger = get_logger(name="archivebox-api")
@@ -355,61 +346,3 @@ def register_web_tools(mcp: FastMCP):
     from agent_connector_sdk.ports.web_source import register_web_source_tools
 
     register_web_source_tools(mcp, get_contract_source)
-
-
-def get_mcp_instance() -> tuple[Any, ...]:
-    """Initialize and return the MCP instance."""
-    load_config()
-    from pathlib import Path
-
-    from agent_connector_sdk.mcp.content import ConnectorContent
-
-    package_root = Path(__file__).resolve().parent
-    args, mcp, middlewares = create_mcp_server(
-        name="archivebox-api MCP",
-        version=__version__,
-        instructions="archivebox-api MCP Server — one typed tool per API operation.",
-        content=ConnectorContent(
-            connector="archivebox-mcp",
-            package_root=package_root,
-            package_version=__version__,
-        ),
-    )
-
-    @mcp.custom_route("/health", methods=["GET"])
-    async def health_check(request: Request) -> JSONResponse:
-        return JSONResponse({"status": "OK"})
-
-    register_tool_surface(
-        mcp,
-        client_cls=Api,
-        get_client=get_client,
-        service="archivebox-api",
-        tools_module=sys.modules[__name__],
-    )
-
-    for mw in middlewares:
-        mcp.add_middleware(mw)
-    return mcp, args, middlewares
-
-
-def mcp_server() -> None:
-    mcp, args, middlewares = get_mcp_instance()
-    print(f"archivebox-api MCP v{__version__}", file=sys.stderr)
-    print("\nStarting MCP Server", file=sys.stderr)
-    print(f"  Transport: {args.transport.upper()}", file=sys.stderr)
-    print(f"  Auth: {args.auth_type}", file=sys.stderr)
-
-    if args.transport == "stdio":
-        mcp.run(transport="stdio")
-    elif args.transport == "streamable-http":
-        mcp.run(transport="streamable-http", host=args.host, port=args.port)
-    elif args.transport == "sse":
-        mcp.run(transport="sse", host=args.host, port=args.port)
-    else:
-        logger.error("Invalid transport", extra={"transport": args.transport})
-        sys.exit(1)
-
-
-if __name__ == "__main__":
-    mcp_server()

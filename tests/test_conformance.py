@@ -22,6 +22,7 @@ from fastmcp import Client
 
 from archivebox_api.web_source import ArchiveSession, ArchiveWebSource
 from archivebox_api.web_source_contract import ArchiveboxSource
+from agent_connector_sdk.connector import build_server
 
 INTERVAL = 0.3
 
@@ -146,7 +147,7 @@ async def test_archivebox_conforms_to_the_web_source_contract(
     )
     monkeypatch.setattr(server_module, "_CONTRACT_SOURCE", source)
     monkeypatch.setattr("sys.argv", ["archivebox-mcp"])
-    mcp, *_ = server_module.get_mcp_instance()
+    _, mcp = build_server("archivebox_api", command_args=[])
     with fixture_site() as site:
         async with Client(mcp) as client:
             report = await check_web_source(
