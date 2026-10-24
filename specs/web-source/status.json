@@ -42,7 +42,7 @@
         "bbb45b8946da"
       ],
       "verified_by": [
-        "tests/test_conformance.py:135"
+        "tests/test_conformance.py:136"
       ]
     },
     {
@@ -55,7 +55,7 @@
       ],
       "verified_by": [
         "tests/test_web_source.py:150",
-        "tests/test_web_source.py:268"
+        "tests/test_web_source.py:242"
       ]
     },
     {
@@ -103,13 +103,11 @@
     {
       "id": "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.7",
       "title": "Ingest mappings",
-      "delivery_state": "VERIFIED",
+      "delivery_state": "LANDED",
       "landed_in": [
         "93d21335f669"
       ],
-      "verified_by": [
-        "tests/test_web_source.py:219"
-      ]
+      "verified_by": []
     },
     {
       "id": "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.8",
@@ -119,19 +117,17 @@
         "bbb45b8946da"
       ],
       "verified_by": [
-        "tests/test_conformance.py:136"
+        "tests/test_conformance.py:137"
       ]
     },
     {
       "id": "CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.9",
       "title": "Fleet name",
-      "delivery_state": "VERIFIED",
+      "delivery_state": "LANDED",
       "landed_in": [
         "3743a52a8eba"
       ],
-      "verified_by": [
-        "tests/test_web_source.py:280"
-      ]
+      "verified_by": []
     }
   ]
 }
