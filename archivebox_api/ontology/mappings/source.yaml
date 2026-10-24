@@ -1,5 +1,5 @@
 schema_version: '1'
-connector: archivebox-api
+connector: archivebox-mcp
 ontology_source: archivebox
 sync:
 - preset: archivebox-snapshots

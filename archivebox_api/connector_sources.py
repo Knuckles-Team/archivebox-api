@@ -9,9 +9,6 @@ from __future__ import annotations
 from typing import Any
 
 from agent_connector_sdk.ingest.live_declaration import source_meta
-from agent_connector_sdk.ingest.sources import IngestSourceDeclaration, IngestSourceSpec
-
-CONNECTOR: str = "archivebox-mcp"
 
 SOURCES: tuple[Any, ...] = (
     source_meta(
@@ -35,17 +32,23 @@ SOURCES: tuple[Any, ...] = (
     ),
 )
 
+SCHEMA_VERSION = 2
+
+FIELD_SETS: dict[str, dict[str, str]] = {
+    "fields_1": {
+        "abid": "xsd:string",
+        "archiveStatus": "xsd:string",
+        "bookmarkedAt": "xsd:dateTime",
+        "extractor": "xsd:string",
+        "output": "xsd:string",
+        "sourceUrl": "xsd:string",
+        "timestamp": "xsd:string",
+    },
+}
+
 SCHEMA_MAPPINGS: dict[str, Any] = {
     "ArchiveResult": {
-        "fields": {
-            "abid": "xsd:string",
-            "archiveStatus": "xsd:string",
-            "bookmarkedAt": "xsd:dateTime",
-            "extractor": "xsd:string",
-            "output": "xsd:string",
-            "sourceUrl": "xsd:string",
-            "timestamp": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": None,
     },
     "Chunk": {
@@ -85,15 +88,7 @@ SCHEMA_MAPPINGS: dict[str, Any] = {
         "ontology_class": "Document",
     },
     "Snapshot": {
-        "fields": {
-            "abid": "xsd:string",
-            "archiveStatus": "xsd:string",
-            "bookmarkedAt": "xsd:dateTime",
-            "extractor": "xsd:string",
-            "output": "xsd:string",
-            "sourceUrl": "xsd:string",
-            "timestamp": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": None,
     },
 }
@@ -120,23 +115,3 @@ RESOURCES: tuple[dict[str, str], ...] = (
         "name": "Chunk",
     },
 )
-
-
-def declaration() -> IngestSourceDeclaration:
-    """The declaration the server assembles from this module."""
-    specs: list[IngestSourceSpec] = []
-    for item in SOURCES:
-        for entry in item["connector_sources"]:
-            body: dict[str, Any] = {
-                k: v for k, v in entry.items() if k not in ("tool", "mapping")
-            }
-            spec = {**body, "tools": (entry["tool"],)}
-            specs.append(IngestSourceSpec.model_validate(spec))
-    return IngestSourceDeclaration.model_validate(
-        {
-            "connector": CONNECTOR,
-            "sources": specs,
-            "schema_mappings": SCHEMA_MAPPINGS,
-            "resources": RESOURCES,
-        }
-    )

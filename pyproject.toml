@@ -4,37 +4,29 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "archivebox-api"
-version = "2.5.5"
+version = "2.5.6"
 description = "Pythonic ArchiveBox API Wrapper and Fast MCP Server for Agentic AI use!"
 readme = "README.md"
 classifiers = [ "Development Status :: 5 - Production/Stable", "License :: Public Domain", "Environment :: Console", "Operating System :: POSIX :: Linux", "Programming Language :: Python :: 3",]
 requires-python = ">=3.12, <3.15"
-dependencies = [ "agent-connector-sdk[mcp]>=0.4.1,<1.0.0",]
+dependencies = [ "agent-connector-sdk[mcp]>=0.5.3,<0.6.0",]
 [[project.authors]]
-name = "Project Maintainers"
-email = "maintainers@users.noreply.github.com"
+name = "Repository Maintainers"
+email = "maintainers@knuckles.team"
 
 [project.license]
 text = "MIT"
 
 [project.optional-dependencies]
-mcp = [ "agent-connector-sdk[mcp]>=0.4.1,<1.0.0",]
-all = [ "agent-connector-sdk[mcp]>=0.4.1,<1.0.0",]
 test = [
     "pytest-xdist>=3.8.0", "pytest>=9.1.1", "pytest-asyncio>=1.4.0", "pytest-cov>=7.1.0",]
 
 [project.scripts]
-archivebox-mcp = "archivebox_api.mcp_server:mcp_server"
+archivebox-mcp = "agent_connector_sdk.cli:serve"
 
 # The one declared connector identity: the fleet name (SDK-CONNECTOR-CONTROL-R071).
 [project.entry-points."agent_connector_sdk.connector"]
-archivebox-mcp = "archivebox_api"
-
-[project.entry-points."agent_connector_sdk.skill_providers"]
-archivebox-api = "archivebox_api.skills"
-
-[project.entry-points."agent_connector_sdk.ontology_providers"]
-archivebox-api = "archivebox_api.ontology"
+archivebox-mcp = "archivebox_api:connector"
 
 [project.entry-points."agent_connector_sdk.prompt_providers"]
 archivebox-api = "archivebox_api.prompts"
@@ -51,6 +43,7 @@ override-dependencies = [
 ]
 
 [tool.ruff]
+extend-exclude = ["tests", "scripts"]
 line-length = 88
 target-version = "py312"
 
@@ -79,3 +72,12 @@ ignore_names = ["request", "config", "connector"]
 
 [tool.pipelines_hooks.ste]
 exempt = ["specs/*", "specs/**/*"]
+
+[tool.pipelines.container]
+debug_apt = ["default-jre", "ripgrep", "tree", "fd-find", "curl", "nano", "build-essential", "cmake", "libssl-dev", "libcurl4-openssl-dev", "pkg-config", "cargo", "rustc"]
+
+[tool.pipelines.codespell]
+ignore_words = ["asser", "fo", "updat"]
+
+[tool.pipelines.api_integration]
+baseline = 26.6

@@ -1,4 +1,3 @@
-import importlib
 import sys
 from typing import Callable, cast
 from unittest.mock import MagicMock, patch
@@ -13,7 +12,6 @@ from agent_connector_sdk.exceptions import (
 from pydantic import ValidationError
 
 # Core imports to test
-import archivebox_api
 from archivebox_api.api_client import Api
 
 # =====================================================================
@@ -28,13 +26,6 @@ def test_init_import_module_safely():
     # Verify non-existent module returns None (ImportError handled)
     res = _import_module_safely("nonexistent_module_xyz")
     assert res is None
-
-
-@pytest.mark.concept("AU-ECO.messaging.native-backend-abstraction")
-def test_init_dir():
-    dir_list = dir(archivebox_api)
-    assert "Api" in dir_list
-    assert "get_mcp_instance" in dir_list
 
 
 # =====================================================================
@@ -386,101 +377,6 @@ async def test_mcp_cli_tool(mock_client, mock_context):
     # Test unknown action
     with pytest.raises(ValueError):
         await tool(action="unknown", params_json="{}", client=mock_client, ctx=None)
-
-
-@pytest.mark.concept("AU-ECO.messaging.native-backend-abstraction")
-@pytest.mark.asyncio
-async def test_mcp_health_check():
-    from starlette.datastructures import Headers
-    from starlette.requests import Request
-
-    from archivebox_api.mcp_server import get_mcp_instance
-
-    mcp_data = get_mcp_instance()
-    mcp = mcp_data[0] if isinstance(mcp_data, tuple) else mcp_data
-
-    app = mcp.http_app()
-    route_handler = None
-    for route in app.routes:
-        if route.path == "/health":
-            route_handler = route.endpoint
-            break
-
-    assert route_handler is not None
-
-    mock_scope = {
-        "type": "http",
-        "method": "GET",
-        "path": "/health",
-        "headers": Headers().raw,
-    }
-    mock_request = Request(scope=mock_scope)
-    response = await route_handler(mock_request)
-    assert response.status_code == 200
-    assert b"ok" in response.body.lower()
-
-
-@pytest.mark.concept("AU-ECO.messaging.native-backend-abstraction")
-@patch("archivebox_api.mcp_server.get_mcp_instance")
-def test_mcp_server_run_options(mock_get_mcp):
-    from archivebox_api.mcp_server import mcp_server
-
-    mock_mcp = MagicMock()
-    mock_args = MagicMock()
-    mock_get_mcp.return_value = (mock_mcp, mock_args, [])
-
-    # 1. Test stdio transport
-    mock_args.transport = "stdio"
-    mcp_server()
-    mock_mcp.run.assert_called_with(transport="stdio")
-
-    # 2. Test streamable-http transport
-    mock_args.transport = "streamable-http"
-    mock_args.host = "127.0.0.1"
-    mock_args.port = 8000
-    mcp_server()
-    mock_mcp.run.assert_called_with(
-        transport="streamable-http", host="127.0.0.1", port=8000
-    )
-
-    # 3. Test sse transport
-    mock_args.transport = "sse"
-    mcp_server()
-    mock_mcp.run.assert_called_with(transport="sse", host="127.0.0.1", port=8000)
-
-    # 4. Test invalid transport handles exit
-    mock_args.transport = "invalid-transport"
-    with pytest.raises(SystemExit) as sys_exit:
-        mcp_server()
-    assert sys_exit.value.code == 1
-
-
-@pytest.mark.concept("AU-ECO.messaging.native-backend-abstraction")
-@patch("archivebox_api.mcp_server.get_mcp_instance")
-def test_mcp_server_main_execution(mock_get_mcp):
-    mock_args = MagicMock()
-    mock_args.transport = "stdio"
-    mock_args.host = "localhost"
-    mock_args.port = 8000
-    mock_args.auth_type = "none"
-
-    mock_mcp = MagicMock()
-    mock_mcp.custom_route.return_value = lambda x: x
-    mock_get_mcp.return_value = (mock_mcp, mock_args, [])
-
-    with (
-        patch(
-            "agent_connector_sdk.mcp.server.create_mcp_server",
-            return_value=(mock_args, mock_mcp, []),
-        ),
-        patch("sys.exit"),
-    ):
-        import runpy
-
-        module_path = importlib.import_module("archivebox_api.mcp_server").__file__
-        assert module_path is not None
-        runpy.run_path(module_path, run_name="__main__")
-        mock_mcp.run.assert_called_with(transport="stdio")
 
 
 # =====================================================================

@@ -22,6 +22,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
+from agent_connector_sdk.connector_identity import connector_name
 from agent_connector_sdk.ingest import (
     ChangeSet,
     Document,
@@ -37,7 +38,7 @@ from agent_connector_sdk.ingest import (
 
 logger = logging.getLogger("archivebox_api.kg")
 
-_SOURCE = "archivebox-api"
+_SOURCE = connector_name("archivebox_api")
 _DOMAIN = "archivebox"
 
 _BINDING = IngestBinding(connector="archivebox-mcp", stream=_DOMAIN)
