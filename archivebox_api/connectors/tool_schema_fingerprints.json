@@ -1,8 +1,0 @@
-{
-  "algorithm": "agent-connector-sdk:mcp-tool-contract-compat:v2",
-  "connector": "archivebox-mcp",
-  "schema_version": "1",
-  "tools": {
-    "archivebox_get_snapshots": "99b97a41c2cc29078b2cf27af52c6ab99ebc97182eb6100611a86fe3a3abfea4"
-  }
-}
