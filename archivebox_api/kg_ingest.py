@@ -14,7 +14,7 @@ every applicable modality (the "maximum ingestion" bar):
 Everything rides the shared ``agent_connector_sdk.ingest`` knowledge-ingest facade. Engine
 failures are explicit; the connector never acknowledges a partial or absent write. Node ids
 follow ``archivebox:<class>:<externalId>`` and ``node_type`` matches a class the package's
-``connector_manifest.yml`` declares.
+``archivebox_api.connector_sources`` declares.
 """
 
 from __future__ import annotations
@@ -52,14 +52,21 @@ _BLOB_BINDING = IngestBinding(
 )
 
 
+def _required_text(record: dict[str, Any], key: str) -> str:
+    value = record.get(key)
+    if not isinstance(value, str) or not value:
+        from agent_connector_sdk.ingest import IngestError
+
+        raise IngestError(
+            f"every entity needs an id and a node_type, got {key}={value!r}"
+        )
+    return value
+
+
 def _to_entity(record: dict[str, Any]) -> Entity:
-    # id/node_type are intentionally read with .get(): a missing one must reach
-    # the SDK's own request builder (agent_connector_sdk.ingest.request._record),
-    # which raises IngestError("every entity needs an id and a node_type") —
-    # don't duplicate that validation here.
     return Entity(
-        id=record.get("id"),
-        node_type=record.get("node_type"),
+        id=_required_text(record, "id"),
+        node_type=_required_text(record, "node_type"),
         properties={k: v for k, v in record.items() if k not in ("id", "node_type")},
     )
 

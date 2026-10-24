@@ -4,8 +4,6 @@
   "schema_version": "1.0",
   "prompt_version": "0.1.0",
   "source": "archivebox-api",
-  "extends": "agent-connector-sdk:base",
-  "compose": "append",
   "description": "ArchiveBox web-archivist specialist: capture, search, and knowledge-graph-ingest web snapshots over the archivebox-api MCP server.",
   "metadata": {
     "topic": "ArchiveBox web archiving",
