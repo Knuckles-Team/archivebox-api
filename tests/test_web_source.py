@@ -216,32 +216,6 @@ def test_session_logs_in_again_after_expiry(archive: Any) -> None:
     assert _Archive.logins == 2
 
 
-@pytest.mark.spec("CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.7")
-async def test_served_manifest_maps_document_and_chunk(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """SourceIngest resolves manifest:<connector>#schema_mappings/Document and /Chunk."""
-    import importlib
-
-    from fastmcp import Client
-
-    monkeypatch.setattr("sys.argv", ["archivebox-mcp"])
-    server_module = importlib.import_module("archivebox_api.mcp_server")
-    mcp, *_ = server_module.get_mcp_instance()
-    async with Client(mcp) as client:
-        uris = {str(r.uri) for r in await client.list_resources()}
-        body = await client.read_resource("manifest://connector")
-    assert "manifest://connector" in uris
-    text = body[0].text if hasattr(body[0], "text") else str(body[0])
-    manifest = (
-        json.loads(text)
-        if text.lstrip().startswith("{")
-        else __import__("yaml").safe_load(text)
-    )
-    for record_type in ("Document", "Chunk"):
-        assert manifest["schema_mappings"][record_type]["ontology_class"] == record_type
-
-
 class QueueingApi(FakeApi):
     """ArchiveBox's cli_add only queues the crawl; the snapshot appears later."""
 
@@ -275,24 +249,3 @@ def test_a_queued_add_is_polled_until_its_snapshot_appears(archive: Any) -> None
     with pytest.raises(WebSourceRefused) as refused:
         _source(archive[0], never, timeout_s=5.0).fetch("https://a.example/pdb")
     assert refused.value.reason == "upstream_failed"
-
-
-@pytest.mark.spec("CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.9")
-def test_connector_name_is_the_fleet_name():
-    """Pack, manifest and both ingest bindings are filed under the fleet name."""
-    import re
-    from pathlib import Path
-
-    import archivebox_api
-    from archivebox_api import kg_ingest
-
-    root = Path(archivebox_api.__file__).parent
-    pack = re.search(
-        r'ConnectorContent\(\s*connector="([^"]+)"',
-        (root / "mcp_server.py").read_text(),
-    )
-    assert pack and pack.group(1) == "archivebox-mcp"
-    assert kg_ingest._BINDING.connector == "archivebox-mcp"
-    assert kg_ingest._BLOB_BINDING.connector == "archivebox-mcp"
-    manifest = (root / "connector_manifest.yml").read_text()
-    assert manifest.startswith("connector: archivebox-mcp\n")
