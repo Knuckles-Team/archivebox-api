@@ -16,6 +16,8 @@ def _actions_on(workflow: dict):
 
 
 def test_pages_publishes_spec_dashboard_from_generated_status():
+    assert not (ROOT / ".github/workflows/docs.yml").exists()
+
     workflow = yaml.safe_load((ROOT / ".github/workflows/pages.yml").read_text())
     publisher = workflow["jobs"]["publish-pages"]
     actions = _actions_on(workflow)
