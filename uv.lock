@@ -70,7 +70,7 @@ wheels = [
 
 [[package]]
 name = "archivebox-api"
-version = "2.5.6"
+version = "2.5.7"
 source = { editable = "." }
 dependencies = [
     { name = "agent-connector-sdk", extra = ["mcp"] },
