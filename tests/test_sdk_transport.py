@@ -70,5 +70,5 @@ def test_expired_session_refreshes_once() -> None:
 def test_dependencies_come_from_the_sdk() -> None:
     text = (ROOT / "pyproject.toml").read_text()
     assert "requests" not in text.split("[project.optional-dependencies]")[0]
-    floor = re.search(r"agent-connector-sdk\[mcp\]>=(\d+)\.(\d+)\.(\d+)", text)
-    assert floor and tuple(map(int, floor.groups())) >= (0, 3, 11)
+    floor = re.search(r"scion-sdk\[mcp\]>=(\d+)\.(\d+)\.(\d+)", text)
+    assert floor and tuple(map(int, floor.groups())) >= (0, 5, 6)
