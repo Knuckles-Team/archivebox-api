@@ -23,7 +23,9 @@ class _FakeTransport:
         self.requests: list[Any] = []
 
     async def source_status(self, connector: str, stream: str) -> Any:
-        return SimpleNamespace(connector=connector, stream=stream, accepted_checkpoint=None)
+        return SimpleNamespace(
+            connector=connector, stream=stream, accepted_checkpoint=None
+        )
 
     async def store_blob(self, data: bytes) -> str:
         self.stored.append(data)
@@ -91,7 +93,9 @@ def test_ingest_snapshot_blob_stores_web_snapshot():
 def test_ingest_snapshot_blob_infers_image_and_pdf():
     service, transport, loop = _service_with_loop()
     try:
-        res_image = ingest_snapshot_blob(b"\x89PNG", mime_type="image/png", ingest=service)
+        res_image = ingest_snapshot_blob(
+            b"\x89PNG", mime_type="image/png", ingest=service
+        )
         res_pdf = ingest_snapshot_blob(
             b"%PDF-1.4", mime_type="application/pdf", ingest=service
         )

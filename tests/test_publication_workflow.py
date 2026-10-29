@@ -5,7 +5,6 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -17,8 +16,6 @@ def _actions_on(workflow: dict):
 
 def test_pages_publishes_spec_dashboard_from_generated_status():
     assert not (ROOT / ".github/workflows/docs.yml").exists()
-
-
 
     config = json.loads((ROOT / ".github/spec-dashboard.json").read_text())
     assert config == {
