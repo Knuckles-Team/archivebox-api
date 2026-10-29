@@ -1,8 +1,8 @@
 # CONN-ARCHIVEBOX-API-WEB-SOURCE — Archive pages as the secondary web-source backend
 
-Owner: archivebox-api. Cross-repo IDs: `SDK-SOURCE-INGEST-R005.40`, `ARBORA-OPS-R067`, `EG-UNIFIED-DATA-PLANE-R651.7`.
+Owner: archivebox-api. Cross-repo IDs: `SCION-SOURCE-INGEST-R005.40`, `ARBORA-OPS-R067`, `MEDULLA-UNIFIED-DATA-PLANE-R651.7`.
 
-Extends: [SDK-SOURCE-INGEST](https://github.com/Knuckles-Team/agent-connector-sdk/blob/main/specs/SDK-SOURCE-INGEST/spec.md)
+Extends: [SCION-SOURCE-INGEST](https://github.com/Knuckles-Team/agent-connector-sdk/blob/main/specs/SCION-SOURCE-INGEST/spec.md)
 References: [ARBORA-OPS](https://github.com/Knuckles-Team/arbora/blob/main/specs/hosted-api-operations/spec.md)
 
 ## Purpose and user stories
@@ -17,7 +17,7 @@ The rows are in [requirements.md](requirements.md). The proving tests are in [te
 
 ## Why a new spec
 
-The search covered `specs/` of this repository and the SDK and arbora specs. This repository had no spec for page fetch. The SDK owns only the contract (`SDK-SOURCE-INGEST-R005.40`). The behavior of this one external system belongs here.
+The search covered `specs/` of this repository and the SDK and arbora specs. This repository had no spec for page fetch. The SDK owns only the contract (`SCION-SOURCE-INGEST-R005.40`). The behavior of this one external system belongs here.
 
 ## Scope and interfaces
 
