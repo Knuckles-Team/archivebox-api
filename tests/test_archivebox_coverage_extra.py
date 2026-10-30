@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 import httpx
-from agent_connector_sdk.exceptions import (
+from scion_sdk.exceptions import (
     AuthError,
     MissingParameterError,
     ParameterError,

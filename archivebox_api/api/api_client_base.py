@@ -2,14 +2,14 @@ import sys
 from abc import ABC, abstractmethod
 
 import httpx
-from agent_connector_sdk.exceptions import (
+from scion_sdk.exceptions import (
     AuthError,
     MissingParameterError,
 )
-from agent_connector_sdk.http.client import create_http_client
-from agent_connector_sdk.http.options import HttpClientOptions
-from agent_connector_sdk.tls.profile import ResolvedTLSProfile
-from agent_connector_sdk.tls.resolve import resolve_tls_profile
+from scion_sdk.http.client import create_http_client
+from scion_sdk.http.options import HttpClientOptions
+from scion_sdk.tls.profile import ResolvedTLSProfile
+from scion_sdk.tls.resolve import resolve_tls_profile
 
 
 class BaseApiClient(ABC):

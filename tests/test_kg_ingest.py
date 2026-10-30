@@ -2,7 +2,7 @@
 
 Exercises the real ``ingest_entities`` / ``ingest_documents`` / ``ingest_snapshots`` /
 ``ingest_archiveresults`` seam against a fake transport boundary (no engine required),
-letting the SDK's own ``agent_connector_sdk.ingest`` request builder run on top of it so
+letting the SDK's own ``scion_sdk.ingest`` request builder run on top of it so
 the test still exercises the SDK's validation contract rather than re-deriving it.
 CONCEPT:AU-KG.ingest.enterprise-source-extractor.
 """
@@ -13,7 +13,7 @@ from types import SimpleNamespace
 from typing import Any
 
 import pytest
-from agent_connector_sdk.ingest import IngestError, KnowledgeIngest
+from scion_sdk.ingest import IngestError, KnowledgeIngest
 
 from archivebox_api.kg_ingest import (
     ingest_archiveresults,

@@ -10,7 +10,7 @@ from __future__ import annotations
 from types import SimpleNamespace
 from typing import Any
 
-from agent_connector_sdk.ingest import KnowledgeIngest
+from scion_sdk.ingest import KnowledgeIngest
 
 from archivebox_api.kg_ingest import ingest_snapshot_blob
 

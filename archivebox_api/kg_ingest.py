@@ -11,7 +11,7 @@ every applicable modality (the "maximum ingestion" bar):
 * **blobs** — raw web-capture bytes (HTML, screenshot, PDF, WARC) → a content-addressed
   media record via :func:`ingest_snapshot_blob`.
 
-Everything rides the shared ``agent_connector_sdk.ingest`` knowledge-ingest facade. Engine
+Everything rides the shared ``scion_sdk.ingest`` knowledge-ingest facade. Engine
 failures are explicit; the connector never acknowledges a partial or absent write. Node ids
 follow ``archivebox:<class>:<externalId>`` and ``node_type`` matches a class the package's
 ``archivebox_api.connector_sources`` declares.
@@ -22,8 +22,8 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from agent_connector_sdk.connector_identity import connector_name
-from agent_connector_sdk.ingest import (
+from scion_sdk.connector_identity import connector_name
+from scion_sdk.ingest import (
     ChangeSet,
     Document,
     Entity,
@@ -56,7 +56,7 @@ _BLOB_BINDING = IngestBinding(
 def _required_text(record: dict[str, Any], key: str) -> str:
     value = record.get(key)
     if not isinstance(value, str) or not value:
-        from agent_connector_sdk.ingest import IngestError
+        from scion_sdk.ingest import IngestError
 
         raise IngestError(
             f"every entity needs an id and a node_type, got {key}={value!r}"

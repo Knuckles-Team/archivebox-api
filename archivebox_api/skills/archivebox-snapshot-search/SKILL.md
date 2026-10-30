@@ -13,7 +13,7 @@ description: >-
 license: MIT
 tags: [archivebox, search, snapshots, archive-results, mcp]
 metadata:
-  author: Genius
+  author: Knuckles-Team
   version: '0.1.0'
 ---
 # ArchiveBox Snapshot Search

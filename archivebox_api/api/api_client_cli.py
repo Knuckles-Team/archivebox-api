@@ -1,11 +1,11 @@
 from typing import Any
 
 import httpx
-from agent_connector_sdk.exceptions import (
+from pydantic import ValidationError
+from scion_sdk.exceptions import (
     ParameterError,
     require_auth,
 )
-from pydantic import ValidationError
 
 from archivebox_api.api.api_client_base import BaseApiClient
 

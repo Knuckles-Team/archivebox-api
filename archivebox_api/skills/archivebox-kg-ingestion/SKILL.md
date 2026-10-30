@@ -13,7 +13,7 @@ description: >-
 license: MIT
 tags: [archivebox, knowledge-graph, ingestion, blob, mcp]
 metadata:
-  author: Genius
+  author: Knuckles-Team
   version: '0.1.0'
 ---
 # ArchiveBox → Knowledge Graph Ingestion

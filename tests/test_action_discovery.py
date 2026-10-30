@@ -1,4 +1,4 @@
-"""Tests for standardized action discovery via the shared agent-connector-sdk helper.
+"""Tests for standardized action discovery via the shared scion-sdk helper.
 
 CONCEPT:AU-ECO.messaging.native-backend-abstraction — Tool Interface & MCP Factory
 """

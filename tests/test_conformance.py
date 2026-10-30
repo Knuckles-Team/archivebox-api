@@ -12,7 +12,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any
 
 import pytest
-from agent_connector_sdk.testing.web_source_conformance import (
+from scion_sdk.testing.web_source_conformance import (
     check_web_source,
     fastmcp_caller,
     fixture_site,
@@ -22,7 +22,7 @@ from fastmcp import Client
 
 from archivebox_api.web_source import ArchiveSession, ArchiveWebSource
 from archivebox_api.web_source_contract import ArchiveboxSource
-from agent_connector_sdk.connector import build_server
+from scion_sdk.connector import build_server
 
 INTERVAL = 0.3
 
