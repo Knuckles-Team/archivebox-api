@@ -1,7 +1,7 @@
 """archivebox-api's implementation of the SDK web-source contract.
 
 CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.1. ``web_fetch`` and ``web_extract`` are
-served by :func:`agent_connector_sdk.ports.web_source.register_web_source_tools`
+served by :func:`scion_sdk.ports.web_source.register_web_source_tools`
 over :class:`ArchiveboxSource`, so their names, schemas, refusal reasons and
 output shape are the contract's, identical to the webarchiver connector's.
 ArchiveBox archives the page; the connector applies robots.txt and the
@@ -19,9 +19,9 @@ from typing import Any
 from urllib.parse import urlsplit
 
 import httpx
-from agent_connector_sdk.http.client import create_http_client
-from agent_connector_sdk.http.options import HttpClientOptions
-from agent_connector_sdk.ports.web_source import (
+from scion_sdk.http.client import create_http_client
+from scion_sdk.http.options import HttpClientOptions
+from scion_sdk.ports.web_source import (
     DEFAULT_MIN_INTERVAL_S,
     DomainRateLimiter,
     RobotsRules,

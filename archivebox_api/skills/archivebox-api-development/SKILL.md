@@ -8,7 +8,7 @@ description: >-
 license: MIT
 tags: [archivebox, connector, mcp, sdk, web-source, knowledge-graph]
 metadata:
-  author: Genius
+  author: Knuckles-Team
   version: '0.1.0'
 ---
 # ArchiveBox API Development

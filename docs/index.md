@@ -20,7 +20,7 @@ with typed, deterministic MCP tools, and ships a Pydantic-AI agent for conversat
 operation. It provides:
 
 - **`Api`** — a `requests`-based REST client over the ArchiveBox API, organized by
-  capability (authentication, core catalog, CLI), built on `agent-connector-sdk`.
+  capability (authentication, core catalog, CLI), built on `scion-sdk`.
 - **Action-routed MCP tools** — three consolidated, togglable tool modules
   (`archivebox_authentication`, `archivebox_core`, `archivebox_cli`) that minimize
   token overhead in an LLM context.

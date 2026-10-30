@@ -87,7 +87,7 @@ def __dir__() -> list[str]:
     return sorted(list(globals().keys()) + __all__)
 
 
-from agent_connector_sdk.connector import Connector
+from scion_sdk.connector import Connector
 
 from archivebox_api.api_client import Api
 from archivebox_api.auth import get_client

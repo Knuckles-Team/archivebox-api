@@ -13,7 +13,7 @@ description: >-
 license: MIT
 tags: [archivebox, web-archiving, snapshots, crawl, mcp]
 metadata:
-  author: Genius
+  author: Knuckles-Team
   version: '0.1.0'
 ---
 # ArchiveBox Web Archiving

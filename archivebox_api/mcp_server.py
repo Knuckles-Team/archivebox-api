@@ -9,12 +9,12 @@ Provides dynamic tool registration and stdio/SSE/http interfaces using FastMCP.
 import logging
 from typing import Any
 
-from agent_connector_sdk.mcp.action_dispatch import resolve_action
-from agent_connector_sdk.mcp.concurrency import run_blocking
 from fastmcp import Context, FastMCP
 from fastmcp.dependencies import Depends
 from fastmcp.utilities.logging import get_logger
 from pydantic import Field
+from scion_sdk.mcp.action_dispatch import resolve_action
+from scion_sdk.mcp.concurrency import run_blocking
 
 from archivebox_api.auth import get_client
 
@@ -300,7 +300,7 @@ def get_web_source() -> Any:
     """The process-wide ArchiveBox web source (CONN-ARCHIVEBOX-API-WEB-SOURCE-R001)."""
     global _WEB_SOURCE
     if _WEB_SOURCE is None:
-        from agent_connector_sdk.config import setting
+        from scion_sdk.config import setting
 
         from archivebox_api.web_source import ArchiveSession, ArchiveWebSource
 
@@ -326,7 +326,7 @@ def get_contract_source() -> Any:
     """The web-source contract's source over the configured ArchiveBox."""
     global _CONTRACT_SOURCE
     if _CONTRACT_SOURCE is None:
-        from agent_connector_sdk.config import setting
+        from scion_sdk.config import setting
 
         from archivebox_api.web_source_contract import ArchiveboxSource
 
@@ -343,6 +343,6 @@ def register_web_tools(mcp: FastMCP):
     CONN-ARCHIVEBOX-API-WEB-SOURCE-R001.1. The same names, schemas, refusal
     reasons and output shape as every other page connector's.
     """
-    from agent_connector_sdk.ports.web_source import register_web_source_tools
+    from scion_sdk.ports.web_source import register_web_source_tools
 
     register_web_source_tools(mcp, get_contract_source)
