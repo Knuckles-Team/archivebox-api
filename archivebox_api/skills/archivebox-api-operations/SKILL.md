@@ -2,7 +2,7 @@
 name: archivebox-api-operations
 skill_type: skill
 description: >-
-  Operate archivebox-api through its governed MCP and Arbora capabilities, including archivebox kg ingestion, archivebox snapshot search, archivebox web archiving. Use when a request requires this provider's read, change, automation, ingestion, troubleshooting, or evidence workflows.
+  Operate archivebox-api through its governed MCP and Arbora capabilities, including web archiving, snapshot search, the research archive, archive administration and KG ingestion. Use when a request requires this provider's read, change, automation, ingestion, troubleshooting, or evidence workflows.
 ---
 
 # Archivebox Api Operations
@@ -12,7 +12,7 @@ Use the provider's governed MCP tools through Arbora delegation.
 ## Workflow
 
 1. Establish the verified GraphSession and tenant before discovery or retrieval.
-2. Discover the current condensed tool surface; never assume a stale tool name or schema.
+2. Discover the current typed tool surface (one tool per ArchiveBox operation); never assume a stale tool name or schema.
 3. Prefer read-only inspection first. For changes, present impact and use the provider's
    dry-run or preview mode when available.
 4. Execute mutations as fenced WorkItems so retries remain idempotent and auditable.

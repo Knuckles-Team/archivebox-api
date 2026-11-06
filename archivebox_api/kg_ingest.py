@@ -4,7 +4,7 @@ CONCEPT:AU-KG.ingest.enterprise-source-extractor. The archivebox-api package nat
 pushes its data into the ONE epistemic-graph knowledge graph **from its own code**, in
 every applicable modality (the "maximum ingestion" bar):
 
-* **typed nodes** — snapshots + per-extractor archive results → OWL ``:Snapshot`` /
+* **typed nodes** — snapshots + per-extractor archive results → OWL ``:WebSnapshot`` /
   ``:ArchiveResult`` / ``:Tag`` nodes + ``:hasArchiveResult`` / ``:hasTag`` links.
 * **documents** — a snapshot's title/URL text → a ``:Document`` (``:hasPageText``) so the
   archived page becomes semantic-search fodder; hub-side enrichment chunks/embeds it.
@@ -134,8 +134,8 @@ async def ingest_documents(
 # record → node/document mappers
 # --------------------------------------------------------------------------- #
 def _ext_id(record: dict[str, Any]) -> str | None:
-    """Prefer the stable ``abid``, else the numeric/uuid ``id``."""
-    return record.get("abid") or record.get("id")
+    """The record's id (ArchiveBox 0.9 ``id``)."""
+    return record.get("id")
 
 
 def _tag_name(tag: Any) -> str | None:
@@ -172,12 +172,15 @@ def _tags_of(snap: dict[str, Any]) -> list[str]:
 
 
 def _snapshot_entity(snap: dict[str, Any], sid: Any, snap_id: str) -> dict[str, Any]:
-    """Build the ``:Snapshot`` node payload for one snapshot record."""
+    """Build the ``:WebSnapshot`` node payload for one snapshot record."""
     return {
         "id": snap_id,
-        "node_type": "Snapshot",
-        "abid": snap.get("abid"),
-        "sourceUrl": snap.get("url"),
+        "node_type": "WebSnapshot",
+        "archiveboxId": snap.get("id"),
+        "sourceRef": snap.get("url"),
+        "snapshotStatus": snap.get("status"),
+        "archivePath": snap.get("archive_path"),
+        "crawlId": snap.get("crawl_id"),
         "title": snap.get("title"),
         "timestamp": snap.get("timestamp"),
         "bookmarkedAt": snap.get("bookmarked_at"),
@@ -258,7 +261,7 @@ def map_snapshots(
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:
     """Map snapshot records → (entities, relationships, documents).
 
-    Emits ``:Snapshot`` (+ ``:Tag`` + ``:hasTag``) nodes and, when the snapshot has a
+    Emits ``:WebSnapshot`` (+ ``:Tag`` + ``:hasTag``) nodes and, when the snapshot has a
     title/URL, a ``:Document`` (+ ``:hasPageText``). Also folds any nested
     ``archiveresults`` into ``:ArchiveResult`` nodes + ``:hasArchiveResult`` links.
     """
@@ -283,10 +286,10 @@ def _map_one_archiveresult(
     ent = {
         "id": res_id,
         "node_type": "ArchiveResult",
-        "abid": res.get("abid"),
-        "extractor": res.get("extractor"),
-        "archiveStatus": res.get("status"),
-        "output": res.get("output"),
+        "archiveboxId": res.get("id"),
+        "extractorName": res.get("plugin"),
+        "resultStatus": res.get("status"),
+        "output": res.get("output_str"),
         "cmd_version": res.get("cmd_version"),
         "created_at": res.get("created_at"),
         "externalToolId": str(rid),
@@ -294,7 +297,7 @@ def _map_one_archiveresult(
     rels: list[dict[str, Any]] = []
     snap_ref = snapshot_node
     if snap_ref is None:
-        sref = res.get("snapshot_abid") or res.get("snapshot_id")
+        sref = res.get("snapshot_id")
         if sref is not None:
             snap_ref = f"archivebox:snapshot:{sref}"
     if snap_ref is not None:
@@ -325,7 +328,7 @@ async def ingest_snapshots(
     *,
     ingest: KnowledgeIngest | None = None,
 ) -> dict[str, int] | None:
-    """Ingest snapshot records as ``:Snapshot`` (+ ``:Tag`` + ``:Document``) nodes.
+    """Ingest snapshot records as ``:WebSnapshot`` (+ ``:Tag`` + ``:Document``) nodes.
 
     Returns merged ``{"nodes":n, "edges":m, "documents":d}``, or ``None`` best-effort
     when no engine is reachable.
@@ -378,12 +381,12 @@ def _media_type_for(mime_type: str) -> str:
 
 
 def _blob_provenance(snapshot: dict[str, Any], extractor: str) -> dict[str, Any]:
-    """Build the non-null provenance fields (source URL/abid/timestamp/extractor)."""
+    """Build the non-null provenance fields (source URL/id/timestamp/extractor)."""
     return {
         k: v
         for k, v in {
             "source_url": snapshot.get("url"),
-            "abid": snapshot.get("abid"),
+            "snapshot_id": snapshot.get("id"),
             "timestamp": snapshot.get("timestamp"),
             "extractor": extractor or None,
         }.items()
@@ -401,7 +404,7 @@ def ingest_snapshot_blob(
 ) -> dict[str, Any] | None:
     """Store raw web-capture bytes as a content-addressed media record in the graph.
 
-    ``snapshot`` supplies provenance (source URL, abid, extractor). Returns
+    ``snapshot`` supplies provenance (source URL, id, extractor). Returns
     ``{asset_id, digest, size_bytes, media_type}`` on success, or ``None`` (no
     bytes, or no reachable engine). This path has no async caller today, so it
     stays synchronous via ``KnowledgeIngest.submit_blocking`` rather than forcing
@@ -414,7 +417,7 @@ def ingest_snapshot_blob(
     extra = _blob_provenance(snapshot, extractor)
     extra["media_kind"] = media_kind
     name = str(
-        snapshot.get("title") or snapshot.get("url") or (snapshot.get("abid") or "")
+        snapshot.get("title") or snapshot.get("url") or (snapshot.get("id") or "")
     )
     asset = MediaAsset(data=data, mime_type=mime_type, name=name, properties=extra)
     change_set = ChangeSet(media=(asset,))

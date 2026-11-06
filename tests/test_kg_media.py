@@ -65,7 +65,7 @@ def test_ingest_snapshot_blob_stores_web_snapshot():
     service, transport, loop = _service_with_loop()
     try:
         snap = {
-            "abid": "snap1",
+            "id": "snap1",
             "url": "https://example.com/a",
             "title": "Example A",
             "timestamp": "1700000000.1",
@@ -85,7 +85,7 @@ def test_ingest_snapshot_blob_stores_web_snapshot():
         record = transport.requests[0].records[0]
         assert record.payload["source_url"] == "https://example.com/a"
         assert record.payload["extractor"] == "singlefile"
-        assert record.payload["abid"] == "snap1"
+        assert record.payload["snapshot_id"] == "snap1"
     finally:
         loop.call_soon_threadsafe(loop.stop)
 

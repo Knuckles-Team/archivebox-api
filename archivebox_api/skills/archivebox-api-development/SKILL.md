@@ -21,7 +21,7 @@ focused tests.
 ## Repository and runtime map
 
 - `archivebox_api/mcp_server.py` registers authentication, core, CLI, KG,
-  and web-source tools. Keep action names and the SDK Connector boundary stable.
+  and web-source tools. Keep tool names and the SDK Connector boundary stable.
 - `archivebox_api/api_client.py` composes the authentication, core, and CLI
   API wrappers. `archivebox_api/auth.py` injects endpoint credentials and the
   SDK TLS profile through `get_client`; it must not persist secret values.
@@ -48,19 +48,23 @@ settings. Keep secrets out of source, skills, fixtures, logs, and test output.
 Use the SDK TLS policy selected by `ARCHIVEBOX_TLS_PROFILE` and
 `ARCHIVEBOX_TLS_PROFILE_REF`; `ArchiveSession` must keep certificate and
 hostname verification governed by the shared resolver. Preserve the supported
-`stdio`, `streamable-http`, and `sse` transports, the
-`MCP_TOOL_MODE` surface selection, `WEBTOOL`/`WEB_SOURCETOOL` toggles,
-and the `ARCHIVEBOX_KG_AUTO_INGEST` opt-out. Do not add a provider-specific
-credential store or a TLS bypass.
+`stdio`, `streamable-http`, and `sse` transports and the
+`WEBTOOL`/`WEB_SOURCETOOL` toggles. The surface is one typed tool per
+ArchiveBox API operation (a public client method with a `VERB /path`
+docstring line); never add an `action=` routed tool. Knowledge-graph ingest is
+explicit through `archivebox_ingest_snapshots` and
+`archivebox_ingest_archiveresults`; there is no `ARCHIVEBOX_KG_AUTO_INGEST`
+read-side auto-ingest. Do not add a provider-specific credential store or a
+TLS bypass.
 
 ## Rapid delivery: the 5-minute contract
 
 1. Read the owning connector-content and web-source specs, this skill,
    `AGENTS.md`, and the directly bound tests before changing a surface.
-2. Inspect the SDK `Connector`, action lists and dispatchers, API wrappers,
+2. Inspect the SDK `Connector`, the API client methods and `coerce_result`,
    `ArchiveWebSource` session/refusal behavior, source declarations, KG
    mappings, and package-data rules.
-3. Make the smallest connector-owned change. Preserve public action/tool names,
+3. Make the smallest connector-owned change. Preserve public tool names,
    source IDs and mappings, keyless web fallbacks, injected credentials, TLS
    verification, bounded extractor reads, stable KG IDs, and canonical/legacy
    server paths.

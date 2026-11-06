@@ -164,3 +164,6 @@ docker/debug.Dockerfile
 docker/*.compose.yml
 archivebox_api/ontology/shapes/connector.shacl.ttl
 archivebox_api/ontology/certification.json
+
+# generated spec status (computed, never tracked)
+specs/**/status.json

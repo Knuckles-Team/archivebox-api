@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.6.0] - 2026-11-06
+
+### Changed
+- One typed tool per ArchiveBox 0.9 REST operation (46 operations, 48 operation tools): adds snapshot create/patch/delete and RSS, archive-result create/patch with file upload, tag create/rename/delete/search/autocomplete/export and snapshot tagging, crawls and crawl files, machines, binaries and personas, and the browser session exchange. Parameters follow the 0.9 API (`plugins`, `persona`, `max_urls`, `output_str`, `id`).
+- `archivebox_cli_list` is replaced by `archivebox_cli_search` (`/api/v1/cli/list` no longer exists).
+- Tool results return the upstream JSON or text body; failed calls return `{status_code, error}`. Before, every tool returned only `{status_code}`.
+- `archivebox_cli_remove` refuses an empty selection.
+- KG ingest and the web source read 0.9 record shapes; KG node types are the core `WebSnapshot` and `ArchiveResult`.
+- The ingest tools take typed filters instead of `params_json`.
+
+### Added
+- Ontology: `pack.ttl` (tool-use contracts, feature/skill/prompt links, ingest contract), `access_contracts.ttl` (data location, routing, federation); the domain classes roll up to medulla core by `rdfs:subClassOf` and no longer redeclare core terms.
+- Skills `archivebox-research-archive` and `archivebox-archive-administration`; the other skills are rewritten for the typed tools.
+- Agent-definition prompts `archivebox_operator` and `archivebox_research_archivist`.
+
+### Removed
+- The action-routed `archivebox_core`, `archivebox_cli` and `archivebox_authentication` registrars and the `web_archivist_specialist` prompt.
+
 ## [2.5.9] - 2026-10-30
 
 ### Changed

@@ -4,6 +4,7 @@ import httpx
 from pydantic import ValidationError
 from scion_sdk.exceptions import (
     ParameterError,
+    require_auth,
 )
 
 from archivebox_api.api.api_client_base import BaseApiClient
@@ -63,3 +64,12 @@ class Api(BaseApiClient):
         except ValidationError as e:
             raise ParameterError(f"Invalid parameters: {e.errors()}") from e
         return response
+
+    @require_auth
+    def browser_session(self) -> httpx.Response:
+        """POST /api/v1/auth/browser_session
+
+        Exchange an administrator API key for a normal browser session (the
+        response sets the session cookie used by the web UI and file views).
+        """
+        return self._send("POST", "/api/v1/auth/browser_session", json={})

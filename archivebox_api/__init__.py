@@ -91,10 +91,12 @@ from scion_sdk.connector import Connector
 
 from archivebox_api.api_client import Api
 from archivebox_api.auth import get_client
+from archivebox_api.mcp_server import coerce_result
 
 connector = Connector(
     api=Api,
     get_client=get_client,
     tools="archivebox_api.mcp_server",
+    result_coercer=coerce_result,
     instructions="archivebox-api MCP Server — one typed tool per API operation.",
 )
