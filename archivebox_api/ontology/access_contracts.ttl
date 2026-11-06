@@ -1,0 +1,70 @@
+@prefix ac: <https://knuckles-team.github.io/agent-connector-sdk/access#> .
+@prefix : <http://knuckles.team/kg#> .
+@prefix ab: <http://knuckles.team/kg/archivebox-access#> .
+
+# Data location, routing and federation of archivebox-mcp
+# (CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R002).
+#
+# Location: ArchiveBox is the system of record. Its index (snapshots, archive
+# results, tags, crawls) and the per-snapshot output files live on the
+# ArchiveBox archive volume; the connector keeps no store.
+# Routing: an engine query over :WebSnapshot, :ArchiveResult, :Tag or
+# :ArchiveCrawl routes to the read-only MCP tool named below, paginated by
+# page/limit, keyed by the ArchiveBox id. Calls carry the connector's ArchiveBox
+# API token; callers never hold it.
+# Federation: answered live from ArchiveBox (virtual graph). Durable copies in
+# the engine come only from archivebox_ingest_snapshots and
+# archivebox_ingest_archiveresults. The live capture of the same pages is the
+# web fetch connector's :ExtractedWebPage; this connector holds the durable copy.
+
+ab:snapshotAccess a ac:AccessContract ;
+    ac:classIri :WebSnapshot ;
+    ac:sourceId "archivebox-mcp" ;
+    ac:entity "snapshot" ;
+    ac:keyField "id" ;
+    ac:accessKind "mcp_tool" ;
+    ac:operation "archivebox_get_snapshots" ;
+    ac:pagination "page" .
+
+ab:snapshotUrl a ac:PropertyBinding ;
+    ac:contract ab:snapshotAccess ; ac:property :sourceRef ; ac:field "url" .
+ab:snapshotStatus a ac:PropertyBinding ;
+    ac:contract ab:snapshotAccess ; ac:property :snapshotStatus ; ac:field "status" .
+ab:snapshotTimestamp a ac:PropertyBinding ;
+    ac:contract ab:snapshotAccess ; ac:property :timestamp ; ac:field "timestamp" .
+ab:snapshotBookmarked a ac:PropertyBinding ;
+    ac:contract ab:snapshotAccess ; ac:property :bookmarkedAt ; ac:field "bookmarked_at" .
+ab:snapshotPath a ac:PropertyBinding ;
+    ac:contract ab:snapshotAccess ; ac:property :archivePath ; ac:field "archive_path" .
+ab:snapshotCrawl a ac:PropertyBinding ;
+    ac:contract ab:snapshotAccess ; ac:property :crawlId ; ac:field "crawl_id" .
+
+ab:archiveResultAccess a ac:AccessContract ;
+    ac:classIri :ArchiveResult ;
+    ac:sourceId "archivebox-mcp" ;
+    ac:entity "archive_result" ;
+    ac:keyField "id" ;
+    ac:accessKind "mcp_tool" ;
+    ac:operation "archivebox_get_archiveresults" ;
+    ac:pagination "page" .
+
+ab:resultPlugin a ac:PropertyBinding ;
+    ac:contract ab:archiveResultAccess ; ac:property :extractorName ; ac:field "plugin" .
+ab:resultStatus a ac:PropertyBinding ;
+    ac:contract ab:archiveResultAccess ; ac:property :resultStatus ; ac:field "status" .
+ab:resultOutput a ac:PropertyBinding ;
+    ac:contract ab:archiveResultAccess ; ac:property :output ; ac:field "output_str" .
+
+ab:crawlAccess a ac:AccessContract ;
+    ac:classIri :ArchiveCrawl ;
+    ac:sourceId "archivebox-mcp" ;
+    ac:entity "crawl" ;
+    ac:keyField "id" ;
+    ac:accessKind "mcp_tool" ;
+    ac:operation "archivebox_get_crawls" ;
+    ac:pagination "none" .
+
+ab:crawlLabel a ac:PropertyBinding ;
+    ac:contract ab:crawlAccess ; ac:property :crawlLabel ; ac:field "label" .
+ab:crawlDepth a ac:PropertyBinding ;
+    ac:contract ab:crawlAccess ; ac:property :crawlMaxDepth ; ac:field "max_depth" .

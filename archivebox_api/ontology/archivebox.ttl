@@ -1,101 +1,147 @@
-@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
-@prefix foaf: <http://xmlns.com/foaf/0.1/> .
-@prefix dc: <http://purl.org/dc/terms/> .
 @prefix : <http://knuckles.team/kg#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-# ArchiveBox web-archiving ontology — snapshots, per-extractor archive results, and the
-# raw web-capture blobs they produce. All classes and properties live in the shared `:`
-# (kg#) namespace; only the owl:Ontology node gets the per-package IRI. Backs the
-# archivebox-api MCP tool surface (archivebox_core / archivebox_cli). Shared classes
-# (:Document, :Tag, :AssetOccurrence, :Blob, :Person) are REUSED, never redefined.
+# ArchiveBox web-archive model: durable, re-checkable captures of web pages.
+# Classes and properties live in the shared : (kg#) namespace; only the
+# owl:Ontology node carries the package IRI. The core classes and properties
+# this connector fills (:WebSnapshot, :ArchiveResult, :hasArchiveResult,
+# :extractorName, :resultStatus, :sourceRef, :Tag, :Document) are used, never
+# redeclared. Every class declared here rolls up to a medulla core class by
+# rdfs:subClassOf; the module never imports the engine ontology.
+#
+# Data location: ArchiveBox is the system of record. Snapshots, archive
+# results, tags and crawls live in the ArchiveBox index (one SQLite index plus
+# the per-snapshot output directories of the archive volume) and are answered
+# live by the tools named in access_contracts.ttl. Copies reach the engine only
+# through archivebox_ingest_snapshots / archivebox_ingest_archiveresults
+# (:WebSnapshot, :ArchiveResult, :Tag, :Document page text).
 
-:Snapshot a owl:Class ;
-    rdfs:label "Snapshot" ;
-    rdfs:comment "An ArchiveBox snapshot: one archived capture of a source URL, identified by its abid/timestamp (archivebox_core get_snapshots)." .
+# --- classes ---------------------------------------------------------------
 
-:ArchiveResult a owl:Class ;
-    rdfs:label "Archive Result" ;
-    rdfs:comment "The output of one extractor run against a Snapshot (e.g. wget, screenshot, pdf, singlefile, dom) with its status and output path (archivebox_core get_archiveresults)." .
+:ArchiveCrawl a owl:Class ;
+    rdfs:label "Archive Crawl" ;
+    rdfs:comment "One ArchiveBox crawl: the seed URLs of one add, schedule or crawl request, its depth, label, notes and tags, and the snapshots it produced (archivebox_get_crawls, archivebox_get_crawl)." ;
+    rdfs:subClassOf :Collection .
 
-# --- links (owl:ObjectProperty) ---
+:ArchivePersona a owl:Class ;
+    rdfs:label "Archive Persona" ;
+    rdfs:comment "A named ArchiveBox browser persona (cookies and profile) captures run with. Holds credentials: its cookies and auth data are never copied out of ArchiveBox (archivebox_get_personas)." ;
+    rdfs:subClassOf :Collection .
 
-:hasArchiveResult a owl:ObjectProperty ;
-    rdfs:label "has archive result" ;
-    rdfs:comment "Links a Snapshot to an ArchiveResult produced for it by an extractor." ;
-    rdfs:domain :Snapshot ;
-    rdfs:range :ArchiveResult .
+:ArchiveWorker a owl:Class ;
+    rdfs:label "Archive Worker" ;
+    rdfs:comment "A machine that runs ArchiveBox capture plugins (archivebox_get_machines, archivebox_get_current_machine)." ;
+    rdfs:subClassOf :Host .
+
+:CaptureBinary a owl:Class ;
+    rdfs:label "Capture Binary" ;
+    rdfs:comment "A capture tool installed on an archive worker (chromium, wget, yt-dlp, singlefile, ...) with its version and install status (archivebox_get_binaries)." ;
+    rdfs:subClassOf :SoftwareComponent .
+
+# --- links (owl:ObjectProperty) --------------------------------------------
 
 :hasTag a owl:ObjectProperty ;
     rdfs:label "has tag" ;
-    rdfs:comment "Links a Snapshot to a :Tag applied to it in ArchiveBox." ;
-    rdfs:domain :Snapshot ;
+    rdfs:comment "Links a :WebSnapshot to a :Tag applied to it in ArchiveBox." ;
+    rdfs:domain :WebSnapshot ;
     rdfs:range :Tag .
-
-:archivedAs a owl:ObjectProperty ;
-    rdfs:label "archived as" ;
-    rdfs:comment "Links a Snapshot (or ArchiveResult) to the raw web-capture :AssetOccurrence/:Blob (HTML, screenshot, PDF, WARC) it was stored as." ;
-    rdfs:domain :Snapshot ;
-    rdfs:range :AssetOccurrence .
 
 :hasPageText a owl:ObjectProperty ;
     rdfs:label "has page text" ;
-    rdfs:comment "Links a Snapshot to the :Document carrying its extracted page text/title for semantic search." ;
-    rdfs:domain :Snapshot ;
+    rdfs:comment "Links a :WebSnapshot to the :Document carrying its title and page text for search." ;
+    rdfs:domain :WebSnapshot ;
     rdfs:range :Document .
 
-# --- fields (owl:DatatypeProperty) ---
+:archivedAs a owl:ObjectProperty ;
+    rdfs:label "archived as" ;
+    rdfs:comment "Links a :WebSnapshot to a raw capture blob (HTML, screenshot, PDF, WARC) stored as an :AssetOccurrence." ;
+    rdfs:domain :WebSnapshot ;
+    rdfs:range :AssetOccurrence .
 
-:abid a owl:DatatypeProperty ;
-    rdfs:label "abid" ;
-    rdfs:comment "ArchiveBox's stable alphanumeric id (abid) for a Snapshot, ArchiveResult, or Tag." ;
+:inCrawl a owl:ObjectProperty ;
+    rdfs:label "in crawl" ;
+    rdfs:comment "Links a :WebSnapshot to the :ArchiveCrawl that queued it." ;
+    rdfs:domain :WebSnapshot ;
+    rdfs:range :ArchiveCrawl .
+
+:capturedWith a owl:ObjectProperty ;
+    rdfs:label "captured with" ;
+    rdfs:comment "Links a :WebSnapshot to the :ArchivePersona its capture ran as." ;
+    rdfs:domain :WebSnapshot ;
+    rdfs:range :ArchivePersona .
+
+:installedOn a owl:ObjectProperty ;
+    rdfs:label "installed on" ;
+    rdfs:comment "Links a :CaptureBinary to the :ArchiveWorker it is installed on." ;
+    rdfs:domain :CaptureBinary ;
+    rdfs:range :ArchiveWorker .
+
+# --- fields (owl:DatatypeProperty) -----------------------------------------
+
+:archiveboxId a owl:DatatypeProperty ;
+    rdfs:label "ArchiveBox id" ;
+    rdfs:comment "The ArchiveBox object id of a snapshot, archive result, crawl, persona, worker or binary." ;
     rdfs:range xsd:string .
 
-:sourceUrl a owl:DatatypeProperty ;
-    rdfs:label "source url" ;
-    rdfs:comment "The original URL a Snapshot archived." ;
-    rdfs:domain :Snapshot ;
+:snapshotStatus a owl:DatatypeProperty ;
+    rdfs:label "snapshot status" ;
+    rdfs:comment "Capture state of a :WebSnapshot (queued, started, sealed)." ;
+    rdfs:domain :WebSnapshot ;
+    rdfs:range xsd:string .
+
+:archivePath a owl:DatatypeProperty ;
+    rdfs:label "archive path" ;
+    rdfs:comment "Path of a :WebSnapshot's output directory inside the archive volume." ;
+    rdfs:domain :WebSnapshot ;
+    rdfs:range xsd:string .
+
+:crawlId a owl:DatatypeProperty ;
+    rdfs:label "crawl id" ;
+    rdfs:comment "Id of the :ArchiveCrawl a :WebSnapshot belongs to." ;
+    rdfs:domain :WebSnapshot ;
     rdfs:range xsd:string .
 
 :timestamp a owl:DatatypeProperty ;
     rdfs:label "timestamp" ;
-    rdfs:comment "ArchiveBox capture timestamp (the on-disk snapshot directory key)." ;
-    rdfs:domain :Snapshot ;
+    rdfs:comment "ArchiveBox capture timestamp of a :WebSnapshot (its stable on-disk key)." ;
+    rdfs:domain :WebSnapshot ;
     rdfs:range xsd:string .
 
 :bookmarkedAt a owl:DatatypeProperty ;
     rdfs:label "bookmarked at" ;
-    rdfs:comment "When the source URL was bookmarked/added for archiving." ;
-    rdfs:domain :Snapshot ;
+    rdfs:comment "When the source URL of a :WebSnapshot was added for archiving." ;
+    rdfs:domain :WebSnapshot ;
     rdfs:range xsd:dateTime .
-
-:extractor a owl:DatatypeProperty ;
-    rdfs:label "extractor" ;
-    rdfs:comment "The ArchiveBox extractor that produced an ArchiveResult (wget, screenshot, pdf, singlefile, dom, media, git, readability, mercury, …)." ;
-    rdfs:domain :ArchiveResult ;
-    rdfs:range xsd:string .
-
-:archiveStatus a owl:DatatypeProperty ;
-    rdfs:label "archive status" ;
-    rdfs:comment "Result status of an ArchiveResult (succeeded, failed, skipped)." ;
-    rdfs:domain :ArchiveResult ;
-    rdfs:range xsd:string .
 
 :output a owl:DatatypeProperty ;
     rdfs:label "output" ;
-    rdfs:comment "The relative output path (or error string) an ArchiveResult wrote inside the snapshot directory." ;
+    rdfs:comment "Output summary (path or message) an :ArchiveResult wrote." ;
     rdfs:domain :ArchiveResult ;
     rdfs:range xsd:string .
 
-<http://knuckles.team/kg/archivebox> a owl:Ontology ;
-    rdfs:label "ArchiveBox Web-Archiving Ontology" ;
-    rdfs:comment """ArchiveBox self-hosted web-archiving model — snapshots of source URLs,
-    the per-extractor archive results they yield, their tags, extracted page-text documents,
-    and the raw web-capture blobs (HTML, screenshot, PDF, WARC) — federated into the
-    scion-sdk knowledge-graph hub. Reuses the shared :Document, :Tag, :AssetOccurrence,
-    :Blob and :Person classes.""" .
+:crawlLabel a owl:DatatypeProperty ;
+    rdfs:label "crawl label" ;
+    rdfs:comment "Human label of an :ArchiveCrawl." ;
+    rdfs:domain :ArchiveCrawl ;
+    rdfs:range xsd:string .
 
-# ontology-codemod R4
-<http://knuckles.team/kg#Snapshot> rdfs:subClassOf <http://knuckles.team/kg#Artifact> .
+:crawlMaxDepth a owl:DatatypeProperty ;
+    rdfs:label "crawl max depth" ;
+    rdfs:comment "Outlink depth an :ArchiveCrawl follows." ;
+    rdfs:domain :ArchiveCrawl ;
+    rdfs:range xsd:integer .
+
+:binaryVersion a owl:DatatypeProperty ;
+    rdfs:label "binary version" ;
+    rdfs:comment "Version string of a :CaptureBinary." ;
+    rdfs:domain :CaptureBinary ;
+    rdfs:range xsd:string .
+
+<http://knuckles.team/kg/archivebox> a owl:Ontology ;
+    rdfs:label "ArchiveBox Web Archive Ontology" ;
+    rdfs:comment """ArchiveBox self-hosted web archive: snapshots of source URLs
+    (:WebSnapshot), the per-plugin archive results they yield (:ArchiveResult),
+    their tags, crawls, personas, workers and capture binaries. Classes roll up
+    to medulla core by rdfs:subClassOf.""" .

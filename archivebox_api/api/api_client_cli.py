@@ -1,13 +1,46 @@
-from typing import Any
+"""ArchiveBox ``/api/v1/cli`` operations: add, update, schedule, search, remove.
+
+One client method per upstream operation (CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R003).
+"""
 
 import httpx
-from pydantic import ValidationError
-from scion_sdk.exceptions import (
-    ParameterError,
-    require_auth,
-)
+from scion_sdk.exceptions import ParameterError, require_auth
 
 from archivebox_api.api.api_client_base import BaseApiClient
+
+_CLI = "/api/v1/cli"
+
+
+def _selection(
+    *,
+    after: float | None,
+    before: float | None,
+    filter_type: str | None,
+    filter_patterns: list[str] | None,
+    status: str | None,
+    url__icontains: str | None,
+    url__istartswith: str | None,
+    tag: str | None,
+    crawl_id: str | None,
+    limit: int | None,
+    sort: str | None,
+    search: str | None,
+) -> dict[str, object]:
+    """The snapshot-selection fields shared by update, search and remove."""
+    return {
+        "after": after,
+        "before": before,
+        "filter_type": filter_type,
+        "filter_patterns": filter_patterns,
+        "status": status,
+        "url__icontains": url__icontains,
+        "url__istartswith": url__istartswith,
+        "tag": tag,
+        "crawl_id": crawl_id,
+        "limit": limit,
+        "sort": sort,
+        "search": search,
+    }
 
 
 class Api(BaseApiClient):
@@ -17,290 +50,301 @@ class Api(BaseApiClient):
         urls: list[str],
         tag: str = "",
         depth: int = 0,
-        update: bool = False,
-        update_all: bool = False,
-        index_only: bool = False,
-        overwrite: bool = False,
-        init: bool = False,
-        extractors: str = "",
+        snapshot_ids: list[str] | None = None,
+        max_urls: int = 0,
+        crawl_max_size: int = 0,
+        crawl_timeout: int = 0,
+        snapshot_max_size: int = 0,
         parser: str = "auto",
-        extra_data: dict | None = None,
+        plugins: str = "",
+        persona: str = "Default",
+        only_new: bool | None = None,
+        update: bool = False,
+        overwrite: bool = False,
+        index_only: bool = False,
     ) -> httpx.Response:
-        """
-        Execute archivebox add command
+        """POST /api/v1/cli/add
+
+        Add URLs to the archive (one crawl; one snapshot per URL) and queue them
+        for capture.
 
         Args:
-            urls: List of URLs to archive.
-            tag: Comma-separated tags.
-            depth: Crawl depth.
-            update: Update existing snapshots.
-            update_all: Update all snapshots.
-            index_only: Index without archiving.
-            overwrite: Overwrite existing files.
-            init: Initialize collection if needed.
-            extractors: Comma-separated list of extractors to use.
-            parser: Parser type.
-            extra_data: Additional parameters as a dictionary.
-
-        Returns:
-            Response: The response object from the POST request.
-
-        Raises:
-            ParameterError: If the provided parameters are invalid.
+            urls: URLs (or text/feeds the parser extracts URLs from) to archive.
+            tag: Comma-separated tag names applied to every new snapshot.
+            depth: Crawl depth (0 = only these URLs, 1 = also their outlinks).
+            snapshot_ids: Re-run capture on these existing snapshots instead.
+            max_urls: Cap on URLs the crawl may queue (0 = unlimited).
+            crawl_max_size: Cap on total crawl bytes (0 = unlimited).
+            crawl_timeout: Crawl time limit in seconds (0 = unlimited).
+            snapshot_max_size: Cap on bytes per snapshot (0 = unlimited).
+            parser: Input parser (``auto``, ``txt``, ``rss``, ``html``, ...).
+            plugins: Comma-separated plugins to run (empty = instance defaults),
+                for example ``wget,singlefile,pdf,screenshot,readability``.
+            persona: Browser persona (cookies/profile) to capture with.
+            only_new: Skip URLs already in the archive.
+            update: Re-archive URLs already in the archive.
+            overwrite: Overwrite existing outputs on re-archive.
+            index_only: Add to the index without capturing.
         """
-        data: dict[str, Any] = {
+        body = {
             "urls": urls,
+            "snapshot_ids": snapshot_ids,
             "tag": tag,
             "depth": depth,
-            "update": update,
-            "update_all": update_all,
-            "index_only": index_only,
-            "overwrite": overwrite,
-            "init": init,
-            "extractors": extractors,
+            "max_urls": max_urls,
+            "crawl_max_size": crawl_max_size,
+            "crawl_timeout": crawl_timeout,
+            "snapshot_max_size": snapshot_max_size,
             "parser": parser,
+            "plugins": plugins,
+            "persona": persona,
+            "only_new": only_new,
+            "update": update,
+            "overwrite": overwrite,
+            "index_only": index_only,
         }
-        if extra_data:
-            data.update(extra_data)
-        try:
-            response = self._session.post(
-                url=f"{self.url}/api/v1/cli/add",
-                json=data,
-                headers=self.headers,
-            )
-        except ValidationError as e:
-            raise ParameterError(f"Invalid parameters: {e.errors()}") from e
-        return response
+        return self._send("POST", f"{_CLI}/add", json=body)
 
     @require_auth
     def cli_update(
         self,
-        resume: float | None = 0,
-        only_new: bool = True,
-        index_only: bool = False,
-        overwrite: bool = False,
         after: float | None = 0,
-        before: float | None = 999999999999999,
-        status: str | None = "unarchived",
+        before: float | None = None,
         filter_type: str | None = "substring",
         filter_patterns: list[str] | None = None,
-        extractors: str | None = "",
-        extra_data: dict | None = None,
+        status: str | None = None,
+        url__icontains: str | None = None,
+        url__istartswith: str | None = None,
+        tag: str | None = None,
+        crawl_id: str | None = None,
+        limit: int | None = None,
+        sort: str | None = None,
+        search: str | None = None,
+        resume: str | None = None,
+        batch_size: int = 100,
+        continuous: bool = False,
+        index_only: bool = False,
+        migrate_only: bool = False,
     ) -> httpx.Response:
-        """
-        Execute archivebox update command
+        """POST /api/v1/cli/update
+
+        Re-archive (or re-index) the snapshots the selection matches.
 
         Args:
-            resume: Resume from timestamp.
-            only_new: Update only new snapshots.
-            index_only: Index without archiving.
-            overwrite: Overwrite existing files.
-            after: Filter snapshots after timestamp.
-            before: Filter snapshots before timestamp.
-            status: Filter by status.
-            filter_type: Filter type.
-            filter_patterns: List of filter patterns.
-            extractors: Comma-separated list of extractors.
-            extra_data: Additional parameters as a dictionary.
-
-        Returns:
-            Response: The response object from the POST request.
-
-        Raises:
-            ParameterError: If the provided parameters are invalid.
+            after: Only snapshots bookmarked after this Unix time.
+            before: Only snapshots bookmarked before this Unix time.
+            filter_type: How ``filter_patterns`` match (exact, substring,
+                domain, regex, tag, search).
+            filter_patterns: Patterns to match.
+            status: Only snapshots with this status.
+            url__icontains: URL contains.
+            url__istartswith: URL starts with.
+            tag: Only snapshots with this tag.
+            crawl_id: Only snapshots of this crawl.
+            limit: Maximum snapshots.
+            sort: Sort field.
+            search: Full-text search.
+            resume: Resume from this snapshot timestamp.
+            batch_size: Snapshots per batch.
+            continuous: Keep running and pick up new snapshots.
+            index_only: Rebuild the index only.
+            migrate_only: Run data migrations only.
         """
-        data = {
+        body = _selection(
+            after=after,
+            before=before,
+            filter_type=filter_type,
+            filter_patterns=filter_patterns,
+            status=status,
+            url__icontains=url__icontains,
+            url__istartswith=url__istartswith,
+            tag=tag,
+            crawl_id=crawl_id,
+            limit=limit,
+            sort=sort,
+            search=search,
+        ) | {
             "resume": resume,
-            "only_new": only_new,
+            "batch_size": batch_size,
+            "continuous": continuous,
             "index_only": index_only,
-            "overwrite": overwrite,
-            "after": after,
-            "before": before,
-            "status": status,
-            "filter_type": filter_type,
-            "filter_patterns": filter_patterns,
-            "extractors": extractors,
+            "migrate_only": migrate_only,
         }
-        data = {k: v for k, v in data.items() if v is not None}
-        if filter_patterns is None:
-            data["filter_patterns"] = ["https://example.com"]
-        if extra_data:
-            data.update(extra_data)
-        try:
-            response = self._session.post(
-                url=f"{self.url}/api/v1/cli/update",
-                json=data,
-                headers=self.headers,
-            )
-        except ValidationError as e:
-            raise ParameterError(f"Invalid parameters: {e.errors()}") from e
-        return response
+        return self._send("POST", f"{_CLI}/update", json=body)
 
     @require_auth
     def cli_schedule(
         self,
         import_path: str | None = None,
         add: bool = False,
+        show: bool = False,
+        foreground: bool = False,
+        run_all: bool = False,
+        quiet: bool = False,
         every: str | None = None,
         tag: str = "",
         depth: int = 0,
-        overwrite: bool = False,
+        only_new: bool | None = None,
         update: bool = False,
+        overwrite: bool = False,
         clear: bool = False,
-        extra_data: dict | None = None,
     ) -> httpx.Response:
-        """
-        Execute archivebox schedule command
+        """POST /api/v1/cli/schedule
+
+        Create, list or clear recurring archive schedules.
 
         Args:
-            import_path: Path to import file.
-            add: Enable adding new URLs.
-            every: Schedule frequency.
-            tag: Comma-separated tags.
-            depth: Crawl depth.
-            overwrite: Overwrite existing files.
-            update: Update existing snapshots.
-            clear: Clear existing schedules.
-            extra_data: Additional parameters as a dictionary.
-
-        Returns:
-            Response: The response object from the POST request.
-
-        Raises:
-            ParameterError: If the provided parameters are invalid.
+            import_path: URL or feed to re-import on each run.
+            add: Create a schedule.
+            show: List existing schedules.
+            foreground: Run the scheduler in the foreground.
+            run_all: Run every schedule now.
+            quiet: Less output.
+            every: Interval (``hour``, ``day``, ``week``, ``month`` or cron).
+            tag: Comma-separated tags for snapshots the schedule adds.
+            depth: Crawl depth for each run.
+            only_new: Only add URLs not yet archived.
+            update: Re-archive existing URLs on each run.
+            overwrite: Overwrite outputs on re-archive.
+            clear: Remove all schedules.
         """
-        data = {
+        body = {
             "import_path": import_path,
             "add": add,
+            "show": show,
+            "foreground": foreground,
+            "run_all": run_all,
+            "quiet": quiet,
             "every": every,
             "tag": tag,
             "depth": depth,
-            "overwrite": overwrite,
+            "only_new": only_new,
             "update": update,
+            "overwrite": overwrite,
             "clear": clear,
         }
-        data = {k: v for k, v in data.items() if v is not None}
-        if extra_data:
-            data.update(extra_data)
-        try:
-            response = self._session.post(
-                url=f"{self.url}/api/v1/cli/schedule",
-                json=data,
-                headers=self.headers,
-            )
-        except ValidationError as e:
-            raise ParameterError(f"Invalid parameters: {e.errors()}") from e
-        return response
+        return self._send("POST", f"{_CLI}/schedule", json=body)
 
     @require_auth
-    def cli_list(
+    def cli_search(
         self,
-        filter_patterns: list[str] | None = None,
-        filter_type: str = "substring",
-        status: str | None = "indexed",
         after: float | None = 0,
-        before: float | None = 999999999999999,
-        sort: str = "bookmarked_at",
+        before: float | None = None,
+        filter_type: str | None = "substring",
+        filter_patterns: list[str] | None = None,
+        status: str | None = None,
+        url__icontains: str | None = None,
+        url__istartswith: str | None = None,
+        tag: str | None = None,
+        crawl_id: str | None = None,
+        limit: int | None = None,
+        sort: str | None = None,
+        search: str | None = None,
         as_json: bool = True,
         as_html: bool = False,
-        as_csv: str | bool = "timestamp,url",
+        as_csv: str | None = "timestamp,url",
         with_headers: bool = False,
-        extra_data: dict | None = None,
     ) -> httpx.Response:
-        """
-        Execute archivebox list command
+        """POST /api/v1/cli/search
+
+        Search the archive index and export the matches (JSON, HTML or CSV).
 
         Args:
-            filter_patterns: List of filter patterns.
-            filter_type: Filter type.
-            status: Filter by status.
-            after: Filter snapshots after timestamp.
-            before: Filter snapshots before timestamp.
+            after: Only snapshots bookmarked after this Unix time.
+            before: Only snapshots bookmarked before this Unix time.
+            filter_type: How ``filter_patterns`` match (exact, substring,
+                domain, regex, tag, search).
+            filter_patterns: Patterns to match.
+            status: Only snapshots with this status.
+            url__icontains: URL contains.
+            url__istartswith: URL starts with.
+            tag: Only snapshots with this tag.
+            crawl_id: Only snapshots of this crawl.
+            limit: Maximum snapshots.
             sort: Sort field.
-            as_json: Output as JSON.
-            as_html: Output as HTML.
-            as_csv: Output as CSV or fields to include.
-            with_headers: Include headers in output.
-            extra_data: Additional parameters as a dictionary.
-
-        Returns:
-            Response: The response object from the POST request.
-
-        Raises:
-            ParameterError: If the provided parameters are invalid.
+            search: Full-text search.
+            as_json: Export as JSON.
+            as_html: Export as HTML.
+            as_csv: Export as CSV with these columns.
+            with_headers: Include headers in the export.
         """
-        data = {
-            "filter_patterns": filter_patterns,
-            "filter_type": filter_type,
-            "status": status,
-            "after": after,
-            "before": before,
-            "sort": sort,
+        body = _selection(
+            after=after,
+            before=before,
+            filter_type=filter_type,
+            filter_patterns=filter_patterns,
+            status=status,
+            url__icontains=url__icontains,
+            url__istartswith=url__istartswith,
+            tag=tag,
+            crawl_id=crawl_id,
+            limit=limit,
+            sort=sort,
+            search=search,
+        ) | {
             "as_json": as_json,
             "as_html": as_html,
             "as_csv": as_csv,
             "with_headers": with_headers,
         }
-        data = {k: v for k, v in data.items() if v is not None}
-        if filter_patterns is None:
-            data["filter_patterns"] = ["https://example.com"]
-        if extra_data:
-            data.update(extra_data)
-        try:
-            response = self._session.post(
-                url=f"{self.url}/api/v1/cli/list",
-                json=data,
-                headers=self.headers,
-            )
-        except ValidationError as e:
-            raise ParameterError(f"Invalid parameters: {e.errors()}") from e
-        return response
+        return self._send("POST", f"{_CLI}/search", json=body)
 
     @require_auth
     def cli_remove(
         self,
-        delete: bool = True,
         after: float | None = 0,
-        before: float | None = 999999999999999,
+        before: float | None = None,
         filter_type: str = "exact",
         filter_patterns: list[str] | None = None,
-        extra_data: dict | None = None,
+        status: str | None = None,
+        url__icontains: str | None = None,
+        url__istartswith: str | None = None,
+        tag: str | None = None,
+        crawl_id: str | None = None,
+        limit: int | None = None,
+        sort: str | None = None,
+        search: str | None = None,
+        timeout: float = 60.0,
     ) -> httpx.Response:
-        """
-        Execute archivebox remove command
+        """POST /api/v1/cli/remove
+
+        Delete the snapshots the selection matches, and their files. Destructive:
+        always pass the narrowest selection (an exact URL, or one tag).
 
         Args:
-            delete: Delete matching snapshots.
-            after: Filter snapshots after timestamp.
-            before: Filter snapshots before timestamp.
-            filter_type: Filter type.
-            filter_patterns: List of filter patterns.
-            extra_data: Additional parameters as a dictionary.
-
-        Returns:
-            Response: The response object from the POST request.
-
-        Raises:
-            ParameterError: If the provided parameters are invalid.
+            after: Only snapshots bookmarked after this Unix time.
+            before: Only snapshots bookmarked before this Unix time.
+            filter_type: How ``filter_patterns`` match (default ``exact``).
+            filter_patterns: Patterns to match.
+            status: Only snapshots with this status.
+            url__icontains: URL contains.
+            url__istartswith: URL starts with.
+            tag: Only snapshots with this tag.
+            crawl_id: Only snapshots of this crawl.
+            limit: Maximum snapshots.
+            sort: Sort field.
+            search: Full-text search.
+            timeout: Seconds to wait for the removal.
         """
-        data = {
-            "delete": delete,
-            "after": after,
-            "before": before,
-            "filter_type": filter_type,
-            "filter_patterns": filter_patterns,
-        }
-        data = {k: v for k, v in data.items() if v is not None}
-        if filter_patterns is None:
-            data["filter_patterns"] = ["https://example.com"]
-        if extra_data:
-            data.update(extra_data)
-        try:
-            response = self._session.post(
-                url=f"{self.url}/api/v1/cli/remove",
-                json=data,
-                headers=self.headers,
+        if not any(
+            (filter_patterns, url__icontains, url__istartswith, tag, crawl_id, search)
+        ):
+            raise ParameterError(
+                "cli_remove needs a selection (filter_patterns, tag, url__icontains,"
+                " url__istartswith, crawl_id or search); it never removes everything"
             )
-        except ValidationError as e:
-            raise ParameterError(f"Invalid parameters: {e.errors()}") from e
-        return response
+        body = _selection(
+            after=after,
+            before=before,
+            filter_type=filter_type,
+            filter_patterns=filter_patterns,
+            status=status,
+            url__icontains=url__icontains,
+            url__istartswith=url__istartswith,
+            tag=tag,
+            crawl_id=crawl_id,
+            limit=limit,
+            sort=sort,
+            search=search,
+        ) | {"timeout": timeout}
+        return self._send("POST", f"{_CLI}/remove", json=body)

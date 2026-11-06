@@ -2,93 +2,53 @@
 name: archivebox-snapshot-search
 skill_type: skill
 description: >-
-  Browse and search an ArchiveBox archive via the archivebox-api MCP server —
-  list/filter snapshots, read one snapshot (with its per-extractor archive
-  results), list archive results by extractor/status, and read tags with the
-  domain-typed core tool. Use when the agent must find an archived URL, inspect
-  what was captured for a page, check extractor success/failure, or resolve a
-  snapshot/result/tag by its abid. Do NOT use for adding or re-archiving URLs
-  (archivebox-web-archiving) or for pushing data into the knowledge graph
-  (archivebox-kg-ingestion); prefer those.
+  Find and read archived pages in ArchiveBox through the archivebox-mcp server:
+  list and filter snapshots by URL, tag, text, status or time, read one
+  snapshot with its per-plugin archive results, list archive results, resolve
+  any object by id, export a tag's URLs or snapshots, and read the RSS feed.
+  Use when the agent must cite or inspect an archived page. Do NOT use to add
+  or re-archive URLs (archivebox-web-archiving) or to ingest into the KG
+  (archivebox-kg-ingestion).
 license: MIT
-tags: [archivebox, search, snapshots, archive-results, mcp]
+tags: [archivebox, search, snapshots, evidence, mcp]
 metadata:
   author: Knuckles-Team
-  version: '0.1.0'
+  version: '0.2.0'
 ---
-# ArchiveBox Snapshot Search
+# ArchiveBox snapshot search
 
-Domain-typed **read** access to an ArchiveBox archive: snapshots, their per-extractor
-archive results, and tags. Prefer these over raw HTTP — they return archive-shaped
-records.
+All tools here are read-only.
 
-## When to use
-- Find / filter snapshots by `search`, `url`, `tag`, `title`, or date window.
-- Read one snapshot by `snapshot_id` (id or abid), optionally with archive results.
-- List `ArchiveResult`s filtered by `extractor`, `status`, `snapshot_url`, etc.
-- Read tags, or resolve any object (snapshot/result/tag) by its `abid`.
+| Tool | Use |
+|------|-----|
+| `archivebox_get_snapshots` | Filter snapshots: `url` (exact), `tag`, `search` (+ `search_mode` meta/contents/deep), `status`, `title`, `bookmarked_at__gte/__lt`, `with_archiveresults`, `limit/offset/page`. |
+| `archivebox_get_snapshot` | One snapshot by `snapshot_id`, with its archive results. |
+| `archivebox_get_archiveresults` | Results by `snapshot_id`, `snapshot_url`, `snapshot_tag`, `plugin`, `status`. |
+| `archivebox_get_archiveresult` | One result by id. |
+| `archivebox_get_any` | Resolve any id (snapshot, result, tag, crawl). |
+| `archivebox_cli_search` | Index search with `filter_patterns` + `filter_type` (exact, substring, domain, regex, tag, search) and JSON/CSV/HTML export. |
+| `archivebox_get_tags` / `archivebox_get_tag` / `archivebox_search_tags` / `archivebox_tags_autocomplete` | Tags and their snapshot counts. |
+| `archivebox_get_tag_urls` / `archivebox_get_tag_snapshots_jsonl` | Export a tag's URLs (text) or snapshots (JSON Lines). |
+| `archivebox_get_crawls` / `archivebox_get_crawl` | Crawls and the snapshots they produced. |
+| `archivebox_get_crawl_file` / `_folder_file` / `_subfolder_file` | A file in a crawl's output directory. |
+| `archivebox_get_snapshots_rss` | Recent snapshots as RSS. |
 
-## When NOT to use
-- Adding, updating, or scheduling captures → `archivebox-web-archiving`.
-- Loading snapshots/results into the epistemic-graph KG → `archivebox-kg-ingestion`.
+## Procedure: cite an archived page
 
-## Prerequisites & environment
-Connect via the `mcp-client` skill against the **`archivebox-api`** MCP server.
-
-| Variable | Required | Notes |
-|----------|----------|-------|
-| `ARCHIVEBOX_BASE_URL` | ✅ | Instance URL (alias `ARCHIVEBOX_URL`) |
-| `ARCHIVEBOX_TOKEN` | one of | Bearer API token (alias `ARCHIVEBOX_API_KEY`) |
-| `ARCHIVEBOX_USERNAME` / `ARCHIVEBOX_PASSWORD` | one of | Basic-auth → token exchange |
-| `ARCHIVEBOX_SSL_VERIFY` | optional | TLS verification toggle (default off) |
-
-`MCP_TOOL_MODE` (`condensed`|`verbose`|`both`) selects the condensed surface (used
-below) vs. the one-to-one verbose tools.
-
-## Tools & actions
-Prefer the **condensed** tool; it takes `action` + a `params_json` **JSON string**.
-
-| Condensed tool | Actions |
-|----------------|---------|
-| `archivebox_core` | `get_snapshots`, `get_snapshot`, `get_archiveresults`, `get_tag`, `get_any` |
-| `archivebox_cli`  | `cli_list` (JSON/CSV export of the index) |
-
-### Key parameters
-- `search` — matches url, title, tags, id, abid, timestamp (`get_snapshots`).
-- `tag`, `url`, `title`, `timestamp` — exact/`icontains`/`startswith` filters.
-- `created_at__gte` / `created_at__lt`, `bookmarked_at__gte` / `__lt` — date windows.
-- `with_archiveresults` — include per-extractor results on a snapshot read.
-- `snapshot_id` — id or abid for `get_snapshot`; `abid` for `get_any`.
-- `extractor`, `status`, `snapshot_url`, `snapshot_tag` — `get_archiveresults` filters.
-- `limit`, `offset`, `page` — pagination.
-
-## Recipes (`params_json`)
-Search snapshots for a term, newest first, small page:
-```json
-{"search":"climate","limit":25,"page":0}
-```
-Read one snapshot with its archive results:
-```json
-{"snapshot_id":"<abid_or_id>","with_archiveresults":true}
-```
-Find failed screenshot captures:
-```json
-{"extractor":"screenshot","status":"failed","limit":50}
-```
-List all snapshots tagged `research`:
-```json
-{"tag":"research","limit":100}
-```
+1. `archivebox_get_snapshots(url="<exact url>")` (or `tag=` / `search=`).
+2. Take the newest `sealed` snapshot. Cite its `id`, `url`, `timestamp`,
+   `bookmarked_at` and `archive_path`; the browsable copy is
+   `<ARCHIVEBOX_BASE_URL>/<archive_path>`.
+3. `archivebox_get_archiveresults(snapshot_id=<id>, status="succeeded")` lists
+   what was kept (`plugin` = singlefile, wget, pdf, screenshot, readability,
+   htmltotext, title, headers, ...). Cite the plugins you rely on.
+4. A page captured more than once: compare `timestamp` and the `title` /
+   readability output of each snapshot to show what changed.
 
 ## Gotchas
-- `params_json` is a **string** of JSON, not an object — serialize it.
-- `tag` is an **exact** tag-name match; use `search` for fuzzy matching across fields.
-- `timestamp` filters `startswith`, not equality — ArchiveBox timestamps are the
-  snapshot directory keys (epoch-like), not ISO dates.
-- Always set a sane `limit`; unbounded reads over a large archive are slow.
-- A `get_snapshots` read triggers default-on native KG ingestion (best-effort, no-op
-  without a live engine; disable with `ARCHIVEBOX_KG_AUTO_INGEST=0`).
 
-## Related
-- **Write side:** `archivebox-web-archiving` (add/update/schedule captures).
-- **KG side:** `archivebox-kg-ingestion` (typed nodes + page-text docs + blobs).
+- Snapshot status: `queued` -> `started` -> `sealed`. Only `sealed` snapshots
+  are complete; a sealed snapshot can still have failed plugins.
+- `search` matches metadata by default; use `search_mode="contents"` for page text.
+- Output files are served to a logged-in browser session, not the API token;
+  cite the archive path, do not try to download files through the API.

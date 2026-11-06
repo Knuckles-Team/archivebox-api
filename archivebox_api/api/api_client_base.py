@@ -1,5 +1,6 @@
 import sys
 from abc import ABC, abstractmethod
+from typing import Any
 
 import httpx
 from scion_sdk.exceptions import (
@@ -77,6 +78,66 @@ class BaseApiClient(ABC):
         if not fetched_token:
             raise AuthError("Failed to retrieve API token")
         self.headers["Authorization"] = f"Bearer {fetched_token}"
+
+    def _send(
+        self,
+        verb: str,
+        path: str,
+        *,
+        params: dict[str, Any] | None = None,
+        json: dict[str, Any] | None = None,
+        api_key: str | None = None,
+        follow_redirects: bool = False,
+    ) -> httpx.Response:
+        """Send one ArchiveBox REST call; ``None`` values are dropped from both
+        the query string and the JSON body so upstream defaults apply."""
+        query = {k: v for k, v in (params or {}).items() if v is not None}
+        if api_key:
+            query["api_key"] = api_key
+        body = None
+        if json is not None:
+            body = {k: v for k, v in json.items() if v is not None}
+        return self._session.request(
+            verb,
+            f"{self.url}{path}",
+            params=query or None,
+            json=body,
+            headers=self.headers,
+            follow_redirects=follow_redirects,
+        )
+
+    def _send_form(
+        self,
+        verb: str,
+        path: str,
+        *,
+        fields: dict[str, Any],
+        files: dict[str, str] | None = None,
+    ) -> httpx.Response:
+        """Send a multipart form (ArchiveBox's archive-result upload shape).
+
+        ``files`` maps each output path (relative to the plugin directory) to
+        its base64-encoded content; each becomes one ``files`` part with its
+        path in ``output_paths``.
+        """
+        import base64
+        import json as _json
+
+        data = {k: str(v) for k, v in fields.items() if v is not None}
+        parts: list[tuple[str, tuple[str, bytes]]] = []
+        if files:
+            data["output_paths"] = _json.dumps(list(files))
+            for out_path, b64 in files.items():
+                name = out_path.rsplit("/", 1)[-1]
+                parts.append(("files", (name, base64.b64decode(b64))))
+        headers = {k: v for k, v in self.headers.items() if k != "Content-Type"}
+        return self._session.request(
+            verb,
+            f"{self.url}{path}",
+            data=data,
+            files=parts or None,
+            headers=headers,
+        )
 
     def close(self) -> None:
         """Release transport resources and runtime-only TLS material."""

@@ -116,7 +116,7 @@ class FakeApi:
         found = self.snapshots.get(url)
         return {"items": [found] if found else []}
 
-    def cli_add(self, *, urls: list[str], tag: str, extractors: str) -> dict[str, Any]:
+    def cli_add(self, *, urls: list[str], tag: str, plugins: str) -> dict[str, Any]:
         self.adds.append(urls)
         for url in urls:
             self._store(url)
@@ -224,7 +224,7 @@ class QueueingApi(FakeApi):
         self.appears_after = appears_after
         self.looked = 0
 
-    def cli_add(self, *, urls: list[str], tag: str, extractors: str) -> dict[str, Any]:
+    def cli_add(self, *, urls: list[str], tag: str, plugins: str) -> dict[str, Any]:
         self.adds.append(urls)
         self.pending = urls
         return {"success": True}

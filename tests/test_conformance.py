@@ -82,7 +82,7 @@ class ArchivingApi:
     ) -> dict[str, Any]:
         return next(s for s in self.snapshots.values() if s["id"] == snapshot_id)
 
-    def cli_add(self, *, urls: list[str], tag: str, extractors: str) -> dict[str, Any]:
+    def cli_add(self, *, urls: list[str], tag: str, plugins: str) -> dict[str, Any]:
         for url in urls:
             snapshot_id = f"{len(self.snapshots) + 1:032x}"
             base = f"/snapshot/{snapshot_id}/"

@@ -9,166 +9,19 @@ Provides dynamic tool registration and stdio/SSE/http interfaces using FastMCP.
 import logging
 from typing import Any
 
+import httpx
 from fastmcp import Context, FastMCP
 from fastmcp.dependencies import Depends
 from fastmcp.utilities.logging import get_logger
 from pydantic import Field
-from scion_sdk.mcp.action_dispatch import resolve_action
 from scion_sdk.mcp.concurrency import run_blocking
+from scion_sdk.mcp.method_tools import jsonable_result
 
 from archivebox_api.auth import get_client
 
 # Telemetry & Observability
 logger = get_logger(name="archivebox-api")
 logger.setLevel(logging.INFO)
-
-
-AUTHENTICATION_ACTIONS = ("get_api_token", "check_api_token")
-CORE_ACTIONS = (
-    "get_snapshots",
-    "get_snapshot",
-    "get_archiveresults",
-    "get_tag",
-    "get_any",
-)
-CLI_ACTIONS = ("cli_add", "cli_update", "cli_schedule", "cli_list", "cli_remove")
-
-
-def _parse_action_kwargs(params_json: str) -> dict[str, Any] | None:
-    """Parse a tool's ``params_json`` blob into filtered kwargs, or None if invalid."""
-    import json
-
-    try:
-        kwargs = json.loads(params_json)
-    except Exception:  # noqa: BLE001 — any parse failure is reported the same way
-        return None
-    return {k: v for k, v in kwargs.items() if v is not None}
-
-
-async def _dispatch_core_action(
-    client: Any, action: str, kwargs: dict[str, Any]
-) -> dict:
-    """Call the client method matching a resolved core action; ``action`` is
-    already validated by ``resolve_action`` against ``CORE_ACTIONS``, and every
-    core action name equals its client method name."""
-    if action not in CORE_ACTIONS:
-        raise ValueError(f"Unknown action: {action}")
-    resp = await run_blocking(getattr(client, action), **kwargs)
-    if action == "get_snapshots":
-        await _auto_ingest_snapshots(resp)
-    return resp
-
-
-async def _dispatch_cli_action(
-    client: Any, action: str, kwargs: dict[str, Any]
-) -> dict:
-    """Call the client method matching a resolved cli action; ``action`` is
-    already validated by ``resolve_action`` against ``CLI_ACTIONS``, and every
-    cli action name equals its client method name."""
-    if action not in CLI_ACTIONS:
-        raise ValueError(f"Unknown action: {action}")
-    return await run_blocking(getattr(client, action), **kwargs)
-
-
-def register_authentication_tools(mcp: FastMCP):
-    """Register authentication management tools.
-
-    Security & Auth
-    """
-
-    @mcp.tool(tags={"authentication"})
-    async def archivebox_authentication(
-        action: str = Field(
-            description="Action to perform. Must be one of: 'get_api_token', 'check_api_token'"
-        ),
-        params_json: str = Field(
-            default="{}", description="JSON string of parameters to pass to the action."
-        ),
-        client=Depends(get_client),
-        ctx: Context | None = Field(
-            default=None, description="MCP context for progress reporting"
-        ),
-    ) -> dict:
-        """Manage archivebox authentication operations."""
-        if ctx:
-            await ctx.info("Executing tool...")
-        import json
-
-        try:
-            kwargs = json.loads(params_json)
-        except Exception:
-            return {"error": "Operation failed"}
-
-        kwargs = {k: v for k, v in kwargs.items() if v is not None}
-
-        resolved = resolve_action(
-            action, AUTHENTICATION_ACTIONS, service="archivebox-api"
-        )
-        if isinstance(resolved, dict):
-            return resolved
-        action = resolved
-
-        if action == "get_api_token":
-            return await run_blocking(client.get_api_token, **kwargs)
-        if action == "check_api_token":
-            return await run_blocking(client.check_api_token, **kwargs)
-        raise ValueError(f"Unknown action: {action}")
-
-
-def register_core_tools(mcp: FastMCP):
-    @mcp.tool(tags={"core"})
-    async def archivebox_core(
-        action: str = Field(
-            description="Action to perform. Must be one of: 'get_snapshots', 'get_snapshot', 'get_archiveresults', 'get_tag', 'get_any'"
-        ),
-        params_json: str = Field(
-            default="{}", description="JSON string of parameters to pass to the action."
-        ),
-        client=Depends(get_client),
-        ctx: Context | None = Field(
-            default=None, description="MCP context for progress reporting"
-        ),
-    ) -> dict:
-        """Manage archivebox core operations."""
-        if ctx:
-            await ctx.info("Executing tool...")
-        kwargs = _parse_action_kwargs(params_json)
-        if kwargs is None:
-            return {"error": "Operation failed"}
-
-        resolved = resolve_action(action, CORE_ACTIONS, service="archivebox-api")
-        if isinstance(resolved, dict):
-            return resolved
-
-        return await _dispatch_core_action(client, resolved, kwargs)
-
-
-def register_cli_tools(mcp: FastMCP):
-    @mcp.tool(tags={"cli"})
-    async def archivebox_cli(
-        action: str = Field(
-            description="Action to perform. Must be one of: 'cli_add', 'cli_update', 'cli_schedule', 'cli_list', 'cli_remove'"
-        ),
-        params_json: str = Field(
-            default="{}", description="JSON string of parameters to pass to the action."
-        ),
-        client=Depends(get_client),
-        ctx: Context | None = Field(
-            default=None, description="MCP context for progress reporting"
-        ),
-    ) -> dict:
-        """Manage archivebox cli operations."""
-        if ctx:
-            await ctx.info("Executing tool...")
-        kwargs = _parse_action_kwargs(params_json)
-        if kwargs is None:
-            return {"error": "Operation failed"}
-
-        resolved = resolve_action(action, CLI_ACTIONS, service="archivebox-api")
-        if isinstance(resolved, dict):
-            return resolved
-
-        return await _dispatch_cli_action(client, resolved, kwargs)
 
 
 def _records_from_dict(data: dict[str, Any]) -> list[dict[str, Any]]:
@@ -204,25 +57,30 @@ def _records_from_response(resp: Any) -> list[dict[str, Any]]:
     return []
 
 
-async def _auto_ingest_snapshots(resp: Any) -> None:
-    """Default-on, best-effort native KG ingestion after a snapshot fetch.
+def coerce_result(result: Any) -> Any:
+    """Turn an ArchiveBox HTTP response into the tool result.
 
-    No-ops unless a live epistemic-graph engine is reachable. Disable by setting
-    ``ARCHIVEBOX_KG_AUTO_INGEST=0``. Never raises into the tool path.
+    CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R004: a 2xx JSON body is returned as-is; a 2xx
+    text body (RSS, ``urls.txt``, JSON Lines) as ``{status_code, content_type,
+    text}``; any other status as ``{status_code, error}`` with the upstream
+    message, so a failed call is never reported as a bare status code.
     """
-    import os
-
-    if os.environ.get("ARCHIVEBOX_KG_AUTO_INGEST", "1") == "0":
-        return
+    if not isinstance(result, httpx.Response):
+        return jsonable_result(result)
+    status = result.status_code
+    ctype = result.headers.get("content-type", "")
+    if 200 <= status < 300:
+        if "json" in ctype and "jsonl" not in ctype and "ndjson" not in ctype:
+            try:
+                return result.json()
+            except ValueError:
+                pass
+        return {"status_code": status, "content_type": ctype, "text": result.text}
     try:
-        records = _records_from_response(resp)
-        if not records:
-            return
-        from archivebox_api.kg_ingest import ingest_snapshots
-
-        await ingest_snapshots(records)
-    except Exception as e:  # noqa: BLE001 — ingestion is best-effort
-        logger.debug("Operation failed: error_type=%s", type(e).__name__)
+        detail: Any = result.json()
+    except ValueError:
+        detail = result.text[:4000]
+    return {"status_code": status, "error": detail}
 
 
 def register_kg_tools(mcp: FastMCP):
@@ -230,64 +88,71 @@ def register_kg_tools(mcp: FastMCP):
 
     @mcp.tool(tags={"kg"})
     async def archivebox_ingest_snapshots(
-        params_json: str = Field(
-            default="{}",
-            description="JSON string of get_snapshots filters (e.g. tag, search, limit).",
+        tag: str | None = Field(
+            default=None, description="Only snapshots with this tag."
         ),
+        search: str | None = Field(default=None, description="Full-text/meta search."),
+        url: str | None = Field(default=None, description="Exact snapshot URL."),
+        limit: int = Field(default=200, description="Maximum snapshots to ingest."),
         client=Depends(get_client),
-        ctx: Context | None = Field(
-            default=None, description="MCP context for progress reporting"
-        ),
+        ctx: Context | None = None,
     ) -> dict:
-        """List ArchiveBox snapshots and natively ingest them into epistemic-graph.
+        """List ArchiveBox snapshots and natively ingest them into the knowledge graph.
 
         Pushes :Snapshot (+ :Tag + :hasTag) nodes and per-snapshot :Document page-text,
-        plus any nested :ArchiveResult links, via the fast engine client. Best-effort:
+        plus nested :ArchiveResult links, via the fast engine client. Best-effort:
         returns ``{"ingested": None}`` when no engine is reachable.
         """
-        import json
-
         from archivebox_api.kg_ingest import ingest_snapshots
 
         if ctx:
             await ctx.info("Ingesting snapshots into the knowledge graph...")
-        try:
-            kwargs = json.loads(params_json) if params_json else {}
-        except Exception:  # noqa: BLE001
-            return {"error": "Operation failed"}
-        kwargs = {k: v for k, v in kwargs.items() if v is not None}
-        resp = await run_blocking(client.get_snapshots, **kwargs)
+        resp = await run_blocking(
+            client.get_snapshots,
+            tag=tag,
+            search=search,
+            url=url,
+            limit=limit,
+            with_archiveresults=True,
+        )
         records = _records_from_response(resp)
         result = await ingest_snapshots(records)
         return {"listed": len(records), "ingested": result}
 
     @mcp.tool(tags={"kg"})
     async def archivebox_ingest_archiveresults(
-        params_json: str = Field(
-            default="{}",
-            description="JSON string of get_archiveresults filters (e.g. snapshot_id, extractor, status).",
+        snapshot_id: str | None = Field(
+            default=None, description="Results of this snapshot."
         ),
+        snapshot_tag: str | None = Field(
+            default=None, description="Results of snapshots with this tag."
+        ),
+        plugin: str | None = Field(
+            default=None, description="Only this plugin's results."
+        ),
+        status: str | None = Field(
+            default=None, description="Only results with this status."
+        ),
+        limit: int = Field(default=200, description="Maximum results to ingest."),
         client=Depends(get_client),
-        ctx: Context | None = Field(
-            default=None, description="MCP context for progress reporting"
-        ),
+        ctx: Context | None = None,
     ) -> dict:
         """List ArchiveBox archive results and ingest them as :ArchiveResult nodes.
 
         Best-effort: returns ``{"ingested": None}`` when no engine is reachable.
         """
-        import json
-
         from archivebox_api.kg_ingest import ingest_archiveresults
 
         if ctx:
             await ctx.info("Ingesting archive results into the knowledge graph...")
-        try:
-            kwargs = json.loads(params_json) if params_json else {}
-        except Exception:  # noqa: BLE001
-            return {"error": "Operation failed"}
-        kwargs = {k: v for k, v in kwargs.items() if v is not None}
-        resp = await run_blocking(client.get_archiveresults, **kwargs)
+        resp = await run_blocking(
+            client.get_archiveresults,
+            snapshot_id=snapshot_id,
+            snapshot_tag=snapshot_tag,
+            plugin=plugin,
+            status=status,
+            limit=limit,
+        )
         records = _records_from_response(resp)
         result = await ingest_archiveresults(records)
         return {"listed": len(records), "ingested": result}

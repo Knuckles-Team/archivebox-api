@@ -1,0 +1,376 @@
+@prefix : <http://knuckles.team/kg#> .
+@prefix cp: <http://knuckles.team/kg/connector-pack#> .
+@prefix c: <http://knuckles.team/kg/connector/archivebox#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# Connector surface and ingest contract of archivebox-mcp. Tool-use contracts:
+# each served tool names the domain class it reads (cp:operatesOn) and the
+# class of the records it emits (cp:produces). Prompt, skill and tool links:
+# each feature is realised by its tools, skills and prompts, and each skill and
+# prompt names the classes it applies to. Domain classes come from
+# archivebox.ttl or medulla core and roll up to core by rdfs:subClassOf.
+# No blank nodes. CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R006; keep in step with the
+# served tools, skills/ and prompts/ (tests/test_surface_contracts.py).
+
+c:connector a cp:Connector ;
+    rdfs:label "ArchiveBox" ;
+    cp:componentId "archivebox-mcp" ;
+    cp:providesFeature c:feature-capture, c:feature-search, c:feature-administration, c:feature-kg-ingest, c:feature-research-archive ;
+    cp:hasContract c:contract .
+
+# --- features ----------------------------------------------------------------
+
+c:feature-capture a cp:Feature ;
+    rdfs:label "Durable capture" ;
+    rdfs:comment "Add URLs, crawls and snapshots to the archive, re-archive and schedule recurring captures, and file externally captured evidence as archive results." ;
+    cp:realizedBy c:tool-archivebox_cli_add, c:tool-archivebox_create_snapshot, c:tool-archivebox_create_crawl, c:tool-archivebox_cli_update, c:tool-archivebox_cli_schedule, c:tool-archivebox_patch_snapshot, c:tool-archivebox_patch_crawl, c:tool-archivebox_create_archiveresult, c:tool-archivebox_patch_archiveresult, c:tool-web_fetch, c:tool-web_extract,
+        c:skill-archivebox-web-archiving, c:prompt-archivebox_operator .
+
+c:feature-search a cp:Feature ;
+    rdfs:label "Archive search and evidence read" ;
+    rdfs:comment "Find archived pages by URL, tag, text or time and read each snapshot's per-plugin results and exports." ;
+    cp:realizedBy c:tool-archivebox_get_snapshots, c:tool-archivebox_get_snapshot, c:tool-archivebox_get_snapshots_rss, c:tool-archivebox_get_archiveresults, c:tool-archivebox_get_archiveresult, c:tool-archivebox_get_any, c:tool-archivebox_cli_search, c:tool-archivebox_get_tags, c:tool-archivebox_get_tag, c:tool-archivebox_search_tags, c:tool-archivebox_tags_autocomplete, c:tool-archivebox_get_tag_urls, c:tool-archivebox_get_tag_snapshots_jsonl, c:tool-archivebox_get_crawls, c:tool-archivebox_get_crawl, c:tool-archivebox_get_crawl_file, c:tool-archivebox_get_crawl_folder_file, c:tool-archivebox_get_crawl_subfolder_file,
+        c:skill-archivebox-snapshot-search, c:prompt-archivebox_operator, c:prompt-archivebox_research_archivist .
+
+c:feature-administration a cp:Feature ;
+    rdfs:label "Archive administration" ;
+    rdfs:comment "Curate tags, remove test or unwanted captures, and inspect workers, capture binaries and personas." ;
+    cp:realizedBy c:tool-archivebox_create_tag, c:tool-archivebox_rename_tag, c:tool-archivebox_delete_tag, c:tool-archivebox_add_tag_to_snapshot, c:tool-archivebox_remove_tag_from_snapshot, c:tool-archivebox_delete_snapshot, c:tool-archivebox_delete_crawl, c:tool-archivebox_cli_remove, c:tool-archivebox_get_machines, c:tool-archivebox_get_current_machine, c:tool-archivebox_get_machine, c:tool-archivebox_get_binaries, c:tool-archivebox_get_binary, c:tool-archivebox_get_binaries_by_name, c:tool-archivebox_get_personas, c:tool-archivebox_sync_persona, c:tool-archivebox_get_api_token, c:tool-archivebox_check_api_token, c:tool-archivebox_browser_session,
+        c:skill-archivebox-archive-administration, c:prompt-archivebox_operator .
+
+c:feature-kg-ingest a cp:Feature ;
+    rdfs:label "Knowledge graph ingest" ;
+    rdfs:comment "Copy snapshots, tags, page text and archive results into the knowledge graph." ;
+    cp:realizedBy c:tool-archivebox_ingest_snapshots, c:tool-archivebox_ingest_archiveresults,
+        c:skill-archivebox-kg-ingestion, c:prompt-archivebox_operator .
+
+c:feature-research-archive a cp:Feature ;
+    rdfs:label "Competitor and market research archive" ;
+    rdfs:comment "Keep a durable, tagged, re-checkable archive of every competitor and market page a research run used, and cite it as evidence later." ;
+    cp:realizedBy c:tool-archivebox_cli_add, c:tool-archivebox_get_snapshots, c:tool-archivebox_get_snapshot, c:tool-archivebox_get_archiveresults, c:tool-archivebox_create_archiveresult, c:tool-archivebox_add_tag_to_snapshot, c:tool-archivebox_get_tag_urls, c:tool-archivebox_search_tags, c:tool-archivebox_cli_update, c:tool-archivebox_ingest_snapshots,
+        c:skill-archivebox-research-archive, c:prompt-archivebox_research_archivist .
+
+# --- tools (tool-use contracts) ----------------------------------------------
+
+c:tool-archivebox_get_api_token a cp:Tool ;
+    cp:componentId "archivebox_get_api_token" ;
+    cp:operatesOn :ArchivePersona ;
+    cp:produces :ArchivePersona .
+
+c:tool-archivebox_check_api_token a cp:Tool ;
+    cp:componentId "archivebox_check_api_token" ;
+    cp:operatesOn :ArchivePersona ;
+    cp:produces :ArchivePersona .
+
+c:tool-archivebox_browser_session a cp:Tool ;
+    cp:componentId "archivebox_browser_session" ;
+    cp:operatesOn :ArchivePersona ;
+    cp:produces :ArchivePersona .
+
+c:tool-archivebox_get_snapshots a cp:Tool ;
+    cp:componentId "archivebox_get_snapshots" ;
+    cp:operatesOn :WebSnapshot ;
+    cp:produces :WebSnapshot .
+
+c:tool-archivebox_create_snapshot a cp:Tool ;
+    cp:componentId "archivebox_create_snapshot" ;
+    cp:operatesOn :WebResource ;
+    cp:produces :WebSnapshot .
+
+c:tool-archivebox_get_snapshots_rss a cp:Tool ;
+    cp:componentId "archivebox_get_snapshots_rss" ;
+    cp:operatesOn :WebSnapshot ;
+    cp:produces :WebSnapshot .
+
+c:tool-archivebox_get_snapshot a cp:Tool ;
+    cp:componentId "archivebox_get_snapshot" ;
+    cp:operatesOn :WebSnapshot ;
+    cp:produces :WebSnapshot, :ArchiveResult .
+
+c:tool-archivebox_patch_snapshot a cp:Tool ;
+    cp:componentId "archivebox_patch_snapshot" ;
+    cp:operatesOn :WebSnapshot ;
+    cp:produces :WebSnapshot .
+
+c:tool-archivebox_delete_snapshot a cp:Tool ;
+    cp:componentId "archivebox_delete_snapshot" ;
+    cp:operatesOn :WebSnapshot ;
+    cp:produces :WebSnapshot .
+
+c:tool-archivebox_get_archiveresults a cp:Tool ;
+    cp:componentId "archivebox_get_archiveresults" ;
+    cp:operatesOn :ArchiveResult ;
+    cp:produces :ArchiveResult .
+
+c:tool-archivebox_create_archiveresult a cp:Tool ;
+    cp:componentId "archivebox_create_archiveresult" ;
+    cp:operatesOn :WebSnapshot ;
+    cp:produces :ArchiveResult .
+
+c:tool-archivebox_get_archiveresult a cp:Tool ;
+    cp:componentId "archivebox_get_archiveresult" ;
+    cp:operatesOn :ArchiveResult ;
+    cp:produces :ArchiveResult .
+
+c:tool-archivebox_patch_archiveresult a cp:Tool ;
+    cp:componentId "archivebox_patch_archiveresult" ;
+    cp:operatesOn :ArchiveResult ;
+    cp:produces :ArchiveResult .
+
+c:tool-archivebox_get_tags a cp:Tool ;
+    cp:componentId "archivebox_get_tags" ;
+    cp:operatesOn :Tag ;
+    cp:produces :Tag .
+
+c:tool-archivebox_get_tag a cp:Tool ;
+    cp:componentId "archivebox_get_tag" ;
+    cp:operatesOn :Tag ;
+    cp:produces :Tag, :WebSnapshot .
+
+c:tool-archivebox_delete_tag a cp:Tool ;
+    cp:componentId "archivebox_delete_tag" ;
+    cp:operatesOn :Tag ;
+    cp:produces :Tag .
+
+c:tool-archivebox_get_any a cp:Tool ;
+    cp:componentId "archivebox_get_any" ;
+    cp:operatesOn :WebSnapshot ;
+    cp:produces :WebSnapshot, :ArchiveResult, :Tag, :ArchiveCrawl .
+
+c:tool-archivebox_search_tags a cp:Tool ;
+    cp:componentId "archivebox_search_tags" ;
+    cp:operatesOn :Tag ;
+    cp:produces :Tag .
+
+c:tool-archivebox_tags_autocomplete a cp:Tool ;
+    cp:componentId "archivebox_tags_autocomplete" ;
+    cp:operatesOn :Tag ;
+    cp:produces :Tag .
+
+c:tool-archivebox_create_tag a cp:Tool ;
+    cp:componentId "archivebox_create_tag" ;
+    cp:operatesOn :Tag ;
+    cp:produces :Tag .
+
+c:tool-archivebox_rename_tag a cp:Tool ;
+    cp:componentId "archivebox_rename_tag" ;
+    cp:operatesOn :Tag ;
+    cp:produces :Tag .
+
+c:tool-archivebox_get_tag_urls a cp:Tool ;
+    cp:componentId "archivebox_get_tag_urls" ;
+    cp:operatesOn :Tag ;
+    cp:produces :WebResource .
+
+c:tool-archivebox_get_tag_snapshots_jsonl a cp:Tool ;
+    cp:componentId "archivebox_get_tag_snapshots_jsonl" ;
+    cp:operatesOn :Tag ;
+    cp:produces :WebSnapshot .
+
+c:tool-archivebox_add_tag_to_snapshot a cp:Tool ;
+    cp:componentId "archivebox_add_tag_to_snapshot" ;
+    cp:operatesOn :WebSnapshot ;
+    cp:produces :Tag .
+
+c:tool-archivebox_remove_tag_from_snapshot a cp:Tool ;
+    cp:componentId "archivebox_remove_tag_from_snapshot" ;
+    cp:operatesOn :WebSnapshot ;
+    cp:produces :Tag .
+
+c:tool-archivebox_get_crawls a cp:Tool ;
+    cp:componentId "archivebox_get_crawls" ;
+    cp:operatesOn :ArchiveCrawl ;
+    cp:produces :ArchiveCrawl .
+
+c:tool-archivebox_create_crawl a cp:Tool ;
+    cp:componentId "archivebox_create_crawl" ;
+    cp:operatesOn :WebResource ;
+    cp:produces :ArchiveCrawl .
+
+c:tool-archivebox_get_crawl a cp:Tool ;
+    cp:componentId "archivebox_get_crawl" ;
+    cp:operatesOn :ArchiveCrawl ;
+    cp:produces :ArchiveCrawl, :WebSnapshot .
+
+c:tool-archivebox_patch_crawl a cp:Tool ;
+    cp:componentId "archivebox_patch_crawl" ;
+    cp:operatesOn :ArchiveCrawl ;
+    cp:produces :ArchiveCrawl .
+
+c:tool-archivebox_delete_crawl a cp:Tool ;
+    cp:componentId "archivebox_delete_crawl" ;
+    cp:operatesOn :ArchiveCrawl ;
+    cp:produces :ArchiveCrawl .
+
+c:tool-archivebox_get_crawl_file a cp:Tool ;
+    cp:componentId "archivebox_get_crawl_file" ;
+    cp:operatesOn :ArchiveCrawl ;
+    cp:produces :AssetOccurrence .
+
+c:tool-archivebox_get_crawl_folder_file a cp:Tool ;
+    cp:componentId "archivebox_get_crawl_folder_file" ;
+    cp:operatesOn :ArchiveCrawl ;
+    cp:produces :AssetOccurrence .
+
+c:tool-archivebox_get_crawl_subfolder_file a cp:Tool ;
+    cp:componentId "archivebox_get_crawl_subfolder_file" ;
+    cp:operatesOn :ArchiveCrawl ;
+    cp:produces :AssetOccurrence .
+
+c:tool-archivebox_cli_add a cp:Tool ;
+    cp:componentId "archivebox_cli_add" ;
+    cp:operatesOn :WebResource ;
+    cp:produces :ArchiveCrawl, :WebSnapshot .
+
+c:tool-archivebox_cli_update a cp:Tool ;
+    cp:componentId "archivebox_cli_update" ;
+    cp:operatesOn :WebSnapshot ;
+    cp:produces :ArchiveResult .
+
+c:tool-archivebox_cli_schedule a cp:Tool ;
+    cp:componentId "archivebox_cli_schedule" ;
+    cp:operatesOn :WebResource ;
+    cp:produces :Schedule .
+
+c:tool-archivebox_cli_search a cp:Tool ;
+    cp:componentId "archivebox_cli_search" ;
+    cp:operatesOn :WebSnapshot ;
+    cp:produces :WebSnapshot .
+
+c:tool-archivebox_cli_remove a cp:Tool ;
+    cp:componentId "archivebox_cli_remove" ;
+    cp:operatesOn :WebSnapshot ;
+    cp:produces :WebSnapshot .
+
+c:tool-archivebox_get_machines a cp:Tool ;
+    cp:componentId "archivebox_get_machines" ;
+    cp:operatesOn :ArchiveWorker ;
+    cp:produces :ArchiveWorker .
+
+c:tool-archivebox_get_current_machine a cp:Tool ;
+    cp:componentId "archivebox_get_current_machine" ;
+    cp:operatesOn :ArchiveWorker ;
+    cp:produces :ArchiveWorker .
+
+c:tool-archivebox_get_machine a cp:Tool ;
+    cp:componentId "archivebox_get_machine" ;
+    cp:operatesOn :ArchiveWorker ;
+    cp:produces :ArchiveWorker .
+
+c:tool-archivebox_get_binaries a cp:Tool ;
+    cp:componentId "archivebox_get_binaries" ;
+    cp:operatesOn :CaptureBinary ;
+    cp:produces :CaptureBinary .
+
+c:tool-archivebox_get_binary a cp:Tool ;
+    cp:componentId "archivebox_get_binary" ;
+    cp:operatesOn :CaptureBinary ;
+    cp:produces :CaptureBinary .
+
+c:tool-archivebox_get_binaries_by_name a cp:Tool ;
+    cp:componentId "archivebox_get_binaries_by_name" ;
+    cp:operatesOn :CaptureBinary ;
+    cp:produces :CaptureBinary .
+
+c:tool-archivebox_get_personas a cp:Tool ;
+    cp:componentId "archivebox_get_personas" ;
+    cp:operatesOn :ArchivePersona ;
+    cp:produces :ArchivePersona .
+
+c:tool-archivebox_sync_persona a cp:Tool ;
+    cp:componentId "archivebox_sync_persona" ;
+    cp:operatesOn :ArchivePersona ;
+    cp:produces :ArchivePersona .
+
+c:tool-archivebox_ingest_snapshots a cp:Tool ;
+    cp:componentId "archivebox_ingest_snapshots" ;
+    cp:operatesOn :WebSnapshot ;
+    cp:produces :WebSnapshot, :Tag, :Document, :ArchiveResult .
+
+c:tool-archivebox_ingest_archiveresults a cp:Tool ;
+    cp:componentId "archivebox_ingest_archiveresults" ;
+    cp:operatesOn :ArchiveResult ;
+    cp:produces :ArchiveResult .
+
+c:tool-web_fetch a cp:Tool ;
+    cp:componentId "web_fetch" ;
+    cp:operatesOn :WebResource ;
+    cp:produces :WebSnapshot .
+
+c:tool-web_extract a cp:Tool ;
+    cp:componentId "web_extract" ;
+    cp:operatesOn :WebResource ;
+    cp:produces :Document .
+
+# --- skills ------------------------------------------------------------------
+
+c:skill-archivebox-web-archiving a cp:Skill ;
+    cp:componentId "archivebox-web-archiving" ;
+    cp:appliesTo :WebResource, :WebSnapshot .
+
+c:skill-archivebox-snapshot-search a cp:Skill ;
+    cp:componentId "archivebox-snapshot-search" ;
+    cp:appliesTo :WebSnapshot, :ArchiveResult, :Tag .
+
+c:skill-archivebox-kg-ingestion a cp:Skill ;
+    cp:componentId "archivebox-kg-ingestion" ;
+    cp:appliesTo :WebSnapshot, :ArchiveResult .
+
+c:skill-archivebox-archive-administration a cp:Skill ;
+    cp:componentId "archivebox-archive-administration" ;
+    cp:appliesTo :Tag, :ArchiveCrawl, :ArchiveWorker, :CaptureBinary, :ArchivePersona .
+
+c:skill-archivebox-research-archive a cp:Skill ;
+    cp:componentId "archivebox-research-archive" ;
+    cp:appliesTo :WebSnapshot, :ArchiveResult, :Tag .
+
+c:skill-archivebox-api-operations a cp:Skill ;
+    cp:componentId "archivebox-api-operations" ;
+    cp:appliesTo :WebSnapshot .
+
+c:skill-archivebox-api-development a cp:Skill ;
+    cp:componentId "archivebox-api-development" ;
+    cp:appliesTo :WebSnapshot .
+
+# --- prompts (agent definitions) ---------------------------------------------
+
+c:prompt-archivebox_operator a cp:Prompt ;
+    cp:componentId "archivebox_operator" ;
+    cp:appliesTo :WebSnapshot, :ArchiveCrawl, :Tag .
+
+c:prompt-archivebox_research_archivist a cp:Prompt ;
+    cp:componentId "archivebox_research_archivist" ;
+    cp:appliesTo :WebSnapshot, :ArchiveResult, :Tag .
+
+# --- ingest contract ---------------------------------------------------------
+
+c:contract a cp:IngestContract ;
+    cp:contractOf c:connector ;
+    cp:contractVersion "2" ;
+    cp:hasSourceObject c:object-snapshot, c:object-archiveresult ;
+    cp:hasCursorPolicy c:cursor ;
+    cp:hasAccessPolicy c:access ;
+    cp:requiresProvenance c:provenance .
+
+c:object-snapshot a cp:SourceObject ;
+    rdfs:label "snapshot" ;
+    rdfs:comment "ArchiveBox snapshots, ingested as :WebSnapshot." ;
+    cp:hasKeyRule c:key-id .
+
+c:object-archiveresult a cp:SourceObject ;
+    rdfs:label "archive_result" ;
+    rdfs:comment "ArchiveBox archive results, ingested as :ArchiveResult." ;
+    cp:hasKeyRule c:key-id .
+
+c:key-id a cp:KeyRule ;
+    rdfs:label "id" ;
+    rdfs:comment "Records are keyed by their ArchiveBox id (:archiveboxId)." .
+
+c:cursor a cp:CursorPolicy ;
+    cp:cursorKind "modified_at" .
+
+c:access a cp:AccessPolicy ;
+    cp:defaultAcl "quarantine" .
+
+c:provenance a cp:ProvenanceRequirement ;
+    rdfs:comment "Every ingested record carries its ArchiveBox id, source URL, capture timestamp and modified_at." .

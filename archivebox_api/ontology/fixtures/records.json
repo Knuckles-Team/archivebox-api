@@ -9,7 +9,7 @@
       },
       "preset": "archivebox-snapshots",
       "record": {
-        "abid": "fixture-record",
+        "id": "fixture-record",
         "acl_public": false,
         "modified_at": "2000-01-01T00:00:00Z",
         "title": "Synthetic content used only for contract validation.",

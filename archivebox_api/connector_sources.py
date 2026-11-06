@@ -14,8 +14,8 @@ SOURCES: tuple[Any, ...] = (
     source_meta(
         tool="archivebox_get_snapshots",
         source_id="archivebox-snapshots",
-        record_type="Snapshot",
-        id_field="abid",
+        record_type="WebSnapshot",
+        id_field="id",
         cursor_field="modified_at",
         page_param="page",
         page_size_param="limit",
@@ -35,21 +35,27 @@ SOURCES: tuple[Any, ...] = (
 SCHEMA_VERSION = 2
 
 FIELD_SETS: dict[str, dict[str, str]] = {
-    "fields_1": {
-        "abid": "xsd:string",
-        "archiveStatus": "xsd:string",
+    "snapshot_fields": {
+        "archiveboxId": "xsd:string",
+        "sourceRef": "xsd:string",
+        "snapshotStatus": "xsd:string",
+        "archivePath": "xsd:string",
+        "crawlId": "xsd:string",
         "bookmarkedAt": "xsd:dateTime",
-        "extractor": "xsd:string",
-        "output": "xsd:string",
-        "sourceUrl": "xsd:string",
         "timestamp": "xsd:string",
+    },
+    "archiveresult_fields": {
+        "archiveboxId": "xsd:string",
+        "extractorName": "xsd:string",
+        "resultStatus": "xsd:string",
+        "output": "xsd:string",
     },
 }
 
 SCHEMA_MAPPINGS: dict[str, Any] = {
     "ArchiveResult": {
-        "field_sets": ["fields_1"],
-        "ontology_class": None,
+        "field_sets": ["archiveresult_fields"],
+        "ontology_class": "ArchiveResult",
     },
     "Chunk": {
         "fields": {
@@ -87,9 +93,9 @@ SCHEMA_MAPPINGS: dict[str, Any] = {
         },
         "ontology_class": "Document",
     },
-    "Snapshot": {
-        "field_sets": ["fields_1"],
-        "ontology_class": None,
+    "WebSnapshot": {
+        "field_sets": ["snapshot_fields"],
+        "ontology_class": "WebSnapshot",
     },
 }
 
@@ -101,8 +107,8 @@ RESOURCES: tuple[dict[str, str], ...] = (
     },
     {
         "id_prefix": "snapshot",
-        "label": "Snapshot",
-        "name": "Snapshot",
+        "label": "Web Snapshot",
+        "name": "WebSnapshot",
     },
     {
         "id_prefix": "document",

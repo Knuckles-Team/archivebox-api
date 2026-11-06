@@ -201,7 +201,7 @@ class ArchiveWebSource:
                 self.api.cli_add(
                     urls=[url],
                     tag="research.web",
-                    extractors="readability,htmltotext,title",
+                    plugins="readability,htmltotext,title",
                 )
             )
             added = True

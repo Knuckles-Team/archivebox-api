@@ -33,7 +33,7 @@ def mock_client():
     client.cli_add.return_value = {"status": "added"}
     client.cli_update.return_value = {"status": "updated"}
     client.cli_schedule.return_value = {"status": "scheduled"}
-    client.cli_list.return_value = {"status": "listed"}
+    client.cli_search.return_value = {"status": "listed"}
     client.cli_remove.return_value = {"status": "removed"}
     return client
 

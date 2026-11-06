@@ -73,17 +73,15 @@ def test_map_snapshots_builds_typed_nodes_docs_and_links():
     entities, rels, docs = map_snapshots(
         [
             {
-                "id": 1,
-                "abid": "snap_abc",
+                "id": "snap_abc",
                 "url": "https://example.com/a",
                 "title": "Example A",
                 "timestamp": "1700000000.1",
                 "tags": "research,news",
                 "archiveresults": [
                     {
-                        "id": 9,
-                        "abid": "res_x",
-                        "extractor": "wget",
+                        "id": "res_x",
+                        "plugin": "wget",
                         "status": "succeeded",
                     }
                 ],
@@ -91,12 +89,12 @@ def test_map_snapshots_builds_typed_nodes_docs_and_links():
         ]
     )
     ids = {e["id"]: e for e in entities}
-    assert ids["archivebox:snapshot:snap_abc"]["node_type"] == "Snapshot"
-    assert ids["archivebox:snapshot:snap_abc"]["sourceUrl"] == "https://example.com/a"
+    assert ids["archivebox:snapshot:snap_abc"]["node_type"] == "WebSnapshot"
+    assert ids["archivebox:snapshot:snap_abc"]["sourceRef"] == "https://example.com/a"
     assert ids["archivebox:snapshot:snap_abc"]["externalToolId"] == "snap_abc"
     assert ids["archivebox:tag:research"]["node_type"] == "Tag"
     assert ids["archivebox:archiveresult:res_x"]["node_type"] == "ArchiveResult"
-    assert ids["archivebox:archiveresult:res_x"]["extractor"] == "wget"
+    assert ids["archivebox:archiveresult:res_x"]["extractorName"] == "wget"
     # doc carries the page text
     assert docs[0]["id"] == "archivebox:document:snap_abc"
     assert docs[0]["text"] == "Example A"
@@ -111,7 +109,7 @@ async def test_ingest_snapshots_writes_nodes_and_docs(ingest):
     res = await ingest_snapshots(
         [
             {
-                "abid": "snap1",
+                "id": "snap1",
                 "url": "https://a.example",
                 "title": "A",
                 "tags": ["research"],
@@ -130,15 +128,15 @@ def test_map_archiveresults_links_to_snapshot():
     entities, rels = map_archiveresults(
         [
             {
-                "abid": "res1",
-                "extractor": "pdf",
+                "id": "res1",
+                "plugin": "pdf",
                 "status": "failed",
-                "snapshot_abid": "snap1",
+                "snapshot_id": "snap1",
             }
         ]
     )
     assert entities[0]["id"] == "archivebox:archiveresult:res1"
-    assert entities[0]["archiveStatus"] == "failed"
+    assert entities[0]["resultStatus"] == "failed"
     assert rels == [
         {
             "source": "archivebox:snapshot:snap1",
@@ -152,7 +150,7 @@ def test_map_archiveresults_links_to_snapshot():
 async def test_ingest_archiveresults_writes_nodes(ingest):
     service, transport = ingest
     res = await ingest_archiveresults(
-        [{"abid": "res1", "extractor": "screenshot", "status": "succeeded"}],
+        [{"id": "res1", "plugin": "screenshot", "status": "succeeded"}],
         ingest=service,
     )
     assert res == {"nodes": 1, "edges": 0}
