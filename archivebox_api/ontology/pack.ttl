@@ -342,6 +342,10 @@ c:prompt-archivebox_research_archivist a cp:Prompt ;
     cp:componentId "archivebox_research_archivist" ;
     cp:appliesTo :WebSnapshot, :ArchiveResult, :Tag .
 
+c:prompt-archivebox_archive_administrator a cp:Prompt ;
+    cp:componentId "archivebox_archive_administrator" ;
+    cp:appliesTo :WebSnapshot, :ArchiveCrawl, :Tag .
+
 # --- ingest contract ---------------------------------------------------------
 
 c:contract a cp:IngestContract ;
