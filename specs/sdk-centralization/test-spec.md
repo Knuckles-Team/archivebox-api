@@ -9,3 +9,9 @@ Governing spec: [spec.md](spec.md).
 | T-003 | `CONN-ARCHIVEBOX-API-SDK-CENTRALIZATION-R001.2` | Unit | `tests/test_sdk_transport.py::test_archive_session_takes_trust_from_the_profile` | The session has no verify field and builds its client with the TLS profile. |  |
 | T-004 | `CONN-ARCHIVEBOX-API-SDK-CENTRALIZATION-R001.3` | Unit | `tests/test_sdk_transport.py::test_expired_session_refreshes_once` | An expired session logs in once more, and a persistent redirect refuses. |  |
 | T-005 | `CONN-ARCHIVEBOX-API-SDK-CENTRALIZATION-R001.4` | Unit | `tests/test_sdk_transport.py::test_dependencies_come_from_the_sdk` | `pyproject.toml` has no `requests` pin and the SDK floor is `0.3.11` or later. |  |
+
+## Adoption of scion-sdk 0.10.0 (`CONN-ARCHIVEBOX-API-SDK-CENTRALIZATION-R002`)
+
+| Requirement | Test | Observation |
+|---|---|---|
+| `CONN-ARCHIVEBOX-API-SDK-CENTRALIZATION-R002` | `tests/test_scion_sdk_0_10_imports.py::test_every_scion_sdk_import_resolves_on_the_pinned_release` | Every `scion_sdk` import resolves on the pinned release; a removed path fails the test. |
