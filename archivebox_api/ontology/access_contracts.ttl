@@ -1,4 +1,4 @@
-@prefix ac: <https://knuckles-team.github.io/agent-connector-sdk/access#> .
+@prefix ac: <https://knuckles-team.github.io/scion-sdk/access#> .
 @prefix : <http://knuckles.team/kg#> .
 @prefix ab: <http://knuckles.team/kg/archivebox-access#> .
 

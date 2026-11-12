@@ -1,4 +1,4 @@
-"""Native epistemic-graph typed-node ingestion for archivebox-api — Wire-First coverage.
+"""Native medulla typed-node ingestion for archivebox-api — Wire-First coverage.
 
 Exercises the real ``ingest_entities`` / ``ingest_documents`` / ``ingest_snapshots`` /
 ``ingest_archiveresults`` seam against a fake transport boundary (no engine required),
