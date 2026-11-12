@@ -21,8 +21,9 @@ from archivebox_api.mcp_server import coerce_result
 
 ROOT = Path(__file__).resolve().parents[1]
 PKG = ROOT / "archivebox_api"
-CP = "http://knuckles.team/kg/connector-pack#"
-KG = "http://knuckles.team/kg#"
+CP = "https://knuckles-team.github.io/ontology/connector-pack#"
+KG = "https://knuckles-team.github.io/ontology/core#"
+CONNECTOR_NS = "https://knuckles-team.github.io/ontology/connector/archivebox#"
 RDFS_SUB = ox.NamedNode("http://www.w3.org/2000/01/rdf-schema#subClassOf")
 RDF_TYPE = ox.NamedNode("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")
 OWL_CLASS = ox.NamedNode("http://www.w3.org/2002/07/owl#Class")
