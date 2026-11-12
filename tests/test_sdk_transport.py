@@ -25,10 +25,10 @@ def test_package_uses_the_governed_client() -> None:
         if re.search(r"^\s*(import|from) requests\b", s, re.M)
     ]
     base = (ROOT / "archivebox_api/api/api_client_base.py").read_text()
-    assert "create_http_client(" in base
-    assert "create_http_client(" in (ROOT / "archivebox_api/web_source.py").read_text()
+    assert "build_http_client(" in base
+    assert "build_http_client(" in (ROOT / "archivebox_api/web_source.py").read_text()
     assert (
-        "create_http_client("
+        "build_http_client("
         in (ROOT / "archivebox_api/web_source_contract.py").read_text()
     )
 
