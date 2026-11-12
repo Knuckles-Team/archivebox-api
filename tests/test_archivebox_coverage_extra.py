@@ -87,7 +87,7 @@ def test_base_api_missing_url():
 def test_base_api_applies_tls_profile():
     profile = MagicMock()
 
-    with patch("archivebox_api.api.api_client_base.create_http_client") as create:
+    with patch("archivebox_api.api.api_client_base.build_http_client") as create:
         client = Api(url="http://test.com", tls_profile=profile)
 
     create.assert_called_once()

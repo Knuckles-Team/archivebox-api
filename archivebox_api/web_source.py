@@ -27,7 +27,7 @@ from dataclasses import dataclass, field
 from typing import Any, cast
 
 import httpx
-from scion_sdk.http.client import create_http_client
+from scion_sdk.http.client import build_http_client
 from scion_sdk.http.options import HttpClientOptions
 from scion_sdk.tls.resolve import resolve_tls_profile
 
@@ -86,7 +86,7 @@ class ArchiveSession:
 
     def __post_init__(self) -> None:
         if self.session is None:
-            self.session = create_http_client(
+            self.session = build_http_client(
                 HttpClientOptions(
                     base_url=self.base_url.rstrip("/"),
                     timeout=self.timeout_s,
