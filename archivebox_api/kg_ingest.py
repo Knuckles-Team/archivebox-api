@@ -1,7 +1,7 @@
-"""Native epistemic-graph ingestion for ArchiveBox records (typed graph nodes + docs).
+"""Native medulla ingestion for ArchiveBox records (typed graph nodes + docs).
 
 CONCEPT:AU-KG.ingest.enterprise-source-extractor. The archivebox-api package natively
-pushes its data into the ONE epistemic-graph knowledge graph **from its own code**, in
+pushes its data into the ONE medulla knowledge graph **from its own code**, in
 every applicable modality (the "maximum ingestion" bar):
 
 * **typed nodes** — snapshots + per-extractor archive results → OWL ``:WebSnapshot`` /

@@ -208,8 +208,8 @@ Refer to [docs/index.md](docs/index.md) for full developer SDK and class referen
 ## MCP Server Setup
 
 > **Install the connector-focused `[mcp]` extra.** Examples use `archivebox-api[mcp]` to add
-> FastMCP / FastAPI through `scion-sdk[mcp]`; the required Agent Utilities core
-> still carries `epistemic-graph[full]`. The `[agent]` extra also
+> FastMCP / FastAPI through `scion-sdk[mcp]`; the required Meristem core
+> still carries `medulla[full]`. The `[agent]` extra also
 > enables model orchestration.
 
 This server use dynamic Action-Routed tools to optimize token overhead and maximize IDE compatibility.
@@ -310,8 +310,8 @@ Pick the extra that matches what the operator want to run:
 
 | Extra | Installs | Use when |
 |-------|----------|----------|
-| `archivebox-api[mcp]` | Connector-focused MCP server (`scion-sdk[mcp]` — FastMCP/FastAPI + `epistemic-graph[full]`) | The operator only run the **MCP server** (smallest install / image) |
-| `archivebox-api[agent]` | Agent runtime (`scion-sdk[agent-runtime,logfire]` — model orchestration + `epistemic-graph[full]`) | The operator run the **integrated agent** |
+| `archivebox-api[mcp]` | Connector-focused MCP server (`scion-sdk[mcp]` — FastMCP/FastAPI + `medulla[full]`) | The operator only run the **MCP server** (smallest install / image) |
+| `archivebox-api[agent]` | Agent runtime (`scion-sdk[agent-runtime,logfire]` — model orchestration + `medulla[full]`) | The operator run the **integrated agent** |
 | `archivebox-api[all]` | Everything (`mcp` + `agent` + `logfire`) | Development / both surfaces |
 
 ```bash
@@ -331,8 +331,8 @@ One multi-stage `docker/Dockerfile` builds two right-sized images, selected by `
 
 | Image tag | Build target | Contents | Entrypoint |
 |-----------|--------------|----------|------------|
-| `example/archivebox-api:mcp` | `--target mcp` | `archivebox-api[mcp]` — **connector-focused**, includes `epistemic-graph[full]`; no model-orchestration stack | `archivebox-mcp` |
-| `example/archivebox-api@sha256:<digest>` | `--target agent` (default) | `archivebox-api[agent]` — **agent runtime**, model orchestration + `epistemic-graph[full]` | `archivebox-agent` |
+| `example/archivebox-api:mcp` | `--target mcp` | `archivebox-api[mcp]` — **connector-focused**, includes `medulla[full]`; no model-orchestration stack | `archivebox-mcp` |
+| `example/archivebox-api@sha256:<digest>` | `--target agent` (default) | `archivebox-api[agent]` — **agent runtime**, model orchestration + `medulla[full]` | `archivebox-agent` |
 
 ```bash
 docker build --target mcp   -t example/archivebox-api:mcp    docker/   # connector-focused MCP server
@@ -342,16 +342,16 @@ docker build --target agent -t example/archivebox-api:agent-local docker/   # ag
 `docker/mcp.compose.yml` runs the connector-focused `:mcp` server; `docker/agent.compose.yml` runs the
 agent (`immutable agent digest`) with a co-located `:mcp` sidecar.
 
-### Knowledge-graph database (`epistemic-graph`)
+### Knowledge-graph database (`medulla`)
 
-Both `[mcp]` and `[agent]` carry the **epistemic-graph** engine through the required
-Agent Utilities core dependency (`epistemic-graph[full]`). The `[mcp]` extra keeps
+Both `[mcp]` and `[agent]` carry the **medulla** engine through the required
+Meristem core dependency (`medulla[full]`). The `[mcp]` extra keeps
 the server connector-focused; `[agent]` also enables model orchestration. Local
 deployments can use the bundled engine. For production or shared state, run
-**epistemic-graph as a dedicated database service** and configure the runtime to use it.
+**medulla as a dedicated database service** and configure the runtime to use it.
 Deployment recipes (single-node + Raft HA), connection configuration, and architecture
 diagrams are documented in the
-[epistemic-graph deployment guide](https://knuckles-team.github.io/epistemic-graph/deployment/).
+[medulla deployment guide](https://knuckles-team.github.io/medulla/deployment/).
 
 ---
 
@@ -397,7 +397,7 @@ The table below is auto-generated from the live server — do not edit by hand.
 | `archivebox_cli` | `CLITOOL` | Manage archivebox cli operations. |
 | `archivebox_core` | `CORETOOL` | Manage archivebox core operations. |
 | `archivebox_ingest_archiveresults` | `KGTOOL` | List ArchiveBox archive results and ingest them as :ArchiveResult nodes. |
-| `archivebox_ingest_snapshots` | `KGTOOL` | List ArchiveBox snapshots and natively ingest them into epistemic-graph. |
+| `archivebox_ingest_snapshots` | `KGTOOL` | List ArchiveBox snapshots and natively ingest them into medulla. |
 
 #### Verbose 1:1 API-mapped tools (`MCP_TOOL_MODE=verbose` or `both`)
 

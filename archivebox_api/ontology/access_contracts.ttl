@@ -1,6 +1,7 @@
-@prefix ac: <https://knuckles-team.github.io/agent-connector-sdk/access#> .
-@prefix : <http://knuckles.team/kg#> .
-@prefix ab: <http://knuckles.team/kg/archivebox-access#> .
+@prefix ac: <https://knuckles-team.github.io/ontology/access#> .
+@prefix core: <https://knuckles-team.github.io/ontology/core#> .
+@prefix : <https://knuckles-team.github.io/ontology/connector/archivebox#> .
+@prefix ab: <https://knuckles-team.github.io/ontology/connector/archivebox-access#> .
 
 # Data location, routing and federation of archivebox-mcp
 # (CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R002).
@@ -18,7 +19,7 @@
 # web fetch connector's :ExtractedWebPage; this connector holds the durable copy.
 
 ab:snapshotAccess a ac:AccessContract ;
-    ac:classIri :WebSnapshot ;
+    ac:classIri core:WebSnapshot ;
     ac:sourceId "archivebox-mcp" ;
     ac:entity "snapshot" ;
     ac:keyField "id" ;
@@ -27,7 +28,7 @@ ab:snapshotAccess a ac:AccessContract ;
     ac:pagination "page" .
 
 ab:snapshotUrl a ac:PropertyBinding ;
-    ac:contract ab:snapshotAccess ; ac:property :sourceRef ; ac:field "url" .
+    ac:contract ab:snapshotAccess ; ac:property core:sourceRef ; ac:field "url" .
 ab:snapshotStatus a ac:PropertyBinding ;
     ac:contract ab:snapshotAccess ; ac:property :snapshotStatus ; ac:field "status" .
 ab:snapshotTimestamp a ac:PropertyBinding ;
@@ -40,7 +41,7 @@ ab:snapshotCrawl a ac:PropertyBinding ;
     ac:contract ab:snapshotAccess ; ac:property :crawlId ; ac:field "crawl_id" .
 
 ab:archiveResultAccess a ac:AccessContract ;
-    ac:classIri :ArchiveResult ;
+    ac:classIri core:ArchiveResult ;
     ac:sourceId "archivebox-mcp" ;
     ac:entity "archive_result" ;
     ac:keyField "id" ;
@@ -49,9 +50,9 @@ ab:archiveResultAccess a ac:AccessContract ;
     ac:pagination "page" .
 
 ab:resultPlugin a ac:PropertyBinding ;
-    ac:contract ab:archiveResultAccess ; ac:property :extractorName ; ac:field "plugin" .
+    ac:contract ab:archiveResultAccess ; ac:property core:extractorName ; ac:field "plugin" .
 ab:resultStatus a ac:PropertyBinding ;
-    ac:contract ab:archiveResultAccess ; ac:property :resultStatus ; ac:field "status" .
+    ac:contract ab:archiveResultAccess ; ac:property core:resultStatus ; ac:field "status" .
 ab:resultOutput a ac:PropertyBinding ;
     ac:contract ab:archiveResultAccess ; ac:property :output ; ac:field "output_str" .
 

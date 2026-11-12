@@ -7,7 +7,7 @@ from scion_sdk.exceptions import (
     AuthError,
     MissingParameterError,
 )
-from scion_sdk.http.client import create_http_client
+from scion_sdk.http.client import build_http_client
 from scion_sdk.http.options import HttpClientOptions
 from scion_sdk.tls.profile import ResolvedTLSProfile
 from scion_sdk.tls.resolve import resolve_tls_profile
@@ -28,7 +28,7 @@ class BaseApiClient(ABC):
 
         self.tls_profile = tls_profile or resolve_tls_profile("archivebox")
         self.url = url.rstrip("/")
-        self._session = create_http_client(
+        self._session = build_http_client(
             HttpClientOptions(
                 base_url=self.url,
                 tls=self.tls_profile,

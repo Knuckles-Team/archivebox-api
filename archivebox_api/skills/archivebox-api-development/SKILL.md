@@ -32,7 +32,7 @@ focused tests.
   keyless web discovery is separate from ArchiveBox REST authentication, while
   extractor files use a logged-in Django session and bounded reads.
 - `archivebox_api/kg_ingest.py` owns best-effort typed Snapshot, ArchiveResult,
-  Document, Chunk, Tag, and Blob ingestion through the SDK/epistemic-graph
+  Document, Chunk, Tag, and Blob ingestion through the SDK/medulla
   boundary. Preserve stable IDs and no-op behavior when the engine is absent.
 - `archivebox_api/skills/**`, `prompts/**`, `ontology/**`, and
   `connectors/**` are package data. A skill change therefore needs a package

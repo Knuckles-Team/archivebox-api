@@ -19,7 +19,7 @@ from typing import Any
 from urllib.parse import urlsplit
 
 import httpx
-from scion_sdk.http.client import create_http_client
+from scion_sdk.http.client import build_http_client
 from scion_sdk.http.options import HttpClientOptions
 from scion_sdk.ports.web_source import (
     DEFAULT_MIN_INTERVAL_S,
@@ -52,7 +52,7 @@ _TAG = re.compile(r"<[^>]+>")
 def _read_robots(url: str) -> tuple[int, str]:
     parts = urlsplit(url)
     try:
-        with create_http_client(
+        with build_http_client(
             HttpClientOptions(
                 base_url=f"{parts.scheme}://{parts.netloc}",
                 timeout=15,
