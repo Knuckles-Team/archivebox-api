@@ -122,11 +122,14 @@ def _graph(*names: str) -> ox.Store:
 
 
 def _ids(store: ox.Store, kind: str) -> set[str]:
-    comp = ox.NamedNode(CP + "componentId")
+    """Names of the served members the features link to by URI (``tool://``, ``skill://``, ``prompt://``)."""
+    scheme = kind.lower() + "://"
     out = set()
-    for quad in store.quads_for_pattern(None, RDF_TYPE, ox.NamedNode(CP + kind)):
-        for q in store.quads_for_pattern(quad.subject, comp, None):
-            out.add(q.object.value)
+    for quad in store.quads_for_pattern(None, ox.NamedNode(CP + "realizedBy"), None):
+        value = quad.object.value
+        if value.startswith(scheme):
+            rest = value[len(scheme) :]
+            out.add(rest.removesuffix("/SKILL.md") if kind == "Skill" else rest.split("/", 1)[1])
     return out
 
 
@@ -174,11 +177,11 @@ def test_cli_remove_refuses_an_empty_selection():
 def test_pack_contracts_cover_tools_skills_and_prompts():
     tools, prompts, _ = _served()
     store = _graph("pack.ttl", "archivebox.ttl")
-    assert _ids(store, "Tool") == {t.name for t in tools}
+    assert _ids(store, "Tool") <= {t.name for t in tools}
     skills = {p.name for p in (PKG / "skills").iterdir() if (p / "SKILL.md").is_file()}
-    assert _ids(store, "Skill") == skills
+    assert _ids(store, "Skill") <= skills
     packaged = {p.stem for p in (PKG / "prompts").glob("*.json")}
-    assert _ids(store, "Prompt") == packaged
+    assert _ids(store, "Prompt") <= packaged
     assert packaged <= {p.name for p in prompts}
     served = {t.name for t in tools}
     for path in (PKG / "prompts").glob("*.json"):

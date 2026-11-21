@@ -12,3 +12,4 @@ Each task line reads `- [ ] T001 [P] [US1] <ID>-R012.4 description`. Order is pr
 - [x] T006 [US1] CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R006 Tool-use contracts and prompt/skill/tool links.
 - [x] T007 [US1] CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R007 Classes roll up to medulla core by subclassing.
 - [x] T008 [US1] CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R008 Research archive skill.
+- [x] T009 [US1] CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R009 Pack extends only the core ontology.

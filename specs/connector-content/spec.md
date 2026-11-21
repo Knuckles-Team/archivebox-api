@@ -30,6 +30,7 @@ The `archivebox-mcp` server serves its packaged skills, prompts and ontology to 
 6. **Given** the connector is configured, **When** the behaviour of row `CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R006` (tool-use contracts and prompt/skill/tool links) is exercised, **Then** the pack's tool, skill and prompt ids equal the served tools, packaged skills and packaged prompts; every archivebox tool and skill a prompt names is served and its tools appear in its directive.
 7. **Given** the connector is configured, **When** the behaviour of row `CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R007` (classes roll up to medulla core by subclassing) is exercised, **Then** every declared class has a superclass, no core term is redeclared and no file imports.
 8. **Given** the connector is configured, **When** the behaviour of row `CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R008` (research archive skill) is exercised, **Then** the skill is served as `skill://archivebox-research-archive/SKILL.md` and names both connectors' tools and the tag scheme.
+9. **Given** the connector is configured, **When** the behaviour of row `CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R009` (pack extends only the core ontology) is exercised, **Then** no core class or property is redeclared and no retired IRI base remains. Test: `tests/test_pack_extends_core.py::test_pack_declares_no_core_term`.
 
 ### Edge Cases
 
@@ -41,6 +42,7 @@ The `archivebox-mcp` server serves its packaged skills, prompts and ontology to 
 - If `CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R006` is not met, its proving test fails: tool-use contracts and prompt/skill/tool links.
 - If `CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R007` is not met, its proving test fails: classes roll up to medulla core by subclassing.
 - If `CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R008` is not met, its proving test fails: research archive skill.
+- If `CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R009` is not met, its proving test fails: pack extends only the core ontology.
 
 ## Requirements
 
@@ -52,6 +54,7 @@ The `archivebox-mcp` server serves its packaged skills, prompts and ontology to 
 - **FR-006**: Tool-use contracts and prompt/skill/tool links. Rows: `CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R006`.
 - **FR-007**: Classes roll up to medulla core by subclassing. Rows: `CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R007`.
 - **FR-008**: Research archive skill. Rows: `CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R008`.
+- **FR-009**: Pack extends only the core ontology. Rows: `CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R009`.
 
 ## Success Criteria
 
@@ -63,6 +66,7 @@ The `archivebox-mcp` server serves its packaged skills, prompts and ontology to 
 - **SC-006**: Tool-use contracts and prompt/skill/tool links holds; its proving test passes. Rows: `CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R006`.
 - **SC-007**: Classes roll up to medulla core by subclassing holds; its proving test passes. Rows: `CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R007`.
 - **SC-008**: Research archive skill holds; its proving test passes. Rows: `CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R008`.
+- **SC-009**: No pack term redeclares a core term and no retired IRI base remains. Rows: `CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R009`.
 
 ## Assumptions
 
@@ -81,3 +85,4 @@ The `archivebox-mcp` server serves its packaged skills, prompts and ontology to 
 | FR-006 | `CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R006` | [plan.md](plan.md) | T-006 | [test-spec.md](test-spec.md) |
 | FR-007 | `CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R007` | [plan.md](plan.md) | T-007 | [test-spec.md](test-spec.md) |
 | FR-008 | `CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R008` | [plan.md](plan.md) | T-008 | [test-spec.md](test-spec.md) |
+| FR-009 | `CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R009` | [plan.md](plan.md) | T-009 | [test-spec.md](test-spec.md) |

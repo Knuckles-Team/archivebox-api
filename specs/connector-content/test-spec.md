@@ -12,3 +12,4 @@ Governing spec: [spec.md](spec.md).
 | T-006 | `CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R006` | `tests/test_surface_contracts.py::test_pack_contracts_cover_tools_skills_and_prompts` | The row's acceptance holds. |
 | T-007 | `CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R007` | `tests/test_surface_contracts.py::test_classes_roll_up_by_subclass_and_never_import_core` | The row's acceptance holds. |
 | T-008 | `CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R008` | `tests/test_surface_contracts.py::test_research_archive_skill_is_served` | The row's acceptance holds. |
+| T-009 | `CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R009` | `tests/test_pack_extends_core.py` | No core term is redeclared and no retired IRI base remains. |
