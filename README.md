@@ -20,23 +20,9 @@
 ![PyPI - Wheel](https://img.shields.io/pypi/wheel/archivebox-api)
 ![PyPI - Implementation](https://img.shields.io/pypi/implementation/archivebox-api)
 
-> **Documentation** — Installation, deployment, usage across the API, CLI, MCP, and
-> A2A agent interfaces, and guidance for provisioning the ArchiveBox platform are
-> maintained in the [official documentation](https://knuckles-team.github.io/archivebox-api/).
-
----
-
-## Table of Contents
-- [Overview](#overview)
-- [Key Features](#key-features)
-- [Concept Registry](#concept-registry)
-- [Environment Variables](#environment-variables)
-- [CLI or API Usage](#cli-or-api-usage)
-- [MCP Server Setup](#mcp-server-setup)
-- [Agentic AI Graph Agent](#agentic-ai-graph-agent)
-- [Security & Governance](#security--governance)
-- [Installation](#installation)
-- [Contribute](#contribute)
+> **Documentation** — Installation, deployment, and usage across the API, CLI, MCP,
+> and A2A agent interfaces are maintained in the
+> [official documentation](https://knuckles-team.github.io/archivebox-api/).
 
 ---
 
@@ -65,6 +51,107 @@ This codebase is aligned with the **5 Core Pillars Architecture** of the `scion-
 | **`ECO-4.1`** | Ecosystem & Peripherals | A2A Network & Consensus | Manages agent peer discovery, routing tables, and consensus. |
 | **`OS-5.1`** | Agent OS Infrastructure | Security & Auth | Implements token-based OIDC access control, JWT filters, and Eunomia validation. |
 | **`AU-OS.governance.wasm-micro-agent-sandbox`** | Agent OS Infrastructure | Telemetry & Observability | Delivers warning suppressions, JSON progress logging, and error tracing. |
+
+---
+
+## MCP
+
+### MCP Server Setup
+
+> **Install the connector-focused `[mcp]` extra.** Examples use `archivebox-api[mcp]` to add
+> FastMCP / FastAPI through `scion-sdk[mcp]`; the required Meristem core
+> still carries `medulla[full]`. The `[agent]` extra also
+> enables model orchestration.
+
+This server use dynamic Action-Routed tools to optimize token overhead and maximize IDE compatibility.
+
+#### Tool Catalog
+
+See the auto-generated [Available MCP Tools](#available-mcp-tools) table below for the full, live list of tools.
+
+#### Dynamic Tool Selection & Visibility
+
+This MCP server supports dynamic toolset selection and visibility filtering at runtime. This allows the operator to restrict the set of exposed tools to prevent blowing up the LLM's context window.
+
+The operator can configure tool filtering via multiple input channels:
+
+- **CLI Arguments:** Pass `--tools` or `--toolsets` (or their disabled counterparts `--disabled-tools` and `--disabled-toolsets`) during startup.
+- **Environment Variables:** Define standard environment variables:
+  - `MCP_ENABLED_TOOLS` / `MCP_DISABLED_TOOLS`
+  - `MCP_ENABLED_TAGS` / `MCP_DISABLED_TAGS`
+- **HTTP SSE Request Headers:** Pass custom headers during transport initialization:
+  - `x-mcp-enabled-tools` / `x-mcp-disabled-tools`
+  - `x-mcp-enabled-tags` / `x-mcp-disabled-tags`
+- **HTTP SSE Request Query Parameters:** Append query parameters directly to the operator's transport connection URL:
+  - `?tools=tool1,tool2`
+  - `?tags=tag1`
+
+When query strings or parameters are provided, an LLM-free **Knowledge Graph resolution layer** (using `DynamicToolOrchestrator`) matches query intents against known tool tags, names, or descriptions, with safe fallback and automated 24-hour background cache refreshing.
+
+---
+
+#### Local IDE Configuration (Cursor / Claude Desktop)
+Add the following block to the operator's `mcp.json` to configure stdio transport via `uvx`:
+
+```json
+{
+  "mcpServers": {
+    "archivebox-api": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--package",
+        "archivebox-api",
+        "archivebox-mcp"
+      ],
+      "env": {
+        "ARCHIVEBOX_BASE_URL": "http://localhost:8000",
+        "ARCHIVEBOX_USERNAME": "admin",
+        "ARCHIVEBOX_PASSWORD": "your-password"
+      }
+    }
+  }
+}
+```
+
+---
+
+## Agentic AI Graph Agent
+
+This repository features a fully integrated Pydantic AI Graph Agent. It communicates over the **Agent Control Protocol (ACP)** and interacts smoothly with the **Agent Web UI (AG-UI)**.
+
+### Running the Agent CLI
+To start the interactive command-line agent:
+
+```bash
+# Export credentials
+export ARCHIVEBOX_BASE_URL="http://localhost:8000"
+export ARCHIVEBOX_USERNAME="admin"
+export ARCHIVEBOX_PASSWORD="your-password"
+
+# Run agent server
+archivebox-agent --provider openai --model-id gpt-4o
+```
+
+Detailed graph node architecture explanations, custom skill configurations, and agentic trace guides are available in [docs/index.md](docs/index.md#agent-orchestration).
+
+---
+
+## Security & Governance
+
+Built directly upon the enterprise-ready [`scion-sdk`](https://github.com/Knuckles-Team/scion-sdk) core, standard security parameters are fully supported:
+
+### Access Control & Policy Enforcement
+- **Eunomia Policies:** Fine-grained, policy-driven tool authorization. Supports `none`, local `embedded` (`mcp_policies.json`), or centralized `remote` modes.
+- **OIDC Token Delegation:** Compliant with RFC 8693 token exchange for flowing authenticating user credentials from Web UI / ACP → Agent → MCP.
+- **Scoped Credentials:** Execution context runs restricted to the specific caller identity.
+
+### Runtime Security Grid
+| Feature | Feature | Enablement |
+|---------|---------------|------------|
+| **Tool Guard** | Sensitivity inspection with human-in-the-loop validation | Enabled by default |
+| **Prompt Injection Defense** | Input scanning, repetition monitoring, and recursive loop blocks | Enabled by default |
+| **Context Safety Guard** | Stuck-loop detectors and contextual overflow preemptive alerts | Enabled by default |
 
 ---
 
@@ -205,105 +292,6 @@ Refer to [docs/index.md](docs/index.md) for full developer SDK and class referen
 
 ---
 
-## MCP Server Setup
-
-> **Install the connector-focused `[mcp]` extra.** Examples use `archivebox-api[mcp]` to add
-> FastMCP / FastAPI through `scion-sdk[mcp]`; the required Meristem core
-> still carries `medulla[full]`. The `[agent]` extra also
-> enables model orchestration.
-
-This server use dynamic Action-Routed tools to optimize token overhead and maximize IDE compatibility.
-
-### Tool Catalog
-
-See the auto-generated [Available MCP Tools](#available-mcp-tools) table below for the full, live list of tools.
-
-### Dynamic Tool Selection & Visibility
-
-This MCP server supports dynamic toolset selection and visibility filtering at runtime. This allows the operator to restrict the set of exposed tools to prevent blowing up the LLM's context window.
-
-The operator can configure tool filtering via multiple input channels:
-
-- **CLI Arguments:** Pass `--tools` or `--toolsets` (or their disabled counterparts `--disabled-tools` and `--disabled-toolsets`) during startup.
-- **Environment Variables:** Define standard environment variables:
-  - `MCP_ENABLED_TOOLS` / `MCP_DISABLED_TOOLS`
-  - `MCP_ENABLED_TAGS` / `MCP_DISABLED_TAGS`
-- **HTTP SSE Request Headers:** Pass custom headers during transport initialization:
-  - `x-mcp-enabled-tools` / `x-mcp-disabled-tools`
-  - `x-mcp-enabled-tags` / `x-mcp-disabled-tags`
-- **HTTP SSE Request Query Parameters:** Append query parameters directly to the operator's transport connection URL:
-  - `?tools=tool1,tool2`
-  - `?tags=tag1`
-
-When query strings or parameters are provided, an LLM-free **Knowledge Graph resolution layer** (using `DynamicToolOrchestrator`) matches query intents against known tool tags, names, or descriptions, with safe fallback and automated 24-hour background cache refreshing.
-
----
-
-### Local IDE Configuration (Cursor / Claude Desktop)
-Add the following block to the operator's `mcp.json` to configure stdio transport via `uvx`:
-
-```json
-{
-  "mcpServers": {
-    "archivebox-api": {
-      "command": "uv",
-      "args": [
-        "run",
-        "--package",
-        "archivebox-api",
-        "archivebox-mcp"
-      ],
-      "env": {
-        "ARCHIVEBOX_BASE_URL": "http://localhost:8000",
-        "ARCHIVEBOX_USERNAME": "admin",
-        "ARCHIVEBOX_PASSWORD": "your-password"
-      }
-    }
-  }
-}
-```
-
----
-
-## Agentic AI Graph Agent
-
-This repository features a fully integrated Pydantic AI Graph Agent. It communicates over the **Agent Control Protocol (ACP)** and interacts smoothly with the **Agent Web UI (AG-UI)**.
-
-### Running the Agent CLI
-To start the interactive command-line agent:
-
-```bash
-# Export credentials
-export ARCHIVEBOX_BASE_URL="http://localhost:8000"
-export ARCHIVEBOX_USERNAME="admin"
-export ARCHIVEBOX_PASSWORD="your-password"
-
-# Run agent server
-archivebox-agent --provider openai --model-id gpt-4o
-```
-
-Detailed graph node architecture explanations, custom skill configurations, and agentic trace guides are available in [docs/index.md](docs/index.md#agent-orchestration).
-
----
-
-## Security & Governance
-
-Built directly upon the enterprise-ready [`scion-sdk`](https://github.com/Knuckles-Team/scion-sdk) core, standard security parameters are fully supported:
-
-### Access Control & Policy Enforcement
-- **Eunomia Policies:** Fine-grained, policy-driven tool authorization. Supports `none`, local `embedded` (`mcp_policies.json`), or centralized `remote` modes.
-- **OIDC Token Delegation:** Compliant with RFC 8693 token exchange for flowing authenticating user credentials from Web UI / ACP → Agent → MCP.
-- **Scoped Credentials:** Execution context runs restricted to the specific caller identity.
-
-### Runtime Security Grid
-| Feature | Feature | Enablement |
-|---------|---------------|------------|
-| **Tool Guard** | Sensitivity inspection with human-in-the-loop validation | Enabled by default |
-| **Prompt Injection Defense** | Input scanning, repetition monitoring, and recursive loop blocks | Enabled by default |
-| **Context Safety Guard** | Stuck-loop detectors and contextual overflow preemptive alerts | Enabled by default |
-
----
-
 ## Installation
 
 Pick the extra that matches what the operator want to run:
@@ -374,6 +362,15 @@ the recommended reference for installation, deployment, and day-to-day operation
 
 ---
 
+## Repository Owners
+
+<img width="100%" height="180em" src="https://github-readme-stats.vercel.app/api?username=example&show_icons=true&hide_border=true&&count_private=true&include_all_commits=true" />
+
+![GitHub followers](https://img.shields.io/github/followers/example)
+![GitHub User's stars](https://img.shields.io/github/stars/example)
+
+---
+
 ## Contribute
 
 Contributions are welcome! Please ensure code quality by running local checks before submitting pull requests:
@@ -440,7 +437,6 @@ the detailed transport contract.
   ingress. Keep its URL, outbound identity references, trust profile, and exact
   `MCP_ALLOWED_HOSTS` in `AgentConfig`.
 <!-- END GENERATED: additional-deployment-options -->
-
 
 <!-- BEGIN scion-sdk-deployment (generated; do not edit between markers) -->
 
