@@ -57,6 +57,22 @@ explicit through `archivebox_ingest_snapshots` and
 read-side auto-ingest. Do not add a provider-specific credential store or a
 TLS bypass.
 
+## Steps
+
+1. Read the owning specs and bound tests with `git grep -n "CONNECTOR-CONTENT" -- specs`. Verify the row id you will cite appears in the output.
+2. Install the locked environment with `uv sync --locked`. Verify the command exits 0.
+3. Make the smallest connector-owned change in `archivebox_api/`. Verify with `git diff --stat` that only intended files changed.
+4. Run the bound tests with `uv run --locked --extra test pytest -q tests/test_archivebox_development_skill.py`. Verify the summary shows zero failures.
+5. Run the gate with `uvx pre-commit run --all-files`. Verify every hook reports Passed.
+
+## Failure recovery
+
+| Failure | Cause | Recovery |
+|---|---|---|
+| Tests cannot import the package | The environment is not synced | Run `uv sync --locked` from the repository root and run the test command from step 4 again with `uv run`. |
+| A hook fails | The change breaks a shared gate | Read the hook output, fix the named file, stage it with an explicit `git add -- <path>` and rerun `uvx pre-commit run --all-files`. |
+| Credential material appears in a diff | A token or host was pasted into a skill or fixture | Remove it from the file, read the value from the `ARCHIVEBOX_TOKEN` setting instead, and recheck with `git diff`. |
+
 ## Rapid delivery: the 5-minute contract
 
 1. Read the owning connector-content and web-source specs, this skill,

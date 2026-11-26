@@ -9,6 +9,22 @@ description: >-
 
 Use the provider's governed MCP tools through Arbora delegation.
 
+## Steps
+
+1. Establish the verified GraphSession and tenant with `manage(intent="session")`. Verify the response names the expected tenant.
+2. Discover the typed tools with `find(intent="archivebox")`. Verify the tool name and schema you plan to use appear in the result.
+3. Inspect read-only first, for example `archivebox_get_snapshots`(tag). Verify the result lists the records you will act on.
+4. Run a change through `act(op="fleet.call")` after previewing its plan. Verify the plan names the exact records and that destructive ones were approved.
+5. Read the result back with `archivebox_get_snapshot`(snapshot_id). Verify the durable record shows the new state before reporting completion.
+
+## Failure recovery
+
+| Failure | Cause | Recovery |
+|---|---|---|
+| Tool not found | The tool name is stale | Rediscover with `find(intent="archivebox")` and use the returned op id. |
+| 403 from ArchiveBox | The write went to a host other than the configured one | Check the configured base URL setting and send writes only to that instance. |
+| Destructive call refused | Approval or confirmation was not given | Ask the user to approve the named target and resubmit the previewed plan with `execute=true`. |
+
 ## Workflow
 
 1. Establish the verified GraphSession and tenant before discovery or retrieval.

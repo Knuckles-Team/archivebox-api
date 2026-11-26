@@ -2,15 +2,7 @@
 name: archivebox-research-archive
 skill_type: skill
 description: >-
-  Keep a durable, tagged, re-checkable archive of competitor and market
-  research and cite it as evidence. The web fetch connector (webarchiver-mcp)
-  captures and extracts each page; archivebox-mcp files a durable copy under
-  research tags, confirms the capture, and later answers "what did this page
-  say on that date" with snapshot ids, timestamps and plugin results. Use for
-  any competitor, pricing, product or market research run that must be
-  evidenced or repeated. Do NOT use for one-off reads that need no durable copy
-  (use webarchiver-mcp alone) or for archive cleanup
-  (archivebox-archive-administration).
+  Keep a durable, tagged, re-checkable archive of competitor and market research and cite it as evidence. Use for any competitor, pricing, product or market research run that must be evidenced or repeated. Do NOT use for one-off reads that need no durable copy (use webarchiver-mcp alone) or for archive cleanup (archivebox-archive-administration).
 license: MIT
 tags: [archivebox, research, competitors, market, evidence, archive]
 metadata:
@@ -18,6 +10,8 @@ metadata:
   version: '0.1.0'
 ---
 # Research archive: competitor and market evidence
+
+Scope: Keep a durable, tagged, re-checkable archive of competitor and market research and cite it as evidence. The web fetch connector (webarchiver-mcp) captures and extracts each page; archivebox-mcp files a durable copy under research tags, confirms the capture, and later answers "what did this page say on that date" with snapshot ids, timestamps and plugin results. Use for any competitor, pricing, product or market research run that must be evidenced or repeated. Do NOT use for one-off reads that need no durable copy (use webarchiver-mcp alone) or for archive cleanup (archivebox-archive-administration).
 
 Business goal: every page a competitor or market brief relies on has a durable
 archive copy, found again by tag, so claims can be re-checked and changes over
@@ -36,6 +30,22 @@ time shown.
 Every page of one run gets three tags: `market-research`, the subject slug
 (for example `acme-corp` or `crm-market`) and the run date `YYYY-MM-DD`.
 Test runs use `zz-validation-<YYYY-MM-DD>` instead and are removed afterwards.
+
+## Steps
+
+1. Select the pages and extract each with `web_extract`. Verify each result carries a `canonical_url` and `retrieved_at`.
+2. Archive them with `archivebox_cli_add`(urls, tag="market-research,<subject>,<YYYY-MM-DD>", depth=0). Verify the count of URLs is 50 or fewer.
+3. Confirm capture with `archivebox_get_snapshots`(tag, search). Verify each URL has a `sealed` snapshot with a durable plugin result and a text result.
+4. Cite each fact with its `canonical_url`, `retrieved_at`, snapshot `id` and `archive_path`. Verify every quote appears in the captured text.
+5. Compare against the previous run with `archivebox_get_snapshots`(tag="<subject>", limit=200). Verify both snapshot ids are named for every reported change.
+
+## Failure recovery
+
+| Failure | Cause | Recovery |
+|---|---|---|
+| A page has no durable result | The capture plugin failed | Call `archivebox_get_archiveresults`(snapshot_id, status="failed"), report `output_str`, and mark the page not archived. |
+| Snapshot never seals | Capture is still queued or failed | Check `archivebox_get_snapshot`(snapshot_id) status and the capture binaries with `archivebox_get_binaries` before reporting. |
+| Page needs a login | The page is not public | Skip it and report it; do not use personas or cookies. |
 
 ## Procedure
 

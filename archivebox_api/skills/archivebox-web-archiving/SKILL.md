@@ -2,13 +2,7 @@
 name: archivebox-web-archiving
 skill_type: skill
 description: >-
-  Capture and re-archive web pages with ArchiveBox through the archivebox-mcp
-  server: add URLs (tags, depth, plugins), create single snapshots or crawls,
-  re-archive existing snapshots, schedule recurring captures, and file evidence
-  captured elsewhere as archive results. Use when a URL must be kept as a
-  durable, re-checkable copy. Do NOT use to browse what is archived
-  (archivebox-snapshot-search), to curate tags or remove captures
-  (archivebox-archive-administration), or for KG ingest (archivebox-kg-ingestion).
+  Capture and re-archive web pages with ArchiveBox through the archivebox-mcp server: add URLs (tags, depth, plugins), create single snapshots or crawls, re-archive existing snapshots, schedule recurring captures, and file evidence captured elsewhere as archive results. Use when a URL must be kept as a durable, re-checkable copy.
 license: MIT
 tags: [archivebox, web-archiving, snapshots, crawl, mcp]
 metadata:
@@ -17,8 +11,26 @@ metadata:
 ---
 # ArchiveBox web archiving
 
+Scope: Capture and re-archive web pages with ArchiveBox through the archivebox-mcp server: add URLs (tags, depth, plugins), create single snapshots or crawls, re-archive existing snapshots, schedule recurring captures, and file evidence captured elsewhere as archive results. Use when a URL must be kept as a durable, re-checkable copy. Do NOT use to browse what is archived (archivebox-snapshot-search), to curate tags or remove captures (archivebox-archive-administration), or for KG ingest (archivebox-kg-ingestion).
+
 One typed tool per ArchiveBox operation. Every tool takes its arguments
 directly (no `action`, no `params_json`).
+
+## Steps
+
+1. Check for an existing capture with `archivebox_get_snapshots`(url). Verify whether a snapshot already exists before adding.
+2. Add the URLs with `archivebox_cli_add`(urls, tag, depth=0). Verify the response returns without `error`.
+3. Poll `archivebox_get_snapshots`(tag) until each status is `sealed`. Verify every URL has a sealed snapshot.
+4. Read the outcome with `archivebox_get_archiveresults`(snapshot_id, status="succeeded"). Verify at least one durable result was kept.
+5. Schedule recurring capture with `archivebox_cli_schedule`(add=true, every, import_path, tag) only when asked. Verify `show=true` lists the schedule.
+
+## Failure recovery
+
+| Failure | Cause | Recovery |
+|---|---|---|
+| Call returns 403 | The write went to a host other than the configured base URL | Send writes only to the instance named by the base URL setting. |
+| Call returns an error body | ArchiveBox rejected the arguments | Read the `error` message and fix the argument, for example pass `urls` as a list and `tag` as a comma-separated string. |
+| Snapshot stays queued | Capture workers are busy or failing | Check `archivebox_get_machines` and `archivebox_get_binaries`, and report the finding. |
 
 ## Tools
 
