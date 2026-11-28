@@ -13,3 +13,10 @@ Governing spec: [spec.md](spec.md).
 | T-007 | `CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R007` | `tests/test_surface_contracts.py::test_classes_roll_up_by_subclass_and_never_import_core` | The row's acceptance holds. |
 | T-008 | `CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R008` | `tests/test_surface_contracts.py::test_research_archive_skill_is_served` | The row's acceptance holds. |
 | T-009 | `CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R009` | `tests/test_pack_extends_core.py` | No core term is redeclared and no retired IRI base remains. |
+
+## Machine roll-up proofs
+
+- `CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R010`: `tests/test_machine_rollup.py::test_pack_class_reaches_the_core_machine` (planned; the owning change adds the test)
+- `CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R010.1`: `tests/test_machine_rollup.py::test_archive_worker_rolls_up_to_machine` (planned; the owning change adds the test)
+- `CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R010.2`: `tests/test_machine_rollup.py::test_roll_up_is_wired_into_the_pack` (planned; the owning change adds the test)
+- `CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R010.3`: `tests/test_machine_rollup.py::test_pack_class_reaches_the_core_machine` (planned; the owning change adds the test)

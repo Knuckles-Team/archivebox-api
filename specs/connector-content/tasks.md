@@ -13,3 +13,7 @@ Each task line reads `- [ ] T001 [P] [US1] <ID>-R012.4 description`. Order is pr
 - [x] T007 [US1] CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R007 Classes roll up to medulla core by subclassing.
 - [x] T008 [US1] CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R008 Research archive skill.
 - [x] T009 [US1] CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R009 Pack extends only the core ontology.
+- [ ] T010 [US1] CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R010 Machine roll-up (rollup).
+- [ ] T011 [US1] CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R010.1 Class rolls up to the machine class.
+- [ ] T012 [US1] CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R010.2 Wiring.
+- [ ] T013 [US1] CONN-ARCHIVEBOX-API-CONNECTOR-CONTENT-R010.3 Hot-path proof: the pack roll-up reaches the core.
